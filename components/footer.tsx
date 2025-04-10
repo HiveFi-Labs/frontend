@@ -1,24 +1,22 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Twitter, Github, DiscIcon as Discord, Mail } from "lucide-react"
-import ComingSoonModal from "@/components/coming-soon-modal"
-import HiveFiLogo from "@/components/hivefi-logo"
+import { useState } from "react";
+import { Twitter, Github, DiscIcon as Discord, Mail } from "lucide-react";
+import ComingSoonModal from "@/components/coming-soon-modal";
+import HiveFiLogo from "@/components/hivefi-logo";
 
 export default function Footer() {
   const [comingSoonModal, setComingSoonModal] = useState({
     isOpen: false,
     feature: "",
-  })
+  });
 
   const showComingSoon = (feature: string) => {
     setComingSoonModal({
       isOpen: true,
       feature,
-    })
-  }
-
-  const currentYear = new Date().getFullYear()
+    });
+  };
 
   return (
     <>
@@ -34,25 +32,35 @@ export default function Footer() {
                 </span>
               </div>
               <div className="flex space-x-4 justify-center">
-                <button
-                  onClick={() => showComingSoon("Twitter")}
+                <a
+                  href="https://x.com/Hivefi_X"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-10 h-10 rounded-full bg-zinc-800 hover:bg-zinc-700 flex items-center justify-center transition-colors"
+                  aria-label="HiveFi on Twitter"
                 >
                   <Twitter className="w-5 h-5 text-zinc-300" />
-                </button>
-                <button
-                  onClick={() => showComingSoon("Discord")}
+                </a>
+                <a
+                  href="https://discord.gg/u93QSsPNd6"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-10 h-10 rounded-full bg-zinc-800 hover:bg-zinc-700 flex items-center justify-center transition-colors"
+                  aria-label="HiveFi Discord server"
                 >
                   <Discord className="w-5 h-5 text-zinc-300" />
-                </button>
-                <button
-                  onClick={() => showComingSoon("GitHub")}
+                </a>
+                <a
+                  href="https://github.com/HiveFi-Labs"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-10 h-10 rounded-full bg-zinc-800 hover:bg-zinc-700 flex items-center justify-center transition-colors"
+                  aria-label="HiveFi on GitHub"
                 >
                   <Github className="w-5 h-5 text-zinc-300" />
-                </button>
+                </a>
                 <button
+                  type="button"
                   onClick={() => showComingSoon("Contact Us")}
                   className="w-10 h-10 rounded-full bg-zinc-800 hover:bg-zinc-700 flex items-center justify-center transition-colors"
                 >
@@ -63,7 +71,9 @@ export default function Footer() {
           </div>
 
           <div className="mt-12 pt-8 border-t border-zinc-800 flex justify-center">
-            <p className="text-zinc-500 text-sm text-center">© 2025 HiveFi. All rights reserved.</p>
+            <p className="text-zinc-500 text-sm text-center">
+              © 2025 HiveFi. All rights reserved.
+            </p>
           </div>
         </div>
       </footer>
@@ -75,5 +85,5 @@ export default function Footer() {
         feature={comingSoonModal.feature}
       />
     </>
-  )
+  );
 }
