@@ -27,7 +27,7 @@ export default function WaitlistSection() {
           <div className="flex justify-center">
             <Button
               className="gradient-button text-white border-0 h-12 px-8 text-lg flex items-center gap-2"
-              onClick={() => window.open("https://discord.gg/hivefi", "_blank")}
+              onClick={() => window.open("https://discord.gg/u93QSsPNd6", "_blank")}
             >
               <Discord className="w-5 h-5" />
               Join Our Discord

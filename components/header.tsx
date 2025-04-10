@@ -75,7 +75,7 @@ export default function Header() {
             </button>
             <Button
               className="gradient-button text-white border-0 ml-4 flex items-center gap-2"
-              onClick={() => window.open("https://discord.gg/hivefi", "_blank")}
+              onClick={() => window.open("https://discord.gg/u93QSsPNd6", "_blank")}
             >
               <DiscIcon className="w-4 h-4" />
               Join Discord
@@ -130,7 +130,7 @@ export default function Header() {
                 className="gradient-button text-white border-0 flex items-center gap-2"
                 onClick={() => {
                   setMobileMenuOpen(false)
-                  window.open("https://discord.gg/hivefi", "_blank")
+                  window.open("https://discord.gg/u93QSsPNd6", "_blank")
                 }}
               >
                 <DiscIcon className="w-4 h-4" />
