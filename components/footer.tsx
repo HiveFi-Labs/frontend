@@ -59,13 +59,13 @@ export default function Footer() {
                 >
                   <Github className="w-5 h-5 text-zinc-300" />
                 </a>
-                <button
-                  type="button"
-                  onClick={() => showComingSoon("Contact Us")}
+                <a
+                  href="mailto:admin@hive.xyz"
                   className="w-10 h-10 rounded-full bg-zinc-800 hover:bg-zinc-700 flex items-center justify-center transition-colors"
+                  aria-label="Contact HiveFi"
                 >
                   <Mail className="w-5 h-5 text-zinc-300" />
-                </button>
+                </a>
               </div>
             </div>
           </div>
