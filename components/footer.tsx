@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Twitter, Github, DiscIcon as Discord, Mail } from "lucide-react";
+import { Mail } from "lucide-react";
+import { SiX, SiDiscord, SiGithub } from "@icons-pack/react-simple-icons";
 import ComingSoonModal from "@/components/coming-soon-modal";
 import HiveFiLogo from "@/components/hivefi-logo";
 
@@ -37,9 +38,9 @@ export default function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-10 h-10 rounded-full bg-zinc-800 hover:bg-zinc-700 flex items-center justify-center transition-colors"
-                  aria-label="HiveFi on Twitter"
+                  aria-label="HiveFi on X"
                 >
-                  <Twitter className="w-5 h-5 text-zinc-300" />
+                  <SiX className="w-5 h-5 text-zinc-300" />
                 </a>
                 <a
                   href="https://discord.gg/u93QSsPNd6"
@@ -48,7 +49,7 @@ export default function Footer() {
                   className="w-10 h-10 rounded-full bg-zinc-800 hover:bg-zinc-700 flex items-center justify-center transition-colors"
                   aria-label="HiveFi Discord server"
                 >
-                  <Discord className="w-5 h-5 text-zinc-300" />
+                  <SiDiscord className="w-5 h-5 text-zinc-300" />
                 </a>
                 <a
                   href="https://github.com/HiveFi-Labs"
@@ -57,10 +58,10 @@ export default function Footer() {
                   className="w-10 h-10 rounded-full bg-zinc-800 hover:bg-zinc-700 flex items-center justify-center transition-colors"
                   aria-label="HiveFi on GitHub"
                 >
-                  <Github className="w-5 h-5 text-zinc-300" />
+                  <SiGithub className="w-5 h-5 text-zinc-300" />
                 </a>
                 <a
-                  href="mailto:admin@hive.xyz"
+                  href="mailto:maff@hive.xyz"
                   className="w-10 h-10 rounded-full bg-zinc-800 hover:bg-zinc-700 flex items-center justify-center transition-colors"
                   aria-label="Contact HiveFi"
                 >
