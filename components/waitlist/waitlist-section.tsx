@@ -52,15 +52,15 @@ export default function WaitlistSection() {
                   Stay tuned for updates and exclusive offers.
                 </p>
                 {walletReady && desiredWallet ? (
-                  <div className="text-zinc-300 px-3 py-2 bg-zinc-800/50 rounded-md flex items-center justify-center max-w-xs mx-auto">
+                  <div className="text-zinc-300 px-3 py-2 bg-zinc-800/50 rounded-md flex flex-wrap items-center justify-center max-w-xl mx-auto overflow-hidden">
                     <Image 
                       src="/solana.webp" 
                       alt="Solana" 
                       width={20} 
                       height={20} 
-                      className="mr-2"
+                      className="mr-2 flex-shrink-0"
                     />
-                    {desiredWallet}
+                    <span className="break-all">{desiredWallet}</span>
                   </div>
                 ) : (
                   <div className="text-zinc-300 px-3 py-2 bg-zinc-800/50 rounded-md flex items-center justify-center max-w-xs mx-auto">
