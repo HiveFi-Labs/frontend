@@ -1,15 +1,28 @@
-"use client"
+"use client";
 
-import { Rocket, DiscIcon as Discord, Loader2 } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import {useLoginWithOAuth, usePrivy, useSolanaWallets} from '@privy-io/react-auth';
+import { Rocket, DiscIcon as Discord, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  useLoginWithOAuth,
+  usePrivy,
+  useSolanaWallets,
+} from "@privy-io/react-auth";
 import Image from "next/image";
-import { shortenAddress } from "@/utils/wallet-utils";
 
 export default function WaitlistSection() {
-  const {initOAuth} = useLoginWithOAuth();
-  const {authenticated, ready, logout} = usePrivy();
-  const {wallets, createWallet, ready: walletReady} = useSolanaWallets();
+  const { wallets, createWallet, ready: walletReady } = useSolanaWallets();
+  const { initOAuth } = useLoginWithOAuth({
+    onComplete: ({ user, isNewUser }) => {
+      console.log("User logged in successfully", user);
+      if (isNewUser) {
+        createWallet();
+      }
+    },
+    onError: (error) => {
+      console.error("Login failed", error);
+    },
+  });
+  const { authenticated } = usePrivy();
   const desiredWallet = wallets[0]?.address;
   return (
     <section id="waitlist" className="py-20 relative overflow-hidden">
@@ -24,40 +37,46 @@ export default function WaitlistSection() {
             </span>
           </div>
 
-          <h2 className="text-3xl md:text-5xl font-bold mb-6 gradient-text glow-text">Join Our Growing Community</h2>
+          <h2 className="text-3xl md:text-5xl font-bold mb-6 gradient-text glow-text">
+            Join Our Growing Community
+          </h2>
 
           <p className="text-zinc-300 text-lg mb-8">
-            Be among the first to experience the future of algorithmic trading in DeFi. Join our Discord server to get
-            early access, exclusive benefits, and connect with like-minded traders.
+            Be among the first to experience the future of algorithmic trading
+            in DeFi. Join our Discord server to get early access, exclusive
+            benefits, and connect with like-minded traders.
           </p>
 
           <div className="flex justify-center">
             <Button
               variant="outline"
               className="border-zinc-700 text-zinc-300 hover:bg-zinc-800/50 h-12 px-8 text-lg flex items-center gap-2"
-              onClick={() => window.open("https://discord.gg/u93QSsPNd6", "_blank")}
+              onClick={() =>
+                window.open("https://discord.gg/u93QSsPNd6", "_blank")
+              }
             >
               <Discord className="w-5 h-5" />
               Join Our Discord
             </Button>
           </div>
 
-
           <div className="mt-8 p-5 rounded-xl bg-zinc-800/40 backdrop-blur-sm border border-purple-500/30">
-            <h3 className="text-xl font-semibold text-white mb-2">Early Adopter Benefits</h3>
+            <h3 className="text-xl font-semibold text-white mb-2">
+              Early Adopter Benefits
+            </h3>
             {authenticated ? (
               <>
                 <p className="text-zinc-300 mb-4">
-                  Thanks for joining our waitlist! We're excited to have you on board.
-                  Stay tuned for updates and exclusive offers.
+                  Thanks for joining our waitlist! We're excited to have you on
+                  board. Stay tuned for updates and exclusive offers.
                 </p>
                 {walletReady && desiredWallet ? (
                   <div className="text-zinc-300 px-3 py-2 bg-zinc-800/50 rounded-md flex flex-wrap items-center justify-center max-w-xl mx-auto overflow-hidden">
-                    <Image 
-                      src="/solana.webp" 
-                      alt="Solana" 
-                      width={20} 
-                      height={20} 
+                    <Image
+                      src="/solana.webp"
+                      alt="Solana"
+                      width={20}
+                      height={20}
                       className="mr-2 flex-shrink-0"
                     />
                     <span className="break-all">{desiredWallet}</span>
@@ -72,12 +91,13 @@ export default function WaitlistSection() {
             ) : (
               <>
                 <p className="text-zinc-300 mb-4">
-                  Join our waitlist to get exclusive access to limited edition NFTs that may unlock special features and
-                  benefits in our ecosystem.
+                  Join our waitlist to get exclusive access to limited edition
+                  NFTs that may unlock special features and benefits in our
+                  ecosystem.
                 </p>
                 <Button
                   className="gradient-button text-white border-0 px-8 py-2 text-lg"
-                  onClick={() => initOAuth({ provider: 'google' })}
+                  onClick={() => initOAuth({ provider: "google" })}
                 >
                   Join Waitlist
                 </Button>
@@ -87,12 +107,12 @@ export default function WaitlistSection() {
 
           <div className="mt-8 p-4 rounded-lg bg-zinc-800/30 backdrop-blur-sm inline-block">
             <p className="text-zinc-400 text-sm">
-              Community-driven • Real-time updates • Priority access for early members
+              Community-driven • Real-time updates • Priority access for early
+              members
             </p>
           </div>
-
         </div>
       </div>
     </section>
-  )
+  );
 }

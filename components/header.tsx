@@ -6,7 +6,11 @@ import { Menu, X, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ComingSoonModal from "@/components/coming-soon-modal";
 import WaitlistModal from "@/components/waitlist/waitlist-modal";
-import { useLoginWithOAuth, usePrivy, useSolanaWallets } from "@privy-io/react-auth";
+import {
+  useLoginWithOAuth,
+  usePrivy,
+  useSolanaWallets,
+} from "@privy-io/react-auth";
 import HiveFiLogo from "@/components/hivefi-logo";
 import Image from "next/image";
 import { shortenAddress } from "@/utils/wallet-utils";
@@ -19,20 +23,18 @@ export default function Header() {
     feature: "",
   });
   const [waitlistModalOpen, setWaitlistModalOpen] = useState(false);
-  const {wallets, createWallet, ready: walletReady} = useSolanaWallets();
-  const { initOAuth } = useLoginWithOAuth(
-    {
-      onComplete: ({ user, isNewUser }) => {
-          console.log('User logged in successfully', user);
-          if (isNewUser) {
-            createWallet()
-          }
-      },
-      onError: (error) => {
-          console.error('Login failed', error);
+  const { wallets, createWallet, ready: walletReady } = useSolanaWallets();
+  const { initOAuth } = useLoginWithOAuth({
+    onComplete: ({ user, isNewUser }) => {
+      console.log("User logged in successfully", user);
+      if (isNewUser) {
+        createWallet();
       }
-  }
-  );
+    },
+    onError: (error) => {
+      console.error("Login failed", error);
+    },
+  });
   const { authenticated, ready, logout } = usePrivy();
   const desiredWallet = wallets[0]?.address;
 
@@ -95,11 +97,11 @@ export default function Header() {
             </button>
             {desiredWallet ? (
               <div className="text-zinc-300 px-3 py-2 bg-zinc-800/50 rounded-md flex items-center">
-                <Image 
-                  src="/solana.webp" 
-                  alt="Solana" 
-                  width={20} 
-                  height={20} 
+                <Image
+                  src="/solana.webp"
+                  alt="Solana"
+                  width={20}
+                  height={20}
                   className="mr-2"
                 />
                 {shortenAddress(desiredWallet)}
@@ -172,11 +174,11 @@ export default function Header() {
               </button>
               {walletReady && desiredWallet ? (
                 <div className="text-zinc-300 px-3 py-2 bg-zinc-800/50 rounded-md flex items-center justify-center">
-                  <Image 
-                    src="/solana.webp" 
-                    alt="Solana" 
-                    width={20} 
-                    height={20} 
+                  <Image
+                    src="/solana.webp"
+                    alt="Solana"
+                    width={20}
+                    height={20}
                     className="mr-2"
                   />
                   {shortenAddress(desiredWallet)}
