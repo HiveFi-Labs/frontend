@@ -5,14 +5,7 @@ import { Button } from "@/components/ui/button"
 import { ArrowLeft, DiscIcon, Rocket, Calendar, Bell } from "lucide-react"
 import { useEffect } from "react"
 
-interface PageProps {
-  searchParams: {
-    feature?: string
-  }
-}
-
-export default function ComingSoonPage({ searchParams }: PageProps) {
-  const feature = searchParams.feature || "This feature"
+export default function ComingSoonPage() {
 
   useEffect(() => {
     // ページがロードされたら最上部にスクロール
@@ -31,7 +24,7 @@ export default function ComingSoonPage({ searchParams }: PageProps) {
                 </span>
               </div>
 
-              <h1 className="text-3xl md:text-4xl font-bold gradient-text">{feature} is on the way</h1>
+              <h1 className="text-3xl md:text-4xl font-bold gradient-text">This feature is on the way</h1>
 
               <p className="text-zinc-300 text-base md:text-lg">
                 We're working hard to bring you this feature. Join our Discord community to get updates and be the first
