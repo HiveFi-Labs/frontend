@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   openGraph: {
     images: [
       {
-        url: '/hivefi-ogp2.jpg',
+        url: 'https://hivefi.xyz/hivefi-ogp2.jpg',
         width: 1200,
         height: 630,
         alt: 'HiveFi - Algorithmic Trading for DeFi',
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    images: ['/hivefi-ogp2.jpg'],
+    images: ['https://hivefi.xyz/hivefi-ogp2.jpg'],
   },
 }
 
