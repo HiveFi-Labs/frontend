@@ -14,7 +14,21 @@ export const metadata: Metadata = {
   icons: [{ rel: 'icon', url: "/favicon.ico" }],
   description:
     "Create, backtest, and deploy algorithmic trading strategies with a visual interface. Invest in verified strategies or share your expertise with the world.",
-    generator: 'v0.dev'
+  generator: 'v0.dev',
+  openGraph: {
+    images: [
+      {
+        url: '/hivefi-ogp.png',
+        width: 1200,
+        height: 630,
+        alt: 'HiveFi - Algorithmic Trading for DeFi',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    images: ['/hivefi-ogp.png'],
+  },
 }
 
 export default function RootLayout({
