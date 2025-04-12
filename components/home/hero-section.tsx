@@ -80,10 +80,15 @@ export default function HeroSection() {
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button
                   className="gradient-button text-white border-0 h-12 px-8 text-lg flex items-center gap-2"
-                  onClick={() => window.open("https://discord.gg/u93QSsPNd6", "_blank")}
+                  onClick={() => {
+                    const waitlistSection = document.getElementById('waitlist');
+                    if (waitlistSection) {
+                      waitlistSection.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }}
                 >
-                  <DiscIcon className="w-5 h-5" />
-                  Join Discord
+                  <TrendingUp className="w-5 h-5" />
+                  Get Early Access
                 </Button>
               </div>
               {/* ユーザー数の表示を削除 */}

@@ -39,13 +39,14 @@ export default function ComingSoonPage({ searchParams }: PageProps) {
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button
-                  className="gradient-button text-white border-0 flex items-center gap-2"
-                  onClick={() => window.open("https://discord.gg/u93QSsPNd6", "_blank")}
-                >
-                  <DiscIcon className="w-4 h-4" />
-                  Join Discord
-                </Button>
+                <Link href="/#waitlist">
+                  <Button
+                    className="gradient-button text-white border-0 flex items-center gap-2"
+                  >
+                    <Rocket className="w-4 h-4" />
+                    Get Early Access
+                  </Button>
+                </Link>
 
                 <Link href="/">
                   <Button

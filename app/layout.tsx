@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import Header from "@/components/header"
 import Footer from "@/components/footer"
 import BackgroundEffect from "@/components/background-effect"
+import Providers from "./providers"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -40,12 +41,14 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.className} bg-black text-white`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange>
-          <div className="flex flex-col min-h-screen">
-            <BackgroundEffect />
-            <Header />
-            <main className="flex-1">{children}</main>
-            <Footer />
-          </div>
+          <Providers>
+            <div className="flex flex-col min-h-screen">
+              <BackgroundEffect />
+              <Header />
+              <main className="flex-1">{children}</main>
+              <Footer />
+            </div>
+          </Providers>
         </ThemeProvider>
       </body>
     </html>

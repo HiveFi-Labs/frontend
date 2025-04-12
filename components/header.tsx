@@ -1,43 +1,63 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import Link from "next/link"
-import { Menu, X } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import ComingSoonModal from "@/components/coming-soon-modal"
-import WaitlistModal from "@/components/waitlist/waitlist-modal"
-import { DiscIcon } from "lucide-react"
-import HiveFiLogo from "@/components/hivefi-logo"
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { Menu, X, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import ComingSoonModal from "@/components/coming-soon-modal";
+import WaitlistModal from "@/components/waitlist/waitlist-modal";
+import { useLoginWithOAuth, usePrivy, useSolanaWallets } from "@privy-io/react-auth";
+import HiveFiLogo from "@/components/hivefi-logo";
+import Image from "next/image";
+import { shortenAddress } from "@/utils/wallet-utils";
 
 export default function Header() {
-  const [isScrolled, setIsScrolled] = useState(false)
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [comingSoonModal, setComingSoonModal] = useState({
     isOpen: false,
     feature: "",
-  })
-  const [waitlistModalOpen, setWaitlistModalOpen] = useState(false)
+  });
+  const [waitlistModalOpen, setWaitlistModalOpen] = useState(false);
+  const {wallets, createWallet, ready: walletReady} = useSolanaWallets();
+  const { initOAuth } = useLoginWithOAuth(
+    {
+      onComplete: ({ user, isNewUser }) => {
+          console.log('User logged in successfully', user);
+          if (isNewUser) {
+            createWallet()
+          }
+      },
+      onError: (error) => {
+          console.error('Login failed', error);
+      }
+  }
+  );
+  const { authenticated, ready, logout } = usePrivy();
+  const desiredWallet = wallets[0]?.address;
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20)
-    }
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const showComingSoon = (feature: string) => {
     setComingSoonModal({
       isOpen: true,
       feature,
-    })
-  }
+    });
+  };
 
   return (
     <>
       <header
         className={`fixed w-full z-50 transition-all duration-300 ${
-          isScrolled ? "py-3 bg-black/80 backdrop-blur-lg border-b border-zinc-800/50" : "py-5 bg-transparent"
+          isScrolled
+            ? "py-3 bg-black/80 backdrop-blur-lg border-b border-zinc-800/50"
+            : "py-5 bg-transparent"
         }`}
       >
         <div className="container mx-auto px-4 flex items-center justify-between">
@@ -73,13 +93,33 @@ export default function Header() {
               <span>Portfolio</span>
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-500 to-blue-500 transition-all duration-300 group-hover:w-full"></span>
             </button>
-            <Button
-              className="gradient-button text-white border-0 ml-4 flex items-center gap-2"
-              onClick={() => window.open("https://discord.gg/u93QSsPNd6", "_blank")}
-            >
-              <DiscIcon className="w-4 h-4" />
-              Join Discord
-            </Button>
+            {desiredWallet ? (
+              <div className="text-zinc-300 px-3 py-2 bg-zinc-800/50 rounded-md flex items-center">
+                <Image 
+                  src="/solana.webp" 
+                  alt="Solana" 
+                  width={20} 
+                  height={20} 
+                  className="mr-2"
+                />
+                {shortenAddress(desiredWallet)}
+              </div>
+            ) : (
+              <Button
+                className="gradient-button text-white border-0"
+                onClick={() => initOAuth({ provider: "google" })}
+                disabled={!ready}
+              >
+                {!ready || !walletReady ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Loading...
+                  </>
+                ) : (
+                  "Login"
+                )}
+              </Button>
+            )}
           </nav>
 
           {/* Mobile Menu Button */}
@@ -90,7 +130,11 @@ export default function Header() {
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="text-white"
             >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {mobileMenuOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
             </Button>
           </div>
         </div>
@@ -101,8 +145,8 @@ export default function Header() {
             <div className="container mx-auto px-4 flex flex-col space-y-4">
               <button
                 onClick={() => {
-                  setMobileMenuOpen(false)
-                  showComingSoon("Strategy Builder")
+                  setMobileMenuOpen(false);
+                  showComingSoon("Strategy Builder");
                 }}
                 className="text-zinc-300 hover:text-white transition-colors py-2"
               >
@@ -110,8 +154,8 @@ export default function Header() {
               </button>
               <button
                 onClick={() => {
-                  setMobileMenuOpen(false)
-                  showComingSoon("Strategy Marketplace")
+                  setMobileMenuOpen(false);
+                  showComingSoon("Strategy Marketplace");
                 }}
                 className="text-zinc-300 hover:text-white transition-colors py-2"
               >
@@ -119,23 +163,48 @@ export default function Header() {
               </button>
               <button
                 onClick={() => {
-                  setMobileMenuOpen(false)
-                  showComingSoon("Portfolio Management")
+                  setMobileMenuOpen(false);
+                  showComingSoon("Portfolio Management");
                 }}
                 className="text-zinc-300 hover:text-white transition-colors py-2"
               >
                 Portfolio
               </button>
-              <Button
-                className="gradient-button text-white border-0 flex items-center gap-2"
-                onClick={() => {
-                  setMobileMenuOpen(false)
-                  window.open("https://discord.gg/u93QSsPNd6", "_blank")
-                }}
-              >
-                <DiscIcon className="w-4 h-4" />
-                Join Discord
-              </Button>
+              {walletReady && desiredWallet ? (
+                <div className="text-zinc-300 px-3 py-2 bg-zinc-800/50 rounded-md flex items-center justify-center">
+                  <Image 
+                    src="/solana.webp" 
+                    alt="Solana" 
+                    width={20} 
+                    height={20} 
+                    className="mr-2"
+                  />
+                  {shortenAddress(desiredWallet)}
+                </div>
+              ) : authenticated ? (
+                <div className="text-zinc-300 px-3 py-2 bg-zinc-800/50 rounded-md flex items-center justify-center">
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Loading...
+                </div>
+              ) : (
+                <Button
+                  className="gradient-button text-white border-0"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    initOAuth({ provider: "google" });
+                  }}
+                  disabled={!ready}
+                >
+                  {!ready ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Loading...
+                    </>
+                  ) : (
+                    "Login"
+                  )}
+                </Button>
+              )}
             </div>
           </div>
         )}
@@ -149,7 +218,10 @@ export default function Header() {
       />
 
       {/* Waitlist Modal */}
-      <WaitlistModal isOpen={waitlistModalOpen} onClose={() => setWaitlistModalOpen(false)} />
+      <WaitlistModal
+        isOpen={waitlistModalOpen}
+        onClose={() => setWaitlistModalOpen(false)}
+      />
     </>
-  )
+  );
 }
