@@ -64,9 +64,13 @@ export default function WaitlistSection() {
             </h3>
             {authenticated ? (
               <>
+                <div className="mx-auto max-w-md mb-5 mt-3 p-3 bg-gradient-to-r from-purple-600/40 to-blue-600/40 rounded-lg border border-purple-400/50">
+                  <h4 className="text-xl font-bold text-white">
+                    🎉 Registration Completed!
+                  </h4>
+                </div>
                 <p className="text-zinc-300 mb-4">
-                  Thanks for joining our waitlist! We're excited to have you on
-                  board. Stay tuned for updates and exclusive offers.
+                  Stay tuned for updates and exclusive offers. We'll notify you as soon as our platform is ready for early adopters.
                 </p>
                 {walletReady && desiredWallet ? (
                   <div className="text-zinc-300 px-3 py-2 bg-zinc-800/50 rounded-md flex flex-wrap items-center justify-center max-w-xl mx-auto overflow-hidden">

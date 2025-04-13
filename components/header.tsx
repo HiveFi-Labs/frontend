@@ -94,15 +94,25 @@ export default function Header() {
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-500 to-blue-500 transition-all duration-300 group-hover:w-full"></span>
             </button>
             {desiredWallet ? (
-              <div className="text-zinc-300 px-3 py-2 bg-zinc-800/50 rounded-md flex items-center">
-                <Image
-                  src="/solana.webp"
-                  alt="Solana"
-                  width={20}
-                  height={20}
-                  className="mr-2"
-                />
-                {shortenAddress(desiredWallet)}
+              <div className="flex items-center gap-2">
+                <div className="text-zinc-300 px-3 py-2 bg-zinc-800/50 rounded-md flex items-center">
+                  <Image
+                    src="/solana.webp"
+                    alt="Solana"
+                    width={20}
+                    height={20}
+                    className="mr-2"
+                  />
+                  {shortenAddress(desiredWallet)}
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => logout()} 
+                  className="text-zinc-300 border-zinc-700 hover:bg-zinc-800 hover:text-white"
+                >
+                  Logout
+                </Button>
               </div>
             ) : (
               <Button
@@ -171,15 +181,27 @@ export default function Header() {
                 Portfolio
               </button>
               {walletReady && desiredWallet ? (
-                <div className="text-zinc-300 px-3 py-2 bg-zinc-800/50 rounded-md flex items-center justify-center">
-                  <Image
-                    src="/solana.webp"
-                    alt="Solana"
-                    width={20}
-                    height={20}
-                    className="mr-2"
-                  />
-                  {shortenAddress(desiredWallet)}
+                <div className="flex flex-col space-y-2">
+                  <div className="text-zinc-300 px-3 py-2 bg-zinc-800/50 rounded-md flex items-center justify-center">
+                    <Image
+                      src="/solana.webp"
+                      alt="Solana"
+                      width={20}
+                      height={20}
+                      className="mr-2"
+                    />
+                    {shortenAddress(desiredWallet)}
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      logout();
+                    }} 
+                    className="text-zinc-300 border-zinc-700 hover:bg-zinc-800 hover:text-white"
+                  >
+                    Logout
+                  </Button>
                 </div>
               ) : authenticated ? (
                 <div className="text-zinc-300 px-3 py-2 bg-zinc-800/50 rounded-md flex items-center justify-center">
