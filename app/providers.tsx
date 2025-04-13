@@ -10,7 +10,6 @@ export default function Providers({ children }: { children: React.ReactNode }) {
       appId={app_id}
       clientId={client_id}
       config={{
-        loginMethods: ["google"],
         appearance: {
           theme: "dark", // アプリがダークテーマを使用しているので合わせる
           accentColor: "#9333ea",

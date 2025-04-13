@@ -10,17 +10,8 @@ import {
 import Image from "next/image";
 
 export default function WaitlistSection() {
-  const { wallets, createWallet, ready: walletReady } = useSolanaWallets();
-  const { initOAuth } = useLoginWithOAuth({
-    onComplete: ({ user }) => {
-      console.log("User logged in successfully", user);
-      createWallet();
-    },
-    onError: (error) => {
-      console.error("Login failed", error);
-    },
-  });
-  const { authenticated } = usePrivy();
+  const { wallets, ready: walletReady } = useSolanaWallets();
+  const { authenticated, login } = usePrivy();
   const desiredWallet = wallets[0]?.address;
   return (
     <section id="waitlist" className="py-20 relative overflow-hidden">
@@ -99,7 +90,7 @@ export default function WaitlistSection() {
                 </p>
                 <Button
                   className="gradient-button text-white border-0 px-8 py-2 text-lg"
-                  onClick={() => initOAuth({ provider: "google" })}
+                  onClick={login}
                 >
                   Join Waitlist
                 </Button>

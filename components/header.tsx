@@ -23,17 +23,8 @@ export default function Header() {
     feature: "",
   });
   const [waitlistModalOpen, setWaitlistModalOpen] = useState(false);
-  const { wallets, createWallet, ready: walletReady } = useSolanaWallets();
-  const { initOAuth } = useLoginWithOAuth({
-    onComplete: ({ user }) => {
-      console.log("User logged in successfully", user);
-      createWallet();
-    },
-    onError: (error) => {
-      console.error("Login failed", error);
-    },
-  });
-  const { authenticated, ready, logout } = usePrivy();
+  const { wallets, ready: walletReady } = useSolanaWallets();
+  const { authenticated, ready, logout, login } = usePrivy();
   const desiredWallet = wallets[0]?.address;
 
   useEffect(() => {
@@ -117,7 +108,7 @@ export default function Header() {
             ) : (
               <Button
                 className="gradient-button text-white border-0"
-                onClick={() => initOAuth({ provider: "google" })}
+                onClick={login}
                 disabled={!ready}
               >
                 {!ready || !walletReady ? (
@@ -213,7 +204,7 @@ export default function Header() {
                   className="gradient-button text-white border-0"
                   onClick={() => {
                     setMobileMenuOpen(false);
-                    initOAuth({ provider: "google" });
+                    login();
                   }}
                   disabled={!ready}
                 >
