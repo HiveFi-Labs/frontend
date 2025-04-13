@@ -12,11 +12,9 @@ import Image from "next/image";
 export default function WaitlistSection() {
   const { wallets, createWallet, ready: walletReady } = useSolanaWallets();
   const { initOAuth } = useLoginWithOAuth({
-    onComplete: ({ user, isNewUser }) => {
+    onComplete: ({ user }) => {
       console.log("User logged in successfully", user);
-      if (isNewUser) {
-        createWallet();
-      }
+      createWallet();
     },
     onError: (error) => {
       console.error("Login failed", error);
