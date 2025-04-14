@@ -43,8 +43,8 @@ export default function StatsSection() {
     <section className="py-16 relative">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {stats.map((stat, index) => (
-            <GlassCard key={index}>
+          {stats.map((stat) => (
+            <GlassCard key={stat.label}>
               <GlassCardContent className="text-center pt-6">
                 <h3 className="text-3xl md:text-4xl font-bold gradient-text mb-2">{stat.value}</h3>
                 <p className="text-zinc-400">{stat.label}</p>
