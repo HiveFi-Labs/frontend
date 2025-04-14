@@ -81,7 +81,7 @@ export default function WaitlistForm() {
         {status === "success" && (
           <div className="flex items-center gap-2 text-green-400 text-sm">
             <CheckCircle className="h-4 w-4" />
-            <span>Thank you! We'll notify you when we launch.</span>
+            <span>Thank you! We&apos;ll notify you when we launch.</span>
           </div>
         )}
 
