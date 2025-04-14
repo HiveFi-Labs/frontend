@@ -19,12 +19,12 @@ export default function Home() {
               </span>
             </div>
             <h2 className="text-3xl md:text-5xl font-bold mb-6 gradient-text">
-              Cutting-Edge Trading Technology
+              Simple, Smart, and Seamless Trade Automation
             </h2>
             <p className="text-zinc-300 text-lg">
-              HiveFi combines cutting-edge AI technology with user-friendly
-              interfaces to create a revolutionary algorithmic trading platform
-              for DeFi.
+              HiveFi drastically reduces automation costs and revolutionizes
+              monetization, empowering you to focus on a what matters most:
+              strategic ideation.
             </p>
           </div>
           <FeatureGrid />
