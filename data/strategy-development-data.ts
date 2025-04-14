@@ -8,57 +8,57 @@ import type {
   EquityCurvePoint,
   StrategyCode,
   StrategySettings,
-} from "@/types/strategy-development"
+} from '@/types/strategy-development'
 
 // AIチャットメッセージデータ
 export const chatConversationsData: ChatMessage[] = [
   {
-    agent: "strategist",
+    agent: 'strategist',
     message:
       "I'm analyzing the market conditions for BTC/USDT. Based on historical data, I suggest we implement a trend-following strategy with RSI as an additional filter.",
-    timestamp: "10:32 AM",
+    timestamp: '10:32 AM',
   },
   {
-    agent: "developer",
+    agent: 'developer',
     message:
       "That makes sense. I'll implement a basic structure using the RSI indicator with a 14-period lookback. We should also consider adding a moving average crossover to confirm the trend.",
-    timestamp: "10:33 AM",
+    timestamp: '10:33 AM',
   },
   {
-    agent: "analyst",
+    agent: 'analyst',
     message:
-      "Looking at the backtesting results, the strategy performs well in trending markets but struggles during sideways price action. We should add a volatility filter to avoid trading in low-volatility environments.",
-    timestamp: "10:35 AM",
+      'Looking at the backtesting results, the strategy performs well in trending markets but struggles during sideways price action. We should add a volatility filter to avoid trading in low-volatility environments.',
+    timestamp: '10:35 AM',
     attachment: {
-      type: "chart",
+      type: 'chart',
       data: {
-        title: "Strategy Performance",
+        title: 'Strategy Performance',
         metrics: {
-          return: "+28.4%",
-          sharpeRatio: "1.8",
-          maxDrawdown: "-12.3%",
+          return: '+28.4%',
+          sharpeRatio: '1.8',
+          maxDrawdown: '-12.3%',
         },
       },
     },
   },
   {
-    agent: "optimizer",
+    agent: 'optimizer',
     message:
       "I've optimized the parameters based on the last 6 months of data. The optimal RSI settings appear to be: overbought = 70, oversold = 30, with a 14-period lookback. The moving average periods should be 10 and 30 for the fast and slow MAs respectively.",
-    timestamp: "10:37 AM",
+    timestamp: '10:37 AM',
   },
   {
-    agent: "user",
-    message: "Can we add a stop-loss mechanism to limit the downside risk?",
-    timestamp: "10:38 AM",
+    agent: 'user',
+    message: 'Can we add a stop-loss mechanism to limit the downside risk?',
+    timestamp: '10:38 AM',
   },
   {
-    agent: "developer",
+    agent: 'developer',
     message:
       "Absolutely. I'll implement a trailing stop-loss at 2% below the entry price. This should help protect profits while limiting downside risk.",
-    timestamp: "10:39 AM",
+    timestamp: '10:39 AM',
     attachment: {
-      type: "code",
+      type: 'code',
       data: `
 // Implement trailing stop-loss
 function applyTrailingStopLoss(position, currentPrice, stopLossPercent) {
@@ -75,83 +75,158 @@ function applyTrailingStopLoss(position, currentPrice, stopLossPercent) {
 
 // パフォーマンス指標データ
 export const performanceMetricsData: PerformanceMetric[] = [
-  { name: "Total Return", value: "+28.4%", status: "positive" },
-  { name: "Sharpe Ratio", value: "1.8", status: "positive" },
-  { name: "Max Drawdown", value: "-12.3%", status: "neutral" },
-  { name: "Win Rate", value: "62%", status: "positive" },
-  { name: "Profit Factor", value: "2.1", status: "positive" },
-  { name: "Avg. Trade", value: "+1.2%", status: "positive" },
-  { name: "Total Trades", value: "47", status: "neutral" },
-  { name: "Avg. Holding Time", value: "3.2 days", status: "neutral" },
+  { name: 'Total Return', value: '+28.4%', status: 'positive' },
+  { name: 'Sharpe Ratio', value: '1.8', status: 'positive' },
+  { name: 'Max Drawdown', value: '-12.3%', status: 'neutral' },
+  { name: 'Win Rate', value: '62%', status: 'positive' },
+  { name: 'Profit Factor', value: '2.1', status: 'positive' },
+  { name: 'Avg. Trade', value: '+1.2%', status: 'positive' },
+  { name: 'Total Trades', value: '47', status: 'neutral' },
+  { name: 'Avg. Holding Time', value: '3.2 days', status: 'neutral' },
 ]
 
 // 取引履歴データ
 export const tradeHistoryData: TradeHistoryItem[] = [
-  { id: 1, type: "LONG", entry: "31,245", exit: "32,850", pnl: "+5.1%", duration: "2d 4h", date: "Jan 15, 2023" },
-  { id: 2, type: "LONG", entry: "33,120", exit: "32,410", pnl: "-2.1%", duration: "1d 7h", date: "Jan 18, 2023" },
-  { id: 3, type: "LONG", entry: "32,780", exit: "34,560", pnl: "+5.4%", duration: "3d 12h", date: "Jan 22, 2023" },
-  { id: 4, type: "LONG", entry: "34,890", exit: "36,720", pnl: "+5.2%", duration: "4d 2h", date: "Jan 28, 2023" },
-  { id: 5, type: "LONG", entry: "36,450", exit: "35,980", pnl: "-1.3%", duration: "0d 18h", date: "Feb 2, 2023" },
+  {
+    id: 1,
+    type: 'LONG',
+    entry: '31,245',
+    exit: '32,850',
+    pnl: '+5.1%',
+    duration: '2d 4h',
+    date: 'Jan 15, 2023',
+  },
+  {
+    id: 2,
+    type: 'LONG',
+    entry: '33,120',
+    exit: '32,410',
+    pnl: '-2.1%',
+    duration: '1d 7h',
+    date: 'Jan 18, 2023',
+  },
+  {
+    id: 3,
+    type: 'LONG',
+    entry: '32,780',
+    exit: '34,560',
+    pnl: '+5.4%',
+    duration: '3d 12h',
+    date: 'Jan 22, 2023',
+  },
+  {
+    id: 4,
+    type: 'LONG',
+    entry: '34,890',
+    exit: '36,720',
+    pnl: '+5.2%',
+    duration: '4d 2h',
+    date: 'Jan 28, 2023',
+  },
+  {
+    id: 5,
+    type: 'LONG',
+    entry: '36,450',
+    exit: '35,980',
+    pnl: '-1.3%',
+    duration: '0d 18h',
+    date: 'Feb 2, 2023',
+  },
 ]
 
 // パラメータ最適化結果データ
 export const optimizationResultsData: OptimizationResult[] = [
-  { rsiPeriod: 14, fastMA: 10, slowMA: 30, stopLoss: 2, return: "+28.4%", sharpe: "1.8" },
-  { rsiPeriod: 12, fastMA: 8, slowMA: 25, stopLoss: 2.5, return: "+26.7%", sharpe: "1.7" },
-  { rsiPeriod: 16, fastMA: 12, slowMA: 35, stopLoss: 1.8, return: "+25.9%", sharpe: "1.6" },
-  { rsiPeriod: 14, fastMA: 9, slowMA: 28, stopLoss: 2.2, return: "+27.8%", sharpe: "1.75" },
-  { rsiPeriod: 15, fastMA: 11, slowMA: 32, stopLoss: 1.9, return: "+26.2%", sharpe: "1.65" },
+  {
+    rsiPeriod: 14,
+    fastMA: 10,
+    slowMA: 30,
+    stopLoss: 2,
+    return: '+28.4%',
+    sharpe: '1.8',
+  },
+  {
+    rsiPeriod: 12,
+    fastMA: 8,
+    slowMA: 25,
+    stopLoss: 2.5,
+    return: '+26.7%',
+    sharpe: '1.7',
+  },
+  {
+    rsiPeriod: 16,
+    fastMA: 12,
+    slowMA: 35,
+    stopLoss: 1.8,
+    return: '+25.9%',
+    sharpe: '1.6',
+  },
+  {
+    rsiPeriod: 14,
+    fastMA: 9,
+    slowMA: 28,
+    stopLoss: 2.2,
+    return: '+27.8%',
+    sharpe: '1.75',
+  },
+  {
+    rsiPeriod: 15,
+    fastMA: 11,
+    slowMA: 32,
+    stopLoss: 1.9,
+    return: '+26.2%',
+    sharpe: '1.65',
+  },
 ]
 
 // チャートデータポイント
 export const chartDataPoints: ChartDataPoint[] = [
-  { date: "Jan 1", price: 29000 },
-  { date: "Jan 5", price: 30200 },
-  { date: "Jan 10", price: 31500 },
-  { date: "Jan 15", price: 31245, signal: "buy" },
-  { date: "Jan 20", price: 32100 },
-  { date: "Jan 25", price: 32850, signal: "sell" },
-  { date: "Jan 30", price: 33120, signal: "buy" },
-  { date: "Feb 5", price: 32410, signal: "sell" },
-  { date: "Feb 10", price: 32780, signal: "buy" },
-  { date: "Feb 15", price: 33500 },
-  { date: "Feb 20", price: 34560, signal: "sell" },
-  { date: "Feb 25", price: 34890, signal: "buy" },
-  { date: "Mar 1", price: 35600 },
-  { date: "Mar 5", price: 36720, signal: "sell" },
-  { date: "Mar 10", price: 36450, signal: "buy" },
-  { date: "Mar 15", price: 35980, signal: "sell" },
-  { date: "Mar 20", price: 36200 },
-  { date: "Mar 25", price: 37100 },
-  { date: "Mar 30", price: 38500 },
+  { date: 'Jan 1', price: 29000 },
+  { date: 'Jan 5', price: 30200 },
+  { date: 'Jan 10', price: 31500 },
+  { date: 'Jan 15', price: 31245, signal: 'buy' },
+  { date: 'Jan 20', price: 32100 },
+  { date: 'Jan 25', price: 32850, signal: 'sell' },
+  { date: 'Jan 30', price: 33120, signal: 'buy' },
+  { date: 'Feb 5', price: 32410, signal: 'sell' },
+  { date: 'Feb 10', price: 32780, signal: 'buy' },
+  { date: 'Feb 15', price: 33500 },
+  { date: 'Feb 20', price: 34560, signal: 'sell' },
+  { date: 'Feb 25', price: 34890, signal: 'buy' },
+  { date: 'Mar 1', price: 35600 },
+  { date: 'Mar 5', price: 36720, signal: 'sell' },
+  { date: 'Mar 10', price: 36450, signal: 'buy' },
+  { date: 'Mar 15', price: 35980, signal: 'sell' },
+  { date: 'Mar 20', price: 36200 },
+  { date: 'Mar 25', price: 37100 },
+  { date: 'Mar 30', price: 38500 },
 ]
 
 // 月次リターンデータ
 export const monthlyReturnsData: MonthlyReturn[] = [
-  { month: "Jan", return: 5.1 },
-  { month: "Feb", return: 3.3 },
-  { month: "Mar", return: 8.2 },
-  { month: "Apr", return: -2.1 },
-  { month: "May", return: 6.7 },
-  { month: "Jun", return: 4.2 },
-  { month: "Jul", return: 1.8 },
-  { month: "Aug", return: -1.5 },
-  { month: "Sep", return: 3.9 },
-  { month: "Oct", return: 5.6 },
-  { month: "Nov", return: 2.3 },
-  { month: "Dec", return: 4.8 },
+  { month: 'Jan', return: 5.1 },
+  { month: 'Feb', return: 3.3 },
+  { month: 'Mar', return: 8.2 },
+  { month: 'Apr', return: -2.1 },
+  { month: 'May', return: 6.7 },
+  { month: 'Jun', return: 4.2 },
+  { month: 'Jul', return: 1.8 },
+  { month: 'Aug', return: -1.5 },
+  { month: 'Sep', return: 3.9 },
+  { month: 'Oct', return: 5.6 },
+  { month: 'Nov', return: 2.3 },
+  { month: 'Dec', return: 4.8 },
 ]
 
 // 株式曲線データ
 export const equityCurveData: EquityCurvePoint[] = [
-  { date: "Jan 1", value: 10000 },
-  { date: "Jan 15", value: 10000 },
-  { date: "Jan 25", value: 10510 },
-  { date: "Feb 5", value: 10300 },
-  { date: "Feb 20", value: 10850 },
-  { date: "Mar 5", value: 11400 },
-  { date: "Mar 15", value: 11250 },
-  { date: "Mar 30", value: 12840 },
+  { date: 'Jan 1', value: 10000 },
+  { date: 'Jan 15', value: 10000 },
+  { date: 'Jan 25', value: 10510 },
+  { date: 'Feb 5', value: 10300 },
+  { date: 'Feb 20', value: 10850 },
+  { date: 'Mar 5', value: 11400 },
+  { date: 'Mar 15', value: 11250 },
+  { date: 'Mar 30', value: 12840 },
 ]
 
 // 戦略コードデータ

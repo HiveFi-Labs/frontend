@@ -1,23 +1,23 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { Mail } from "lucide-react";
-import { SiX, SiDiscord, SiGithub } from "@icons-pack/react-simple-icons";
-import ComingSoonModal from "@/components/coming-soon-modal";
-import HiveFiLogo from "@/components/hivefi-logo";
+import { useState } from 'react'
+import { Mail } from 'lucide-react'
+import { SiX, SiDiscord, SiGithub } from '@icons-pack/react-simple-icons'
+import ComingSoonModal from '@/components/coming-soon-modal'
+import HiveFiLogo from '@/components/hivefi-logo'
 
 export default function Footer() {
   const [comingSoonModal, setComingSoonModal] = useState({
     isOpen: false,
-    feature: "",
-  });
+    feature: '',
+  })
 
   const showComingSoon = (feature: string) => {
     setComingSoonModal({
       isOpen: true,
       feature,
-    });
-  };
+    })
+  }
 
   return (
     <>
@@ -82,9 +82,9 @@ export default function Footer() {
       {/* Coming Soon Modal */}
       <ComingSoonModal
         isOpen={comingSoonModal.isOpen}
-        onClose={() => setComingSoonModal({ isOpen: false, feature: "" })}
+        onClose={() => setComingSoonModal({ isOpen: false, feature: '' })}
         feature={comingSoonModal.feature}
       />
     </>
-  );
+  )
 }

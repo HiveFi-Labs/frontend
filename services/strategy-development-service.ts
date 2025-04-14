@@ -8,7 +8,7 @@ import type {
   EquityCurvePoint,
   StrategyCode,
   StrategySettings,
-} from "@/types/strategy-development"
+} from '@/types/strategy-development'
 
 import {
   chatConversationsData,
@@ -20,7 +20,7 @@ import {
   equityCurveData,
   strategyCodeData,
   strategySettingsData,
-} from "@/data/strategy-development-data"
+} from '@/data/strategy-development-data'
 
 class StrategyDevelopmentService {
   private cache: Record<string, any> = {}

@@ -1,54 +1,54 @@
-"use client";
+'use client'
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import { Menu, X, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import ComingSoonModal from "@/components/coming-soon-modal";
-import WaitlistModal from "@/components/waitlist/waitlist-modal";
+import { useState, useEffect } from 'react'
+import Link from 'next/link'
+import { Menu, X, Loader2 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import ComingSoonModal from '@/components/coming-soon-modal'
+import WaitlistModal from '@/components/waitlist/waitlist-modal'
 import {
   useLoginWithOAuth,
   usePrivy,
   useSolanaWallets,
-} from "@privy-io/react-auth";
-import HiveFiLogo from "@/components/hivefi-logo";
-import Image from "next/image";
-import { shortenAddress } from "@/utils/wallet-utils";
+} from '@privy-io/react-auth'
+import HiveFiLogo from '@/components/hivefi-logo'
+import Image from 'next/image'
+import { shortenAddress } from '@/utils/wallet-utils'
 
 export default function Header() {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [comingSoonModal, setComingSoonModal] = useState({
     isOpen: false,
-    feature: "",
-  });
-  const [waitlistModalOpen, setWaitlistModalOpen] = useState(false);
-  const { wallets, ready: walletReady } = useSolanaWallets();
-  const { authenticated, ready, logout, login } = usePrivy();
-  const desiredWallet = wallets[0]?.address;
+    feature: '',
+  })
+  const [waitlistModalOpen, setWaitlistModalOpen] = useState(false)
+  const { wallets, ready: walletReady } = useSolanaWallets()
+  const { authenticated, ready, logout, login } = usePrivy()
+  const desiredWallet = wallets[0]?.address
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+      setIsScrolled(window.scrollY > 20)
+    }
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   const showComingSoon = (feature: string) => {
     setComingSoonModal({
       isOpen: true,
       feature,
-    });
-  };
+    })
+  }
 
   return (
     <>
       <header
         className={`fixed w-full z-50 transition-all duration-300 ${
           isScrolled
-            ? "py-3 bg-black/80 backdrop-blur-lg border-b border-zinc-800/50"
-            : "py-5 bg-transparent"
+            ? 'py-3 bg-black/80 backdrop-blur-lg border-b border-zinc-800/50'
+            : 'py-5 bg-transparent'
         }`}
       >
         <div className="container mx-auto px-4 flex items-center justify-between">
@@ -64,21 +64,21 @@ export default function Header() {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8">
             <button
-              onClick={() => showComingSoon("Strategy Builder")}
+              onClick={() => showComingSoon('Strategy Builder')}
               className="text-zinc-300 hover:text-white transition-colors relative group"
             >
               <span>Strategy</span>
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-500 to-blue-500 transition-all duration-300 group-hover:w-full"></span>
             </button>
             <button
-              onClick={() => showComingSoon("Strategy Marketplace")}
+              onClick={() => showComingSoon('Strategy Marketplace')}
               className="text-zinc-300 hover:text-white transition-colors relative group"
             >
               <span>Strategies</span>
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-500 to-blue-500 transition-all duration-300 group-hover:w-full"></span>
             </button>
             <button
-              onClick={() => showComingSoon("Portfolio Management")}
+              onClick={() => showComingSoon('Portfolio Management')}
               className="text-zinc-300 hover:text-white transition-colors relative group"
             >
               <span>Portfolio</span>
@@ -96,10 +96,10 @@ export default function Header() {
                   />
                   {shortenAddress(desiredWallet)}
                 </div>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={() => logout()} 
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => logout()}
                   className="text-zinc-300 border-zinc-700 hover:bg-zinc-800 hover:text-white"
                 >
                   Logout
@@ -117,7 +117,7 @@ export default function Header() {
                     Loading...
                   </>
                 ) : (
-                  "Login"
+                  'Login'
                 )}
               </Button>
             )}
@@ -146,8 +146,8 @@ export default function Header() {
             <div className="container mx-auto px-4 flex flex-col space-y-4">
               <button
                 onClick={() => {
-                  setMobileMenuOpen(false);
-                  showComingSoon("Strategy Builder");
+                  setMobileMenuOpen(false)
+                  showComingSoon('Strategy Builder')
                 }}
                 className="text-zinc-300 hover:text-white transition-colors py-2"
               >
@@ -155,8 +155,8 @@ export default function Header() {
               </button>
               <button
                 onClick={() => {
-                  setMobileMenuOpen(false);
-                  showComingSoon("Strategy Marketplace");
+                  setMobileMenuOpen(false)
+                  showComingSoon('Strategy Marketplace')
                 }}
                 className="text-zinc-300 hover:text-white transition-colors py-2"
               >
@@ -164,8 +164,8 @@ export default function Header() {
               </button>
               <button
                 onClick={() => {
-                  setMobileMenuOpen(false);
-                  showComingSoon("Portfolio Management");
+                  setMobileMenuOpen(false)
+                  showComingSoon('Portfolio Management')
                 }}
                 className="text-zinc-300 hover:text-white transition-colors py-2"
               >
@@ -183,12 +183,12 @@ export default function Header() {
                     />
                     {shortenAddress(desiredWallet)}
                   </div>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     onClick={() => {
-                      setMobileMenuOpen(false);
-                      logout();
-                    }} 
+                      setMobileMenuOpen(false)
+                      logout()
+                    }}
                     className="text-zinc-300 border-zinc-700 hover:bg-zinc-800 hover:text-white"
                   >
                     Logout
@@ -203,8 +203,8 @@ export default function Header() {
                 <Button
                   className="gradient-button text-white border-0"
                   onClick={() => {
-                    setMobileMenuOpen(false);
-                    login();
+                    setMobileMenuOpen(false)
+                    login()
                   }}
                   disabled={!ready}
                 >
@@ -214,7 +214,7 @@ export default function Header() {
                       Loading...
                     </>
                   ) : (
-                    "Login"
+                    'Login'
                   )}
                 </Button>
               )}
@@ -226,7 +226,7 @@ export default function Header() {
       {/* Coming Soon Modal */}
       <ComingSoonModal
         isOpen={comingSoonModal.isOpen}
-        onClose={() => setComingSoonModal({ isOpen: false, feature: "" })}
+        onClose={() => setComingSoonModal({ isOpen: false, feature: '' })}
         feature={comingSoonModal.feature}
       />
 
@@ -236,5 +236,5 @@ export default function Header() {
         onClose={() => setWaitlistModalOpen(false)}
       />
     </>
-  );
+  )
 }

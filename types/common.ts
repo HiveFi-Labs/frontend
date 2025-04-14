@@ -9,7 +9,7 @@ export interface TimeSeriesData {
 // パフォーマンス指標
 export interface PerformanceMetric {
   value: string | number
-  trend?: "up" | "down" | "neutral"
+  trend?: 'up' | 'down' | 'neutral'
   changePercent?: number
 }
 

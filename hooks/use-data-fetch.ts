@@ -1,6 +1,6 @@
-"use client"
+'use client'
 
-import { useState, useEffect } from "react"
+import { useState, useEffect } from 'react'
 
 interface UseFetchOptions<T> {
   onSuccess?: (data: T) => void
@@ -15,7 +15,10 @@ interface UseFetchOptions<T> {
  * @param options オプション設定
  * @returns データ、ローディング状態、エラー、リフェッチ関数
  */
-export function useDataFetch<T>(fetchFn: () => Promise<T>, options: UseFetchOptions<T> = {}) {
+export function useDataFetch<T>(
+  fetchFn: () => Promise<T>,
+  options: UseFetchOptions<T> = {},
+) {
   const { onSuccess, onError, enabled = true } = options
   const [data, setData] = useState<T | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -30,7 +33,7 @@ export function useDataFetch<T>(fetchFn: () => Promise<T>, options: UseFetchOpti
       setError(null)
       onSuccess?.(result)
     } catch (err) {
-      console.error("Failed to fetch data:", err)
+      console.error('Failed to fetch data:', err)
       const error = err instanceof Error ? err : new Error(String(err))
       setError(error)
       onError?.(error)

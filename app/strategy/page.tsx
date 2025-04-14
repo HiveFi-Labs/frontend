@@ -1,10 +1,10 @@
-"use client"
+'use client'
 
-import { useState } from "react"
-import { Upload, Save } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import AICollaboration from "@/components/strategy/ai-collaboration"
-import BacktestingResults from "@/components/strategy/backtesting-results"
+import { useState } from 'react'
+import { Upload, Save } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import AICollaboration from '@/components/strategy/ai-collaboration'
+import BacktestingResults from '@/components/strategy/backtesting-results'
 
 export default function StrategyPage() {
   const [showCode, setShowCode] = useState(false)
@@ -14,8 +14,13 @@ export default function StrategyPage() {
       <div className="container mx-auto px-4 max-w-7xl">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold gradient-text">Strategy Development & Backtesting</h1>
-            <p className="text-zinc-400 mt-2">Create, test, and optimize your trading strategies with AI assistance</p>
+            <h1 className="text-3xl font-bold gradient-text">
+              Strategy Development & Backtesting
+            </h1>
+            <p className="text-zinc-400 mt-2">
+              Create, test, and optimize your trading strategies with AI
+              assistance
+            </p>
           </div>
           <div className="flex gap-4">
             <Button

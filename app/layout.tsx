@@ -1,20 +1,20 @@
-import type React from "react"
-import type { Metadata } from "next"
-import { Inter } from "next/font/google"
-import "./globals.css"
-import { ThemeProvider } from "@/components/theme-provider"
-import Header from "@/components/header"
-import Footer from "@/components/footer"
-import BackgroundEffect from "@/components/background-effect"
-import Providers from "./providers"
+import type React from 'react'
+import type { Metadata } from 'next'
+import { Inter } from 'next/font/google'
+import './globals.css'
+import { ThemeProvider } from '@/components/theme-provider'
+import Header from '@/components/header'
+import Footer from '@/components/footer'
+import BackgroundEffect from '@/components/background-effect'
+import Providers from './providers'
 
-const inter = Inter({ subsets: ["latin"] })
+const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: "HiveFi - Algorithmic Trading for DeFi",
-  icons: [{ rel: 'icon', url: "/favicon.ico" }],
+  title: 'HiveFi - Algorithmic Trading for DeFi',
+  icons: [{ rel: 'icon', url: '/favicon.ico' }],
   description:
-    "Create, backtest, and deploy algorithmic trading strategies with a visual interface. Invest in verified strategies or share your expertise with the world.",
+    'Create, backtest, and deploy algorithmic trading strategies with a visual interface. Invest in verified strategies or share your expertise with the world.',
   generator: 'v0.dev',
   openGraph: {
     images: [
@@ -40,7 +40,12 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.className} bg-black text-white`}>
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem={false}
+          disableTransitionOnChange
+        >
           <Providers>
             <div className="flex flex-col min-h-screen">
               <BackgroundEffect />
@@ -54,6 +59,5 @@ export default function RootLayout({
     </html>
   )
 }
-
 
 import './globals.css'

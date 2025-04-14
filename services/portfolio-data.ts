@@ -8,7 +8,7 @@ import type {
   Alert,
   NotificationPreferences,
   ProfitHandlingSettings,
-} from "../types/portfolio"
+} from '../types/portfolio'
 
 // データのインポート
 import {
@@ -22,7 +22,7 @@ import {
   notificationPreferencesData,
   profitHandlingSettingsData,
   marketplaceStrategiesData, // 追加: マーケットプレイス戦略データをインポート
-} from "@/data/portfolio-data"
+} from '@/data/portfolio-data'
 
 /**
  * ポートフォリオデータサービス

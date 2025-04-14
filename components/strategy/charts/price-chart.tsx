@@ -1,8 +1,8 @@
-"use client"
+'use client'
 
-import { useEffect, useState } from "react"
-import portfolioData from "@/services/index"
-import type { ChartDataPoint } from "@/types/strategy-development"
+import { useEffect, useState } from 'react'
+import portfolioData from '@/services/index'
+import type { ChartDataPoint } from '@/types/strategy-development'
 
 export default function PriceChart() {
   const [chartData, setChartData] = useState<ChartDataPoint[]>([])
@@ -14,7 +14,7 @@ export default function PriceChart() {
         const data = await portfolioData.getChartData()
         setChartData(data)
       } catch (err) {
-        console.error("Failed to fetch chart data", err)
+        console.error('Failed to fetch chart data', err)
       } finally {
         setIsLoading(false)
       }
@@ -25,7 +25,7 @@ export default function PriceChart() {
 
   // Generate chart path
   const generateChartPath = () => {
-    if (chartData.length === 0) return ""
+    if (chartData.length === 0) return ''
 
     const minPrice = Math.min(...chartData.map((d) => d.price)) * 0.98
     const maxPrice = Math.max(...chartData.map((d) => d.price)) * 1.02
@@ -39,11 +39,14 @@ export default function PriceChart() {
 
     const points = chartData.map((point, i) => {
       const x = padding + i * xStep
-      const y = height - padding - ((point.price - minPrice) / priceRange) * (height - 2 * padding)
+      const y =
+        height -
+        padding -
+        ((point.price - minPrice) / priceRange) * (height - 2 * padding)
       return `${x},${y}`
     })
 
-    return `M${points.join(" L")}`
+    return `M${points.join(' L')}`
   }
 
   // Calculate positions for buy/sell signals
@@ -65,7 +68,10 @@ export default function PriceChart() {
         if (!point.signal) return null
 
         const x = padding + i * xStep
-        const y = height - padding - ((point.price - minPrice) / priceRange) * (height - 2 * padding)
+        const y =
+          height -
+          padding -
+          ((point.price - minPrice) / priceRange) * (height - 2 * padding)
 
         return {
           x,
@@ -94,7 +100,10 @@ export default function PriceChart() {
 
     for (let i = 0; i < tickCount; i++) {
       const price = minPrice + (priceRange * i) / (tickCount - 1)
-      const y = height - padding - ((price - minPrice) / priceRange) * (height - 2 * padding)
+      const y =
+        height -
+        padding -
+        ((price - minPrice) / priceRange) * (height - 2 * padding)
 
       ticks.push({
         y,
@@ -118,7 +127,9 @@ export default function PriceChart() {
   return (
     <div className="bg-zinc-900/70 rounded-lg p-6">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-medium text-white">BTC/USDT Price Chart with Signals</h3>
+        <h3 className="text-lg font-medium text-white">
+          BTC/USDT Price Chart with Signals
+        </h3>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-1">
             <div className="w-3 h-3 rounded-full bg-green-500"></div>
@@ -132,13 +143,29 @@ export default function PriceChart() {
       </div>
 
       <div className="h-[300px] relative">
-        <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+        <svg
+          className="w-full h-full"
+          viewBox="0 0 100 100"
+          preserveAspectRatio="none"
+        >
           <defs>
-            <linearGradient id="chart-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <linearGradient
+              id="chart-gradient"
+              x1="0%"
+              y1="0%"
+              x2="0%"
+              y2="100%"
+            >
               <stop offset="0%" stopColor="rgba(147, 51, 234, 0.5)" />
               <stop offset="100%" stopColor="rgba(147, 51, 234, 0)" />
             </linearGradient>
-            <linearGradient id="purple-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <linearGradient
+              id="purple-gradient"
+              x1="0%"
+              y1="0%"
+              x2="100%"
+              y2="0%"
+            >
               <stop offset="0%" stopColor="#9333ea" />
               <stop offset="50%" stopColor="#3b82f6" />
               <stop offset="100%" stopColor="#9333ea" />
@@ -169,15 +196,29 @@ export default function PriceChart() {
           />
 
           {/* Area fill */}
-          <path d={`${generateChartPath()} L90,90 L10,90 Z`} fill="url(#chart-gradient)" opacity="0.3" />
+          <path
+            d={`${generateChartPath()} L90,90 L10,90 Z`}
+            fill="url(#chart-gradient)"
+            opacity="0.3"
+          />
 
           {/* Buy/Sell signals */}
           {signalPositions.map((signal, index) => (
             <g key={index} transform={`translate(${signal.x}, ${signal.y})`}>
-              {signal.signal === "buy" ? (
-                <path d="M0 0L1 -2L-1 -2Z" fill="#10b981" stroke="#0f172a" strokeWidth="0.2" />
+              {signal.signal === 'buy' ? (
+                <path
+                  d="M0 0L1 -2L-1 -2Z"
+                  fill="#10b981"
+                  stroke="#0f172a"
+                  strokeWidth="0.2"
+                />
               ) : (
-                <path d="M0 0L1 2L-1 2Z" fill="#ef4444" stroke="#0f172a" strokeWidth="0.2" />
+                <path
+                  d="M0 0L1 2L-1 2Z"
+                  fill="#ef4444"
+                  stroke="#0f172a"
+                  strokeWidth="0.2"
+                />
               )}
             </g>
           ))}
@@ -189,7 +230,12 @@ export default function PriceChart() {
             <div
               key={`y-tick-${i}`}
               className="text-xs text-zinc-500"
-              style={{ position: "absolute", left: "8px", top: `${tick.y}%`, transform: "translateY(-50%)" }}
+              style={{
+                position: 'absolute',
+                left: '8px',
+                top: `${tick.y}%`,
+                transform: 'translateY(-50%)',
+              }}
             >
               ${tick.price}
             </div>
@@ -198,7 +244,7 @@ export default function PriceChart() {
 
         {/* X-axis ticks */}
         <div className="absolute bottom-0 left-0 w-full grid grid-cols-7 px-2">
-          {["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"].map((month, i) => (
+          {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'].map((month, i) => (
             <div key={i} className="text-center text-xs text-zinc-500">
               {month}
             </div>

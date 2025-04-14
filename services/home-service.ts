@@ -1,4 +1,11 @@
-import type { Feature, ProblemSolution, ProductFeature, Stat, Testimonial, HeroData } from "@/types/home"
+import type {
+  Feature,
+  ProblemSolution,
+  ProductFeature,
+  Stat,
+  Testimonial,
+  HeroData,
+} from '@/types/home'
 import {
   featuresData,
   problemSolutionsData,
@@ -6,7 +13,7 @@ import {
   statsData,
   testimonialsData,
   heroData,
-} from "@/data/home-data"
+} from '@/data/home-data'
 
 class HomeService {
   private cache: Record<string, any> = {}
