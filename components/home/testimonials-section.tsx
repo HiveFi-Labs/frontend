@@ -43,8 +43,8 @@ export default function TestimonialsSection() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-      {testimonials.map((testimonial, index) => (
-        <GlassCard key={index} gradientBorder>
+      {testimonials.map((testimonial) => (
+        <GlassCard key={testimonial.name} gradientBorder>
           <GlassCardContent className="p-8">
             <div className="flex items-center gap-4 mb-6">
               <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-purple-500 glow">
