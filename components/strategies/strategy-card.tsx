@@ -1,19 +1,23 @@
-"use client"
+'use client'
 
-import { useState } from "react"
-import { LineChart, Copy, Edit, Trash2 } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { useState } from 'react'
+import { LineChart, Copy, Edit, Trash2 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from '@/components/ui/dropdown-menu'
 
-export default function StrategyCard({ strategy, isMarketplace = false, onSelect }) {
+export default function StrategyCard({
+  strategy,
+  isMarketplace = false,
+  onSelect,
+}) {
   const [isPublic, setIsPublic] = useState(strategy.isPublic || false)
 
   const handlePublicToggle = (e) => {
@@ -36,10 +40,10 @@ export default function StrategyCard({ strategy, isMarketplace = false, onSelect
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <div
-              className={`w-8 h-8 rounded-md ${strategy.type === "trend" ? "bg-purple-900/50" : strategy.type === "mean" ? "bg-blue-900/50" : "bg-green-900/50"} flex items-center justify-center`}
+              className={`w-8 h-8 rounded-md ${strategy.type === 'trend' ? 'bg-purple-900/50' : strategy.type === 'mean' ? 'bg-blue-900/50' : 'bg-green-900/50'} flex items-center justify-center`}
             >
               <LineChart
-                className={`w-4 h-4 ${strategy.type === "trend" ? "text-purple-400" : strategy.type === "mean" ? "text-blue-400" : "text-green-400"}`}
+                className={`w-4 h-4 ${strategy.type === 'trend' ? 'text-purple-400' : strategy.type === 'mean' ? 'text-blue-400' : 'text-green-400'}`}
               />
             </div>
             <div>
@@ -55,20 +59,28 @@ export default function StrategyCard({ strategy, isMarketplace = false, onSelect
             variant="outline"
             className={`
               ${
-                strategy.status === "live"
-                  ? "border-green-500 text-green-400 bg-green-900/20"
-                  : strategy.status === "testing"
-                    ? "border-yellow-500 text-yellow-400 bg-yellow-900/20"
-                    : "border-zinc-500 text-zinc-400 bg-zinc-900/20"
+                strategy.status === 'live'
+                  ? 'border-green-500 text-green-400 bg-green-900/20'
+                  : strategy.status === 'testing'
+                    ? 'border-yellow-500 text-yellow-400 bg-yellow-900/20'
+                    : 'border-zinc-500 text-zinc-400 bg-zinc-900/20'
               }
             `}
           >
-            {strategy.status === "live" ? "Live" : strategy.status === "testing" ? "Testing" : "Draft"}
+            {strategy.status === 'live'
+              ? 'Live'
+              : strategy.status === 'testing'
+                ? 'Testing'
+                : 'Draft'}
           </Badge>
           {!isMarketplace && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-400 hover:text-zinc-300">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-zinc-400 hover:text-zinc-300"
+                >
                   <svg
                     width="15"
                     height="3"
@@ -83,17 +95,20 @@ export default function StrategyCard({ strategy, isMarketplace = false, onSelect
                   </svg>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="bg-zinc-900 border-zinc-800">
+              <DropdownMenuContent
+                align="end"
+                className="bg-zinc-900 border-zinc-800"
+              >
                 <DropdownMenuItem
                   className="text-zinc-300 focus:text-white focus:bg-zinc-800"
-                  onClick={(e) => handleAction(e, "edit")}
+                  onClick={(e) => handleAction(e, 'edit')}
                 >
                   <Edit className="w-4 h-4 mr-2" />
                   Edit Strategy
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   className="text-zinc-300 focus:text-white focus:bg-zinc-800"
-                  onClick={(e) => handleAction(e, "duplicate")}
+                  onClick={(e) => handleAction(e, 'duplicate')}
                 >
                   <Copy className="w-4 h-4 mr-2" />
                   Duplicate
@@ -101,7 +116,7 @@ export default function StrategyCard({ strategy, isMarketplace = false, onSelect
                 <DropdownMenuSeparator className="bg-zinc-800" />
                 <DropdownMenuItem
                   className="text-red-400 focus:text-red-300 focus:bg-zinc-800"
-                  onClick={(e) => handleAction(e, "delete")}
+                  onClick={(e) => handleAction(e, 'delete')}
                 >
                   <Trash2 className="w-4 h-4 mr-2" />
                   Delete
@@ -113,21 +128,43 @@ export default function StrategyCard({ strategy, isMarketplace = false, onSelect
       </CardHeader>
       <CardContent className="p-4">
         <div className="h-[100px] relative mb-4">
-          <svg className="w-full h-full" viewBox="0 0 300 100" preserveAspectRatio="none">
+          <svg
+            className="w-full h-full"
+            viewBox="0 0 300 100"
+            preserveAspectRatio="none"
+          >
             <defs>
-              <linearGradient id={`chart-gradient-${strategy.id}`} x1="0%" y1="0%" x2="0%" y2="100%">
+              <linearGradient
+                id={`chart-gradient-${strategy.id}`}
+                x1="0%"
+                y1="0%"
+                x2="0%"
+                y2="100%"
+              >
                 <stop
                   offset="0%"
-                  stopColor={`${strategy.performance.trend === "up" ? "rgba(16, 185, 129, 0.5)" : "rgba(239, 68, 68, 0.5)"}`}
+                  stopColor={`${strategy.performance.trend === 'up' ? 'rgba(16, 185, 129, 0.5)' : 'rgba(239, 68, 68, 0.5)'}`}
                 />
                 <stop
                   offset="100%"
-                  stopColor={`${strategy.performance.trend === "up" ? "rgba(16, 185, 129, 0)" : "rgba(239, 68, 68, 0)"}`}
+                  stopColor={`${strategy.performance.trend === 'up' ? 'rgba(16, 185, 129, 0)' : 'rgba(239, 68, 68, 0)'}`}
                 />
               </linearGradient>
-              <linearGradient id={`line-gradient-${strategy.id}`} x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor={`${strategy.performance.trend === "up" ? "#10b981" : "#ef4444"}`} />
-                <stop offset="100%" stopColor={`${strategy.performance.trend === "up" ? "#10b981" : "#ef4444"}`} />
+              <linearGradient
+                id={`line-gradient-${strategy.id}`}
+                x1="0%"
+                y1="0%"
+                x2="100%"
+                y2="0%"
+              >
+                <stop
+                  offset="0%"
+                  stopColor={`${strategy.performance.trend === 'up' ? '#10b981' : '#ef4444'}`}
+                />
+                <stop
+                  offset="100%"
+                  stopColor={`${strategy.performance.trend === 'up' ? '#10b981' : '#ef4444'}`}
+                />
               </linearGradient>
             </defs>
 
@@ -152,36 +189,44 @@ export default function StrategyCard({ strategy, isMarketplace = false, onSelect
           <div className="space-y-1">
             <p className="text-xs text-zinc-400">Total Return</p>
             <p
-              className={`text-lg font-semibold ${strategy.performance.return.startsWith("+") ? "text-green-400" : "text-red-400"}`}
+              className={`text-lg font-semibold ${strategy.performance.return.startsWith('+') ? 'text-green-400' : 'text-red-400'}`}
             >
               {strategy.performance.return}
             </p>
           </div>
           <div className="space-y-1">
             <p className="text-xs text-zinc-400">Sharpe Ratio</p>
-            <p className="text-lg font-semibold text-zinc-300">{strategy.performance.sharpe}</p>
+            <p className="text-lg font-semibold text-zinc-300">
+              {strategy.performance.sharpe}
+            </p>
           </div>
           <div className="space-y-1">
             <p className="text-xs text-zinc-400">Win Rate</p>
-            <p className="text-lg font-semibold text-zinc-300">{strategy.performance.winRate}</p>
+            <p className="text-lg font-semibold text-zinc-300">
+              {strategy.performance.winRate}
+            </p>
           </div>
           <div className="space-y-1">
             <p className="text-xs text-zinc-400">Max Drawdown</p>
-            <p className="text-lg font-semibold text-red-400">{strategy.performance.maxDrawdown}</p>
+            <p className="text-lg font-semibold text-red-400">
+              {strategy.performance.maxDrawdown}
+            </p>
           </div>
         </div>
       </CardContent>
       <CardFooter className="p-4 pt-0 flex justify-between items-center">
-        <div className="text-xs text-zinc-400">Last updated: {new Date().toLocaleDateString()}</div>
+        <div className="text-xs text-zinc-400">
+          Last updated: {new Date().toLocaleDateString()}
+        </div>
 
         <div className="text-xs text-zinc-400">
-          {strategy.type === "trend"
-            ? "Trend Following"
-            : strategy.type === "mean"
-              ? "Mean Reversion"
-              : strategy.type === "breakout"
-                ? "Breakout"
-                : "Custom"}{" "}
+          {strategy.type === 'trend'
+            ? 'Trend Following'
+            : strategy.type === 'mean'
+              ? 'Mean Reversion'
+              : strategy.type === 'breakout'
+                ? 'Breakout'
+                : 'Custom'}{' '}
           Strategy
         </div>
       </CardFooter>

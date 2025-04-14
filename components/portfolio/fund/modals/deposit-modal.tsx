@@ -1,12 +1,18 @@
-"use client"
+'use client'
 
-import { useEffect, useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { DollarSign } from "lucide-react"
-import portfolioData from "@/services/portfolio-data"
-import type { ModalProps, FundSummary } from "@/types/portfolio"
+import { useEffect, useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { DollarSign } from 'lucide-react'
+import portfolioData from '@/services/portfolio-data'
+import type { ModalProps, FundSummary } from '@/types/portfolio'
 
 export default function DepositModal({ onClose }: ModalProps) {
   const [fundSummary, setFundSummary] = useState<FundSummary | null>(null)
@@ -18,7 +24,7 @@ export default function DepositModal({ onClose }: ModalProps) {
         const data = await portfolioData.getFundSummary()
         setFundSummary(data)
       } catch (err) {
-        console.error("Failed to fetch fund summary", err)
+        console.error('Failed to fetch fund summary', err)
       } finally {
         setIsLoading(false)
       }
@@ -74,7 +80,9 @@ export default function DepositModal({ onClose }: ModalProps) {
           </div>
 
           <div className="space-y-2">
-            <span className="text-sm text-zinc-400">Description (Optional)</span>
+            <span className="text-sm text-zinc-400">
+              Description (Optional)
+            </span>
             <Input
               placeholder="Add a note"
               defaultValue=""
@@ -83,14 +91,22 @@ export default function DepositModal({ onClose }: ModalProps) {
           </div>
 
           <div className="flex items-center gap-2">
-            <input type="checkbox" id="auto-allocate" className="rounded bg-zinc-800 border-zinc-700 text-purple-500" />
+            <input
+              type="checkbox"
+              id="auto-allocate"
+              className="rounded bg-zinc-800 border-zinc-700 text-purple-500"
+            />
             <label htmlFor="auto-allocate" className="text-sm text-zinc-400">
               Auto-allocate funds according to current portfolio weights
             </label>
           </div>
         </div>
         <div className="p-4 border-t border-zinc-800 flex justify-end gap-2">
-          <Button variant="outline" className="border-zinc-700 text-zinc-300" onClick={onClose}>
+          <Button
+            variant="outline"
+            className="border-zinc-700 text-zinc-300"
+            onClick={onClose}
+          >
             Cancel
           </Button>
           <Button className="gradient-button" onClick={onClose}>

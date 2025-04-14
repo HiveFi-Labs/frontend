@@ -1,16 +1,22 @@
-"use client"
+'use client'
 
-import { useState } from "react"
-import { Play, Pause, Code } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import StrategyCode from "@/components/strategy/strategy-code-modal"
-import EquityCurveChart from "@/components/strategy/charts/equity-curve-chart"
-import MonthlyReturnsChart from "@/components/strategy/charts/monthly-returns-chart"
-import PerformanceMetrics from "@/components/strategy/performance-metrics"
-import PriceChart from "@/components/strategy/charts/price-chart"
-import TradeHistory from "@/components/strategy/trade-history"
-import ParameterOptimization from "@/components/strategy/parameter-optimization"
+import { useState } from 'react'
+import { Play, Pause, Code } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import StrategyCode from '@/components/strategy/strategy-code-modal'
+import EquityCurveChart from '@/components/strategy/charts/equity-curve-chart'
+import MonthlyReturnsChart from '@/components/strategy/charts/monthly-returns-chart'
+import PerformanceMetrics from '@/components/strategy/performance-metrics'
+import PriceChart from '@/components/strategy/charts/price-chart'
+import TradeHistory from '@/components/strategy/trade-history'
+import ParameterOptimization from '@/components/strategy/parameter-optimization'
 
 export default function BacktestingResults({ showCode, setShowCode }) {
   const [isRunningBacktest, setIsRunningBacktest] = useState(false)
@@ -32,9 +38,13 @@ export default function BacktestingResults({ showCode, setShowCode }) {
                 Edit Code
               </Button>
               <Button
-                variant={isRunningBacktest ? "destructive" : "default"}
+                variant={isRunningBacktest ? 'destructive' : 'default'}
                 size="sm"
-                className={isRunningBacktest ? "bg-red-600 hover:bg-red-700" : "gradient-button"}
+                className={
+                  isRunningBacktest
+                    ? 'bg-red-600 hover:bg-red-700'
+                    : 'gradient-button'
+                }
                 onClick={() => setIsRunningBacktest(!isRunningBacktest)}
               >
                 {isRunningBacktest ? (
@@ -51,7 +61,9 @@ export default function BacktestingResults({ showCode, setShowCode }) {
               </Button>
             </div>
           </div>
-          <CardDescription className="text-zinc-400">Analyze the performance of your trading strategy</CardDescription>
+          <CardDescription className="text-zinc-400">
+            Analyze the performance of your trading strategy
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Equity Curve and Monthly Returns at the top */}

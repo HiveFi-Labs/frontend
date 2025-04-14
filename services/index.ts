@@ -1,11 +1,11 @@
 // 各サービスをまとめてエクスポート
-import portfolioOverviewService from "./portfolio-overview-service"
-import strategiesService from "./strategies-service"
-import riskManagementService from "./risk-management-service"
-import fundManagementService from "./fund-management-service"
-import alertsService from "./alerts-service"
-import strategyDevelopmentService from "./strategy-development-service"
-import homeService from "./home-service"
+import portfolioOverviewService from './portfolio-overview-service'
+import strategiesService from './strategies-service'
+import riskManagementService from './risk-management-service'
+import fundManagementService from './fund-management-service'
+import alertsService from './alerts-service'
+import strategyDevelopmentService from './strategy-development-service'
+import homeService from './home-service'
 
 // 統合サービス
 class PortfolioDataService {
@@ -23,7 +23,8 @@ class PortfolioDataService {
   getTransactions = () => fundManagementService.getTransactions()
   getRebalanceHistory = () => fundManagementService.getRebalanceHistory()
   getFundSummary = () => fundManagementService.getFundSummary()
-  getProfitHandlingSettings = () => fundManagementService.getProfitHandlingSettings()
+  getProfitHandlingSettings = () =>
+    fundManagementService.getProfitHandlingSettings()
 
   // アラート設定サービス
   getAlerts = () => alertsService.getAlerts()
@@ -31,9 +32,11 @@ class PortfolioDataService {
 
   // 戦略開発サービス
   getChatConversations = () => strategyDevelopmentService.getChatConversations()
-  getPerformanceMetrics = () => strategyDevelopmentService.getPerformanceMetrics()
+  getPerformanceMetrics = () =>
+    strategyDevelopmentService.getPerformanceMetrics()
   getTradeHistory = () => strategyDevelopmentService.getTradeHistory()
-  getOptimizationResults = () => strategyDevelopmentService.getOptimizationResults()
+  getOptimizationResults = () =>
+    strategyDevelopmentService.getOptimizationResults()
   getChartData = () => strategyDevelopmentService.getChartData()
   getMonthlyReturns = () => strategyDevelopmentService.getMonthlyReturns()
   getEquityCurveData = () => strategyDevelopmentService.getEquityCurveData()

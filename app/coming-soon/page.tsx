@@ -1,9 +1,9 @@
-"use client"
+'use client'
 
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { ArrowLeft, Rocket, Calendar, Bell } from "lucide-react"
-import { useEffect } from "react"
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import { ArrowLeft, Rocket, Calendar, Bell } from 'lucide-react'
+import { useEffect } from 'react'
 
 export default function ComingSoonPage() {
   useEffect(() => {
@@ -23,11 +23,14 @@ export default function ComingSoonPage() {
                 </span>
               </div>
 
-              <h1 className="text-3xl md:text-4xl font-bold gradient-text">This feature is on the way</h1>
+              <h1 className="text-3xl md:text-4xl font-bold gradient-text">
+                This feature is on the way
+              </h1>
 
               <p className="text-zinc-300 text-base md:text-lg">
-                We&apos;re working hard to bring you this feature. Join our Discord community to get updates and be the
-                first to know when it launches.
+                We&apos;re working hard to bring you this feature. Join our
+                Discord community to get updates and be the first to know when
+                it launches.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4">
@@ -70,10 +73,16 @@ export default function ComingSoonPage() {
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium text-zinc-300">Planning Phase</span>
-                          <span className="text-xs text-green-400">Completed</span>
+                          <span className="text-sm font-medium text-zinc-300">
+                            Planning Phase
+                          </span>
+                          <span className="text-xs text-green-400">
+                            Completed
+                          </span>
                         </div>
-                        <p className="text-xs text-zinc-500">Requirements gathering and feature planning</p>
+                        <p className="text-xs text-zinc-500">
+                          Requirements gathering and feature planning
+                        </p>
                       </div>
                     </div>
 
@@ -83,10 +92,16 @@ export default function ComingSoonPage() {
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium text-zinc-300">Development</span>
-                          <span className="text-xs text-purple-400">In Progress</span>
+                          <span className="text-sm font-medium text-zinc-300">
+                            Development
+                          </span>
+                          <span className="text-xs text-purple-400">
+                            In Progress
+                          </span>
                         </div>
-                        <p className="text-xs text-zinc-500">Building core functionality and user interface</p>
+                        <p className="text-xs text-zinc-500">
+                          Building core functionality and user interface
+                        </p>
                       </div>
                     </div>
 
@@ -96,17 +111,24 @@ export default function ComingSoonPage() {
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium text-zinc-300">Testing & Launch</span>
-                          <span className="text-xs text-zinc-500">Coming Soon</span>
+                          <span className="text-sm font-medium text-zinc-300">
+                            Testing & Launch
+                          </span>
+                          <span className="text-xs text-zinc-500">
+                            Coming Soon
+                          </span>
                         </div>
-                        <p className="text-xs text-zinc-500">Final testing and public release</p>
+                        <p className="text-xs text-zinc-500">
+                          Final testing and public release
+                        </p>
                       </div>
                     </div>
                   </div>
 
                   <div className="pt-4 border-t border-zinc-800/50">
                     <p className="text-xs text-zinc-400">
-                      Join our Discord community for early access and to provide feedback during development.
+                      Join our Discord community for early access and to provide
+                      feedback during development.
                     </p>
                   </div>
                 </div>

@@ -1,14 +1,26 @@
-"use client"
+'use client'
 
-import { useState, useEffect } from "react"
-import { Shield, AlertTriangle, Sliders, Download } from "lucide-react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Slider } from "@/components/ui/slider"
-import { Progress } from "@/components/ui/progress"
-import portfolioData from "@/services/portfolio-data"
-import type { RiskMetrics } from "@/types/portfolio"
+import { useState, useEffect } from 'react'
+import { Shield, AlertTriangle, Sliders, Download } from 'lucide-react'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Slider } from '@/components/ui/slider'
+import { Progress } from '@/components/ui/progress'
+import portfolioData from '@/services/portfolio-data'
+import type { RiskMetrics } from '@/types/portfolio'
 
 export default function RiskManagement() {
   const [riskData, setRiskData] = useState<RiskMetrics | null>(null)
@@ -23,8 +35,8 @@ export default function RiskManagement() {
         setRiskData(data)
         setError(null)
       } catch (err) {
-        console.error("Failed to fetch risk metrics", err)
-        setError("Failed to load risk data. Please try again later.")
+        console.error('Failed to fetch risk metrics', err)
+        setError('Failed to load risk data. Please try again later.')
       } finally {
         setIsLoading(false)
       }
@@ -35,7 +47,7 @@ export default function RiskManagement() {
 
   // Generate colors for strategies
   const getColorForIndex = (index) => {
-    const colors = ["#9333ea", "#3b82f6", "#10b981", "#f59e0b"]
+    const colors = ['#9333ea', '#3b82f6', '#10b981', '#f59e0b']
     return colors[index % colors.length]
   }
 
@@ -49,7 +61,10 @@ export default function RiskManagement() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[1, 2].map((i) => (
-            <div key={i} className="h-64 bg-zinc-800/50 rounded-xl animate-pulse"></div>
+            <div
+              key={i}
+              className="h-64 bg-zinc-800/50 rounded-xl animate-pulse"
+            ></div>
           ))}
         </div>
       </div>
@@ -89,7 +104,10 @@ export default function RiskManagement() {
               <SelectItem value="correlation">Correlation View</SelectItem>
             </SelectContent>
           </Select>
-          <Button variant="outline" className="border-zinc-700 text-zinc-300 hover:bg-zinc-800/50">
+          <Button
+            variant="outline"
+            className="border-zinc-700 text-zinc-300 hover:bg-zinc-800/50"
+          >
             <Download className="w-4 h-4 mr-2" />
             Export
           </Button>
@@ -100,8 +118,12 @@ export default function RiskManagement() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card className="glass-card md:col-span-2">
           <CardHeader className="pb-2">
-            <CardTitle className="text-lg text-zinc-300">Portfolio Risk Overview</CardTitle>
-            <CardDescription>Overall risk assessment of your portfolio</CardDescription>
+            <CardTitle className="text-lg text-zinc-300">
+              Portfolio Risk Overview
+            </CardTitle>
+            <CardDescription>
+              Overall risk assessment of your portfolio
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-6">
@@ -109,9 +131,13 @@ export default function RiskManagement() {
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-2">
                     <Shield className="w-4 h-4 text-zinc-400" />
-                    <span className="text-sm text-zinc-400">Overall Risk Level</span>
+                    <span className="text-sm text-zinc-400">
+                      Overall Risk Level
+                    </span>
                   </div>
-                  <span className="text-sm font-medium text-zinc-300">Medium</span>
+                  <span className="text-sm font-medium text-zinc-300">
+                    Medium
+                  </span>
                 </div>
                 <div className="w-full h-2 bg-zinc-800 rounded-full overflow-hidden">
                   <div
@@ -129,45 +155,69 @@ export default function RiskManagement() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="space-y-1">
                   <span className="text-xs text-zinc-400">Volatility</span>
-                  <p className="text-lg font-semibold text-zinc-300">{riskData.volatility}%</p>
+                  <p className="text-lg font-semibold text-zinc-300">
+                    {riskData.volatility}%
+                  </p>
                 </div>
                 <div className="space-y-1">
                   <span className="text-xs text-zinc-400">Max Drawdown</span>
-                  <p className="text-lg font-semibold text-red-400">-{riskData.drawdown}%</p>
+                  <p className="text-lg font-semibold text-red-400">
+                    -{riskData.drawdown}%
+                  </p>
                 </div>
                 <div className="space-y-1">
                   <span className="text-xs text-zinc-400">Sharpe Ratio</span>
-                  <p className="text-lg font-semibold text-zinc-300">{riskData.sharpeRatio}</p>
+                  <p className="text-lg font-semibold text-zinc-300">
+                    {riskData.sharpeRatio}
+                  </p>
                 </div>
                 <div className="space-y-1">
                   <span className="text-xs text-zinc-400">Sortino Ratio</span>
-                  <p className="text-lg font-semibold text-zinc-300">{riskData.sortinoRatio}</p>
+                  <p className="text-lg font-semibold text-zinc-300">
+                    {riskData.sortinoRatio}
+                  </p>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-zinc-400">Value at Risk (95%)</span>
-                    <span className="text-sm font-medium text-red-400">-{riskData.var95}%</span>
+                    <span className="text-sm text-zinc-400">
+                      Value at Risk (95%)
+                    </span>
+                    <span className="text-sm font-medium text-red-400">
+                      -{riskData.var95}%
+                    </span>
                   </div>
                   <div className="w-full h-2 bg-zinc-800 rounded-full overflow-hidden">
-                    <div className="h-full rounded-full bg-red-500" style={{ width: `${riskData.var95 * 10}%` }}></div>
+                    <div
+                      className="h-full rounded-full bg-red-500"
+                      style={{ width: `${riskData.var95 * 10}%` }}
+                    ></div>
                   </div>
                   <p className="text-xs text-zinc-500">
-                    There is a 95% chance that your portfolio will not lose more than {riskData.var95}% in a single day.
+                    There is a 95% chance that your portfolio will not lose more
+                    than {riskData.var95}% in a single day.
                   </p>
                 </div>
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-zinc-400">Value at Risk (99%)</span>
-                    <span className="text-sm font-medium text-red-400">-{riskData.var99}%</span>
+                    <span className="text-sm text-zinc-400">
+                      Value at Risk (99%)
+                    </span>
+                    <span className="text-sm font-medium text-red-400">
+                      -{riskData.var99}%
+                    </span>
                   </div>
                   <div className="w-full h-2 bg-zinc-800 rounded-full overflow-hidden">
-                    <div className="h-full rounded-full bg-red-500" style={{ width: `${riskData.var99 * 5}%` }}></div>
+                    <div
+                      className="h-full rounded-full bg-red-500"
+                      style={{ width: `${riskData.var99 * 5}%` }}
+                    ></div>
                   </div>
                   <p className="text-xs text-zinc-500">
-                    There is a 99% chance that your portfolio will not lose more than {riskData.var99}% in a single day.
+                    There is a 99% chance that your portfolio will not lose more
+                    than {riskData.var99}% in a single day.
                   </p>
                 </div>
               </div>
@@ -177,7 +227,9 @@ export default function RiskManagement() {
 
         <Card className="glass-card">
           <CardHeader className="pb-2">
-            <CardTitle className="text-lg text-zinc-300">Risk Contribution</CardTitle>
+            <CardTitle className="text-lg text-zinc-300">
+              Risk Contribution
+            </CardTitle>
             <CardDescription>Risk breakdown by strategy</CardDescription>
           </CardHeader>
           <CardContent>
@@ -186,10 +238,15 @@ export default function RiskManagement() {
                 <div key={index} className="space-y-1">
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded-full" style={{ backgroundColor: getColorForIndex(index) }}></div>
+                      <div
+                        className="w-3 h-3 rounded-full"
+                        style={{ backgroundColor: getColorForIndex(index) }}
+                      ></div>
                       <span className="text-sm text-zinc-300">{item.name}</span>
                     </div>
-                    <span className="text-sm font-medium text-zinc-400">{item.value}%</span>
+                    <span className="text-sm font-medium text-zinc-400">
+                      {item.value}%
+                    </span>
                   </div>
                   <Progress
                     value={item.value}
@@ -206,17 +263,26 @@ export default function RiskManagement() {
       {/* Correlation Matrix */}
       <Card className="glass-card">
         <CardHeader className="pb-2">
-          <CardTitle className="text-lg text-zinc-300">Strategy Correlation Matrix</CardTitle>
-          <CardDescription>How your strategies correlate with each other</CardDescription>
+          <CardTitle className="text-lg text-zinc-300">
+            Strategy Correlation Matrix
+          </CardTitle>
+          <CardDescription>
+            How your strategies correlate with each other
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
             <table className="w-full min-w-[600px]">
               <thead>
                 <tr>
-                  <th className="text-left py-2 px-4 text-xs font-medium text-zinc-400">Strategy</th>
+                  <th className="text-left py-2 px-4 text-xs font-medium text-zinc-400">
+                    Strategy
+                  </th>
                   {riskData.strategies.map((strategy, index) => (
-                    <th key={index} className="text-left py-2 px-4 text-xs font-medium text-zinc-400">
+                    <th
+                      key={index}
+                      className="text-left py-2 px-4 text-xs font-medium text-zinc-400"
+                    >
                       {strategy.name}
                     </th>
                   ))}
@@ -225,18 +291,20 @@ export default function RiskManagement() {
               <tbody>
                 {riskData.strategies.map((strategy, rowIndex) => (
                   <tr key={rowIndex} className="border-t border-zinc-800/50">
-                    <td className="py-2 px-4 text-sm text-zinc-300">{strategy.name}</td>
+                    <td className="py-2 px-4 text-sm text-zinc-300">
+                      {strategy.name}
+                    </td>
                     {strategy.correlation.map((value, colIndex) => (
                       <td key={colIndex} className="py-2 px-4">
                         <div
                           className={`w-10 h-10 rounded flex items-center justify-center ${
                             rowIndex === colIndex
-                              ? "bg-purple-900/30 text-purple-400"
+                              ? 'bg-purple-900/30 text-purple-400'
                               : value < 0.3
-                                ? "bg-green-900/30 text-green-400"
+                                ? 'bg-green-900/30 text-green-400'
                                 : value < 0.7
-                                  ? "bg-yellow-900/30 text-yellow-400"
-                                  : "bg-red-900/30 text-red-400"
+                                  ? 'bg-yellow-900/30 text-yellow-400'
+                                  : 'bg-red-900/30 text-red-400'
                           }`}
                         >
                           {value.toFixed(1)}
@@ -269,7 +337,9 @@ export default function RiskManagement() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card className="glass-card">
           <CardHeader className="pb-2">
-            <CardTitle className="text-lg text-zinc-300">Risk Factors</CardTitle>
+            <CardTitle className="text-lg text-zinc-300">
+              Risk Factors
+            </CardTitle>
             <CardDescription>Breakdown of risk sources</CardDescription>
           </CardHeader>
           <CardContent>
@@ -278,7 +348,9 @@ export default function RiskManagement() {
                 <div key={index} className="space-y-1">
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-zinc-300">{factor.name}</span>
-                    <span className="text-sm font-medium text-zinc-400">{factor.value}%</span>
+                    <span className="text-sm font-medium text-zinc-400">
+                      {factor.value}%
+                    </span>
                   </div>
                   <div className="w-full h-2 bg-zinc-800 rounded-full overflow-hidden">
                     <div
@@ -296,8 +368,8 @@ export default function RiskManagement() {
               <div className="flex items-start gap-2">
                 <AlertTriangle className="w-4 h-4 text-yellow-400 mt-0.5" />
                 <p className="text-xs text-zinc-400">
-                  Market risk is currently your highest risk factor. Consider diversifying your strategies to reduce
-                  exposure.
+                  Market risk is currently your highest risk factor. Consider
+                  diversifying your strategies to reduce exposure.
                 </p>
               </div>
             </div>
@@ -306,17 +378,30 @@ export default function RiskManagement() {
 
         <Card className="glass-card">
           <CardHeader className="pb-2">
-            <CardTitle className="text-lg text-zinc-300">Risk Adjustment</CardTitle>
-            <CardDescription>Adjust your portfolio risk tolerance</CardDescription>
+            <CardTitle className="text-lg text-zinc-300">
+              Risk Adjustment
+            </CardTitle>
+            <CardDescription>
+              Adjust your portfolio risk tolerance
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-6">
               <div className="space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-sm text-zinc-400">Portfolio Risk Tolerance</span>
-                  <span className="text-sm font-medium text-zinc-300">Medium (65%)</span>
+                  <span className="text-sm text-zinc-400">
+                    Portfolio Risk Tolerance
+                  </span>
+                  <span className="text-sm font-medium text-zinc-300">
+                    Medium (65%)
+                  </span>
                 </div>
-                <Slider defaultValue={[65]} max={100} step={1} className="py-1" />
+                <Slider
+                  defaultValue={[65]}
+                  max={100}
+                  step={1}
+                  className="py-1"
+                />
                 <div className="flex justify-between text-xs text-zinc-500">
                   <span>Conservative</span>
                   <span>Balanced</span>
@@ -325,18 +410,38 @@ export default function RiskManagement() {
               </div>
 
               <div className="space-y-2">
-                <span className="text-sm text-zinc-400">Maximum Drawdown Limit</span>
+                <span className="text-sm text-zinc-400">
+                  Maximum Drawdown Limit
+                </span>
                 <div className="flex items-center gap-4">
-                  <Slider defaultValue={[15]} min={5} max={30} step={1} className="flex-1 py-1" />
-                  <span className="text-sm font-medium text-zinc-300 w-12 text-right">15%</span>
+                  <Slider
+                    defaultValue={[15]}
+                    min={5}
+                    max={30}
+                    step={1}
+                    className="flex-1 py-1"
+                  />
+                  <span className="text-sm font-medium text-zinc-300 w-12 text-right">
+                    15%
+                  </span>
                 </div>
               </div>
 
               <div className="space-y-2">
-                <span className="text-sm text-zinc-400">Maximum Allocation Per Strategy</span>
+                <span className="text-sm text-zinc-400">
+                  Maximum Allocation Per Strategy
+                </span>
                 <div className="flex items-center gap-4">
-                  <Slider defaultValue={[40]} min={10} max={80} step={5} className="flex-1 py-1" />
-                  <span className="text-sm font-medium text-zinc-300 w-12 text-right">40%</span>
+                  <Slider
+                    defaultValue={[40]}
+                    min={10}
+                    max={80}
+                    step={5}
+                    className="flex-1 py-1"
+                  />
+                  <span className="text-sm font-medium text-zinc-300 w-12 text-right">
+                    40%
+                  </span>
                 </div>
               </div>
 
@@ -354,25 +459,79 @@ export default function RiskManagement() {
       {/* Drawdown Analysis */}
       <Card className="glass-card">
         <CardHeader className="pb-2">
-          <CardTitle className="text-lg text-zinc-300">Drawdown Analysis</CardTitle>
-          <CardDescription>Historical drawdowns and recovery periods</CardDescription>
+          <CardTitle className="text-lg text-zinc-300">
+            Drawdown Analysis
+          </CardTitle>
+          <CardDescription>
+            Historical drawdowns and recovery periods
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="h-[200px] relative mb-4">
-            <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <svg
+              className="w-full h-full"
+              viewBox="0 0 100 100"
+              preserveAspectRatio="none"
+            >
               <defs>
-                <linearGradient id="drawdown-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                <linearGradient
+                  id="drawdown-gradient"
+                  x1="0%"
+                  y1="0%"
+                  x2="0%"
+                  y2="100%"
+                >
                   <stop offset="0%" stopColor="rgba(239, 68, 68, 0.5)" />
                   <stop offset="100%" stopColor="rgba(239, 68, 68, 0)" />
                 </linearGradient>
               </defs>
 
               {/* Grid lines */}
-              <line x1="10" y1="10" x2="90" y2="10" stroke="#374151" strokeWidth="0.1" strokeDasharray="0.5" />
-              <line x1="10" y1="30" x2="90" y2="30" stroke="#374151" strokeWidth="0.1" strokeDasharray="0.5" />
-              <line x1="10" y1="50" x2="90" y2="50" stroke="#374151" strokeWidth="0.1" strokeDasharray="0.5" />
-              <line x1="10" y1="70" x2="90" y2="70" stroke="#374151" strokeWidth="0.1" strokeDasharray="0.5" />
-              <line x1="10" y1="90" x2="90" y2="90" stroke="#374151" strokeWidth="0.1" strokeDasharray="0.5" />
+              <line
+                x1="10"
+                y1="10"
+                x2="90"
+                y2="10"
+                stroke="#374151"
+                strokeWidth="0.1"
+                strokeDasharray="0.5"
+              />
+              <line
+                x1="10"
+                y1="30"
+                x2="90"
+                y2="30"
+                stroke="#374151"
+                strokeWidth="0.1"
+                strokeDasharray="0.5"
+              />
+              <line
+                x1="10"
+                y1="50"
+                x2="90"
+                y2="50"
+                stroke="#374151"
+                strokeWidth="0.1"
+                strokeDasharray="0.5"
+              />
+              <line
+                x1="10"
+                y1="70"
+                x2="90"
+                y2="70"
+                stroke="#374151"
+                strokeWidth="0.1"
+                strokeDasharray="0.5"
+              />
+              <line
+                x1="10"
+                y1="90"
+                x2="90"
+                y2="90"
+                stroke="#374151"
+                strokeWidth="0.1"
+                strokeDasharray="0.5"
+              />
 
               {/* Drawdown chart (simplified) */}
               <path
@@ -414,11 +573,21 @@ export default function RiskManagement() {
             <table className="w-full min-w-[600px]">
               <thead>
                 <tr>
-                  <th className="text-left py-2 px-4 text-xs font-medium text-zinc-400">Period</th>
-                  <th className="text-left py-2 px-4 text-xs font-medium text-zinc-400">Max Drawdown</th>
-                  <th className="text-left py-2 px-4 text-xs font-medium text-zinc-400">Duration</th>
-                  <th className="text-left py-2 px-4 text-xs font-medium text-zinc-400">Recovery Time</th>
-                  <th className="text-left py-2 px-4 text-xs font-medium text-zinc-400">Primary Cause</th>
+                  <th className="text-left py-2 px-4 text-xs font-medium text-zinc-400">
+                    Period
+                  </th>
+                  <th className="text-left py-2 px-4 text-xs font-medium text-zinc-400">
+                    Max Drawdown
+                  </th>
+                  <th className="text-left py-2 px-4 text-xs font-medium text-zinc-400">
+                    Duration
+                  </th>
+                  <th className="text-left py-2 px-4 text-xs font-medium text-zinc-400">
+                    Recovery Time
+                  </th>
+                  <th className="text-left py-2 px-4 text-xs font-medium text-zinc-400">
+                    Primary Cause
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -427,21 +596,27 @@ export default function RiskManagement() {
                   <td className="py-2 px-4 text-sm text-red-400">-8.2%</td>
                   <td className="py-2 px-4 text-sm text-zinc-300">5 days</td>
                   <td className="py-2 px-4 text-sm text-zinc-300">12 days</td>
-                  <td className="py-2 px-4 text-sm text-zinc-300">Market volatility</td>
+                  <td className="py-2 px-4 text-sm text-zinc-300">
+                    Market volatility
+                  </td>
                 </tr>
                 <tr className="border-t border-zinc-800/50">
                   <td className="py-2 px-4 text-sm text-zinc-300">Mar 2023</td>
                   <td className="py-2 px-4 text-sm text-red-400">-12.3%</td>
                   <td className="py-2 px-4 text-sm text-zinc-300">8 days</td>
                   <td className="py-2 px-4 text-sm text-zinc-300">21 days</td>
-                  <td className="py-2 px-4 text-sm text-zinc-300">Banking crisis</td>
+                  <td className="py-2 px-4 text-sm text-zinc-300">
+                    Banking crisis
+                  </td>
                 </tr>
                 <tr className="border-t border-zinc-800/50">
                   <td className="py-2 px-4 text-sm text-zinc-300">Jun 2023</td>
                   <td className="py-2 px-4 text-sm text-red-400">-6.5%</td>
                   <td className="py-2 px-4 text-sm text-zinc-300">3 days</td>
                   <td className="py-2 px-4 text-sm text-zinc-300">7 days</td>
-                  <td className="py-2 px-4 text-sm text-zinc-300">Regulatory news</td>
+                  <td className="py-2 px-4 text-sm text-zinc-300">
+                    Regulatory news
+                  </td>
                 </tr>
               </tbody>
             </table>

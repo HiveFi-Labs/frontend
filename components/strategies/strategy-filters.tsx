@@ -1,18 +1,24 @@
-"use client"
+'use client'
 
-import { useState } from "react"
-import { Search, Filter } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useState } from 'react'
+import { Search, Filter } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Slider } from "@/components/ui/slider"
+} from '@/components/ui/dropdown-menu'
+import { Slider } from '@/components/ui/slider'
 
 export default function StrategyFilters({ activeTab }) {
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false)
@@ -58,7 +64,7 @@ export default function StrategyFilters({ activeTab }) {
             </SelectContent>
           </Select>
 
-          {activeTab === "marketplace" && (
+          {activeTab === 'marketplace' && (
             <Select defaultValue="popular">
               <SelectTrigger className="w-[180px] bg-zinc-900/50 border-zinc-700 text-zinc-300">
                 <SelectValue placeholder="Sort By" />
@@ -75,7 +81,10 @@ export default function StrategyFilters({ activeTab }) {
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="border-zinc-700 text-zinc-300 hover:bg-zinc-800/50">
+              <Button
+                variant="outline"
+                className="border-zinc-700 text-zinc-300 hover:bg-zinc-800/50"
+              >
                 <Filter className="h-4 w-4 mr-2" />
                 Filters
               </Button>

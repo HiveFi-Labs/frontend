@@ -2,11 +2,11 @@
 
 // AIチャットメッセージ
 export interface ChatMessage {
-  agent: "strategist" | "developer" | "analyst" | "optimizer" | "user"
+  agent: 'strategist' | 'developer' | 'analyst' | 'optimizer' | 'user'
   message: string
   timestamp: string
   attachment?: {
-    type: "chart" | "code"
+    type: 'chart' | 'code'
     data: any
   }
 }
@@ -15,13 +15,13 @@ export interface ChatMessage {
 export interface PerformanceMetric {
   name: string
   value: string
-  status: "positive" | "negative" | "neutral"
+  status: 'positive' | 'negative' | 'neutral'
 }
 
 // 取引履歴
 export interface TradeHistoryItem {
   id: number
-  type: "LONG" | "SHORT"
+  type: 'LONG' | 'SHORT'
   entry: string
   exit: string
   pnl: string
@@ -43,7 +43,7 @@ export interface OptimizationResult {
 export interface ChartDataPoint {
   date: string
   price: number
-  signal?: "buy" | "sell"
+  signal?: 'buy' | 'sell'
 }
 
 // 月次リターンデータ

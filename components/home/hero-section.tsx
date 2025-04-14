@@ -1,21 +1,25 @@
-"use client"
+'use client'
 
-import { useState } from "react"
-import { TrendingUp, DiscIcon } from "lucide-react"
-import { useDataFetch } from "@/hooks/use-data-fetch"
-import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
-import ComingSoonModal from "@/components/coming-soon-modal"
-import WaitlistModal from "@/components/waitlist/waitlist-modal"
-import portfolioData from "@/services/index"
-import type { HeroData } from "@/types/home"
-import HiveFiLogo from "@/components/hivefi-logo"
+import { useState } from 'react'
+import { TrendingUp, DiscIcon } from 'lucide-react'
+import { useDataFetch } from '@/hooks/use-data-fetch'
+import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
+import ComingSoonModal from '@/components/coming-soon-modal'
+import WaitlistModal from '@/components/waitlist/waitlist-modal'
+import portfolioData from '@/services/index'
+import type { HeroData } from '@/types/home'
+import HiveFiLogo from '@/components/hivefi-logo'
 
 export default function HeroSection() {
-  const { data: heroData, isLoading, error } = useDataFetch<HeroData>(() => portfolioData.getHeroData())
+  const {
+    data: heroData,
+    isLoading,
+    error,
+  } = useDataFetch<HeroData>(() => portfolioData.getHeroData())
   const [comingSoonModal, setComingSoonModal] = useState({
     isOpen: false,
-    feature: "",
+    feature: '',
   })
   const [waitlistModalOpen, setWaitlistModalOpen] = useState(false)
 
@@ -56,7 +60,7 @@ export default function HeroSection() {
         <div className="container mx-auto px-4">
           <div className="p-6 bg-red-900/20 border border-red-800 rounded-lg text-red-400">
             <h3 className="text-lg font-semibold mb-2">Error</h3>
-            <p>{error?.message || "Failed to load hero data"}</p>
+            <p>{error?.message || 'Failed to load hero data'}</p>
           </div>
         </div>
       </section>
@@ -75,15 +79,19 @@ export default function HeroSection() {
                   <HiveFiLogo size={24} /> Revolutionizing DeFi Trading
                 </span>
               </div>
-              <h1 className="text-4xl md:text-6xl font-bold gradient-text glow-text leading-tight">{heroData.title}</h1>
-              <p className="text-lg md:text-xl text-zinc-300">{heroData.subtitle}</p>
+              <h1 className="text-4xl md:text-6xl font-bold gradient-text glow-text leading-tight">
+                {heroData.title}
+              </h1>
+              <p className="text-lg md:text-xl text-zinc-300">
+                {heroData.subtitle}
+              </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button
                   className="gradient-button text-white border-0 h-12 px-8 text-lg flex items-center gap-2"
                   onClick={() => {
-                    const waitlistSection = document.getElementById("waitlist")
+                    const waitlistSection = document.getElementById('waitlist')
                     if (waitlistSection) {
-                      waitlistSection.scrollIntoView({ behavior: "smooth" })
+                      waitlistSection.scrollIntoView({ behavior: 'smooth' })
                     }
                   }}
                 >
@@ -99,7 +107,9 @@ export default function HeroSection() {
                 <div className="p-6">
                   <div className="flex justify-between items-center mb-6">
                     <div className="space-y-1">
-                      <h3 className="font-bold text-lg">Strategy Performance</h3>
+                      <h3 className="font-bold text-lg">
+                        Strategy Performance
+                      </h3>
                       <p className="text-zinc-400 text-sm">Last 30 days</p>
                     </div>
                     <div className="px-3 py-1 rounded-full bg-green-900/30 border border-green-800/50 text-green-400 text-xs font-medium flex items-center gap-1">
@@ -107,12 +117,30 @@ export default function HeroSection() {
                     </div>
                   </div>
                   <div className="h-64 relative">
-                    <svg className="w-full h-full" viewBox="0 0 400 200" aria-labelledby="performance-chart-title">
-                      <title id="performance-chart-title">Strategy Performance Chart</title>
+                    <svg
+                      className="w-full h-full"
+                      viewBox="0 0 400 200"
+                      aria-labelledby="performance-chart-title"
+                    >
+                      <title id="performance-chart-title">
+                        Strategy Performance Chart
+                      </title>
                       <defs>
-                        <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                          <stop offset="0%" stopColor="rgba(147, 51, 234, 0.5)" />
-                          <stop offset="100%" stopColor="rgba(147, 51, 234, 0)" />
+                        <linearGradient
+                          id="gradient"
+                          x1="0%"
+                          y1="0%"
+                          x2="0%"
+                          y2="100%"
+                        >
+                          <stop
+                            offset="0%"
+                            stopColor="rgba(147, 51, 234, 0.5)"
+                          />
+                          <stop
+                            offset="100%"
+                            stopColor="rgba(147, 51, 234, 0)"
+                          />
                         </linearGradient>
                       </defs>
                       <path
@@ -128,18 +156,29 @@ export default function HeroSection() {
                         opacity="0.5"
                         transform="translate(0, 30)"
                       />
-                      <linearGradient id="purple-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <linearGradient
+                        id="purple-gradient"
+                        x1="0%"
+                        y1="0%"
+                        x2="100%"
+                        y2="0%"
+                      >
                         <stop offset="0%" stopColor="#9333ea" />
                         <stop offset="50%" stopColor="#3b82f6" />
                         <stop offset="100%" stopColor="#9333ea" />
                       </linearGradient>
                     </svg>
                     <div className="absolute bottom-0 left-0 w-full grid grid-cols-7 px-2">
-                      {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day) => (
-                        <div key={day} className="text-center text-xs text-zinc-500">
-                          {day}
-                        </div>
-                      ))}
+                      {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(
+                        (day) => (
+                          <div
+                            key={day}
+                            className="text-center text-xs text-zinc-500"
+                          >
+                            {day}
+                          </div>
+                        ),
+                      )}
                     </div>
                   </div>
                   <div className="grid grid-cols-3 gap-4 mt-6">
@@ -149,7 +188,9 @@ export default function HeroSection() {
                     </div>
                     <div className="space-y-1">
                       <p className="text-zinc-400 text-xs">Profit/Loss</p>
-                      <p className="font-bold text-lg text-green-400">+$4,892</p>
+                      <p className="font-bold text-lg text-green-400">
+                        +$4,892
+                      </p>
                     </div>
                     <div className="space-y-1">
                       <p className="text-zinc-400 text-xs">Sharpe Ratio</p>
@@ -166,12 +207,15 @@ export default function HeroSection() {
       {/* Coming Soon Modal */}
       <ComingSoonModal
         isOpen={comingSoonModal.isOpen}
-        onClose={() => setComingSoonModal({ isOpen: false, feature: "" })}
+        onClose={() => setComingSoonModal({ isOpen: false, feature: '' })}
         feature={comingSoonModal.feature}
       />
 
       {/* Waitlist Modal */}
-      <WaitlistModal isOpen={waitlistModalOpen} onClose={() => setWaitlistModalOpen(false)} />
+      <WaitlistModal
+        isOpen={waitlistModalOpen}
+        onClose={() => setWaitlistModalOpen(false)}
+      />
     </>
   )
 }

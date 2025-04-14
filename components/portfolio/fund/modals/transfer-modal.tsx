@@ -1,12 +1,18 @@
-"use client"
+'use client'
 
-import { useEffect, useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { DollarSign, AlertTriangle } from "lucide-react"
-import portfolioData from "@/services/portfolio-data"
-import type { ModalProps, FundSummary, Strategy } from "@/types/portfolio"
+import { useEffect, useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { DollarSign, AlertTriangle } from 'lucide-react'
+import portfolioData from '@/services/portfolio-data'
+import type { ModalProps, FundSummary, Strategy } from '@/types/portfolio'
 
 export default function TransferModal({ onClose }: ModalProps) {
   const [fundSummary, setFundSummary] = useState<FundSummary | null>(null)
@@ -23,7 +29,7 @@ export default function TransferModal({ onClose }: ModalProps) {
         setFundSummary(fundData)
         setStrategies(strategiesData)
       } catch (err) {
-        console.error("Failed to fetch data", err)
+        console.error('Failed to fetch data', err)
       } finally {
         setIsLoading(false)
       }
@@ -59,11 +65,19 @@ export default function TransferModal({ onClose }: ModalProps) {
               </SelectTrigger>
               <SelectContent className="bg-zinc-900 border-zinc-800">
                 <SelectItem value="available">
-                  Available Balance (${fundSummary.availableBalance.toLocaleString()})
+                  Available Balance ($
+                  {fundSummary.availableBalance.toLocaleString()})
                 </SelectItem>
                 {strategies.map((strategy) => (
-                  <SelectItem key={strategy.id} value={`strategy-${strategy.id}`}>
-                    {strategy.name} (${strategy.allocation ? strategy.allocation.toLocaleString() : "0"})
+                  <SelectItem
+                    key={strategy.id}
+                    value={`strategy-${strategy.id}`}
+                  >
+                    {strategy.name} ($
+                    {strategy.allocation
+                      ? strategy.allocation.toLocaleString()
+                      : '0'}
+                    )
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -72,14 +86,21 @@ export default function TransferModal({ onClose }: ModalProps) {
 
           <div className="space-y-2">
             <span className="text-sm text-zinc-400">To</span>
-            <Select defaultValue={strategies.length > 0 ? `strategy-${strategies[0].id}` : ""}>
+            <Select
+              defaultValue={
+                strategies.length > 0 ? `strategy-${strategies[0].id}` : ''
+              }
+            >
               <SelectTrigger className="w-full bg-zinc-900/50 border-zinc-700 text-zinc-300">
                 <SelectValue placeholder="Select destination" />
               </SelectTrigger>
               <SelectContent className="bg-zinc-900 border-zinc-800">
                 <SelectItem value="available">Available Balance</SelectItem>
                 {strategies.map((strategy) => (
-                  <SelectItem key={strategy.id} value={`strategy-${strategy.id}`}>
+                  <SelectItem
+                    key={strategy.id}
+                    value={`strategy-${strategy.id}`}
+                  >
                     {strategy.name}
                   </SelectItem>
                 ))}
@@ -104,14 +125,18 @@ export default function TransferModal({ onClose }: ModalProps) {
             <div className="flex items-start gap-2">
               <AlertTriangle className="w-4 h-4 text-yellow-400 mt-0.5" />
               <p className="text-xs text-zinc-400">
-                Transferring funds between strategies will change your portfolio allocation and may affect your risk
-                profile.
+                Transferring funds between strategies will change your portfolio
+                allocation and may affect your risk profile.
               </p>
             </div>
           </div>
         </div>
         <div className="p-4 border-t border-zinc-800 flex justify-end gap-2">
-          <Button variant="outline" className="border-zinc-700 text-zinc-300" onClick={onClose}>
+          <Button
+            variant="outline"
+            className="border-zinc-700 text-zinc-300"
+            onClick={onClose}
+          >
             Cancel
           </Button>
           <Button className="gradient-button" onClick={onClose}>

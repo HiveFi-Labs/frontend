@@ -14,12 +14,17 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-16 max-w-3xl mx-auto">
             <div className="inline-block px-4 py-2 rounded-full bg-zinc-800/50 backdrop-blur-sm border border-zinc-700 mb-4">
-              <span className="text-sm font-medium text-zinc-300">Powerful Features</span>
+              <span className="text-sm font-medium text-zinc-300">
+                Powerful Features
+              </span>
             </div>
-            <h2 className="text-3xl md:text-5xl font-bold mb-6 gradient-text">Cutting-Edge Trading Technology</h2>
+            <h2 className="text-3xl md:text-5xl font-bold mb-6 gradient-text">
+              Cutting-Edge Trading Technology
+            </h2>
             <p className="text-zinc-300 text-lg">
-              HiveFi combines cutting-edge AI technology with user-friendly interfaces to create a revolutionary
-              algorithmic trading platform for DeFi.
+              HiveFi combines cutting-edge AI technology with user-friendly
+              interfaces to create a revolutionary algorithmic trading platform
+              for DeFi.
             </p>
           </div>
           <FeatureGrid />

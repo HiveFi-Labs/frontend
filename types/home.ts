@@ -1,5 +1,5 @@
 // Homeページの型定義
-import type { IconName } from "@/utils/icon-utils"
+import type { IconName } from '@/utils/icon-utils'
 // 機能項目
 export interface Feature {
   title: string
