@@ -43,8 +43,8 @@ export default function ProblemSolutionSection() {
 
   return (
     <div className="space-y-8">
-      {items.map((item, index) => (
-        <GlassCard key={index} gradientBorder hoverEffect>
+      {items.map((item) => (
+        <GlassCard key={item.problem} gradientBorder hoverEffect>
           <GlassCardContent className="p-8">
             <div className="grid md:grid-cols-2 gap-8">
               <div className="space-y-4">
