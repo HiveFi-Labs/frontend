@@ -1,12 +1,11 @@
-"use client"
+'use client'
 
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { ArrowLeft, DiscIcon, Rocket, Calendar, Bell } from "lucide-react"
-import { useEffect } from "react"
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import { ArrowLeft, DiscIcon, Rocket, Calendar, Bell } from 'lucide-react'
+import { useEffect } from 'react'
 
 export default function ComingSoonPage() {
-
   useEffect(() => {
     // ページがロードされたら最上部にスクロール
     window.scrollTo(0, 0)
@@ -33,9 +32,7 @@ export default function ComingSoonPage() {
 
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link href="/#waitlist">
-                  <Button
-                    className="gradient-button text-white border-0 flex items-center gap-2"
-                  >
+                  <Button className="gradient-button text-white border-0 flex items-center gap-2">
                     <Rocket className="w-4 h-4" />
                     Get Early Access
                   </Button>
@@ -54,9 +51,9 @@ export default function ComingSoonPage() {
             </div>
 
             <div className="relative hidden md:block">
-              <div className="absolute -inset-4 bg-gradient-to-br from-purple-600/20 to-blue-600/20 rounded-xl blur-xl animate-pulse-slow"></div>
+              <div className="absolute -inset-4 bg-gradient-to-br from-purple-600/20 to-blue-600/20 rounded-xl blur-xl animate-pulse-slow" />
               <div className="relative glass-card rounded-xl overflow-hidden border border-zinc-700/50 p-6">
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500"></div>
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500" />
 
                 <div className="space-y-6">
                   <div className="flex items-center justify-between">
