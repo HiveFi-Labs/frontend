@@ -29,7 +29,7 @@ export default function HeroSection() {
   if (isLoading) {
     return (
       <section className="min-h-screen pt-32 pb-20 relative overflow-hidden flex items-center">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-purple-900/20 blur-[100px] animate-pulse-slow"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-purple-900/20 blur-[100px] animate-pulse-slow" />
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="space-y-8 animate-pulse">
@@ -66,7 +66,7 @@ export default function HeroSection() {
   return (
     <>
       <section className="min-h-screen pt-32 pb-20 relative overflow-hidden flex items-center">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-purple-900/20 blur-[100px] animate-pulse-slow"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-purple-900/20 blur-[100px] animate-pulse-slow" />
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
@@ -81,9 +81,9 @@ export default function HeroSection() {
                 <Button
                   className="gradient-button text-white border-0 h-12 px-8 text-lg flex items-center gap-2"
                   onClick={() => {
-                    const waitlistSection = document.getElementById('waitlist');
+                    const waitlistSection = document.getElementById("waitlist")
                     if (waitlistSection) {
-                      waitlistSection.scrollIntoView({ behavior: 'smooth' });
+                      waitlistSection.scrollIntoView({ behavior: "smooth" })
                     }
                   }}
                 >
@@ -91,12 +91,11 @@ export default function HeroSection() {
                   Get Early Access
                 </Button>
               </div>
-              {/* ユーザー数の表示を削除 */}
             </div>
             <div className="relative">
-              <div className="absolute -inset-4 bg-gradient-to-br from-purple-600/20 to-blue-600/20 rounded-xl blur-xl animate-pulse-slow"></div>
+              <div className="absolute -inset-4 bg-gradient-to-br from-purple-600/20 to-blue-600/20 rounded-xl blur-xl animate-pulse-slow" />
               <div className="relative glass-card rounded-xl overflow-hidden border border-zinc-700/50 backdrop-blur-md">
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500"></div>
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500" />
                 <div className="p-6">
                   <div className="flex justify-between items-center mb-6">
                     <div className="space-y-1">
@@ -108,7 +107,8 @@ export default function HeroSection() {
                     </div>
                   </div>
                   <div className="h-64 relative">
-                    <svg className="w-full h-full" viewBox="0 0 400 200">
+                    <svg className="w-full h-full" viewBox="0 0 400 200" aria-labelledby="performance-chart-title">
+                      <title id="performance-chart-title">Strategy Performance Chart</title>
                       <defs>
                         <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
                           <stop offset="0%" stopColor="rgba(147, 51, 234, 0.5)" />
@@ -135,8 +135,8 @@ export default function HeroSection() {
                       </linearGradient>
                     </svg>
                     <div className="absolute bottom-0 left-0 w-full grid grid-cols-7 px-2">
-                      {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day, i) => (
-                        <div key={i} className="text-center text-xs text-zinc-500">
+                      {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day) => (
+                        <div key={day} className="text-center text-xs text-zinc-500">
                           {day}
                         </div>
                       ))}
