@@ -61,15 +61,15 @@ export default function AlertSettings() {
     return (
       <div className="space-y-6">
         <div className="flex justify-between items-center mb-6">
-          <div className="h-8 bg-zinc-800 rounded w-48 animate-pulse"></div>
-          <div className="h-10 w-40 bg-zinc-800 rounded-md animate-pulse"></div>
+          <div className="h-8 bg-zinc-800 rounded w-48 animate-pulse" />
+          <div className="h-10 w-40 bg-zinc-800 rounded-md animate-pulse" />
         </div>
 
-        <div className="h-64 bg-zinc-800/50 rounded-xl animate-pulse mb-6"></div>
+        <div className="h-64 bg-zinc-800/50 rounded-xl animate-pulse mb-6" />
 
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-24 bg-zinc-800/50 rounded-xl animate-pulse"></div>
+            <div key={i} className="h-24 bg-zinc-800/50 rounded-xl animate-pulse" />
           ))}
         </div>
       </div>
@@ -346,7 +346,8 @@ export default function AlertSettings() {
                   <BellOff className="w-12 h-12 text-zinc-700 mb-4" />
                   <h3 className="text-lg font-medium text-zinc-400 mb-2">No {category} alerts</h3>
                   <p className="text-sm text-zinc-500 mb-4 text-center max-w-md">
-                    You haven't created any {category} alerts yet. Create one to get notified about important events.
+                    You haven&apos;t created any {category} alerts yet. Create one to get notified about important
+                    events.
                   </p>
                   <Button className="gradient-button" onClick={() => setShowNewAlertModal(true)}>
                     <Plus className="w-4 h-4 mr-2" />
