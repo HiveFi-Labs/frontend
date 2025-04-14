@@ -153,8 +153,8 @@ export const testimonialsData: Testimonial[] = [
 
 // ヒーローセクションのデータ
 export const heroData: HeroData = {
-  title: "AI-Powered Algorithmic Trading for DeFi",
+  title: "The AI Trading Automator",
   subtitle:
-    "Create, backtest, and deploy algorithmic trading strategies with AI assistance. Invest in verified strategies or share your expertise with the world.",
+    "Automate, analyze, operate, and deploy your trades as DeFi.",
   userCount: 2500,
 }
