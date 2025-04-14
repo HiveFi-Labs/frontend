@@ -3,35 +3,24 @@ import type { Feature, ProblemSolution, ProductFeature, Stat, Testimonial, HeroD
 // 機能データ
 export const featuresData: Feature[] = [
   {
-    title: "Visual Strategy Builder",
-    description: "Create complex trading strategies with an intuitive drag-and-drop interface. No coding required.",
+    title: "Effortless Automation",
+    description: "Automate your trading strategies seamlessly using AI, simplifying complex processes.",
     icon: "Code2",
   },
   {
-    title: "Advanced Backtesting",
-    description: "Test your strategies against historical data with comprehensive performance metrics and analysis.",
+    title: "Intelligent Analysis",
+    description: "Automatically analyze your trades statistically, providing clear insights to optimize strategy performance.",
     icon: "BarChart3",
   },
   {
-    title: "AI-Powered Strategy Creation",
-    description: "Leverage artificial intelligence to create, optimize, and improve your trading strategies.",
+    title: "24/7 Hands-Free Operation",
+    description: "Keep your automated strategies running continuously without manual oversight.",
     icon: "MessageSquare",
   },
   {
-    title: "Risk Management",
-    description: "Set precise risk parameters to protect capital and ensure strategies align with risk tolerance.",
+    title: "Monetize via DeFi",
+    description: "Instantly convert your successful strategies into profitable DeFi products, boosting your returns.",
     icon: "Shield",
-  },
-  {
-    title: "Capital Efficiency",
-    description:
-      "Maximize returns by deploying capital across multiple verified strategies with different risk profiles.",
-    icon: "Rocket",
-  },
-  {
-    title: "Strategy Marketplace",
-    description: "Discover and invest in verified strategies or monetize your own trading expertise.",
-    icon: "LineChart",
   },
 ]
 
@@ -153,8 +142,8 @@ export const testimonialsData: Testimonial[] = [
 
 // ヒーローセクションのデータ
 export const heroData: HeroData = {
-  title: "AI-Powered Algorithmic Trading for DeFi",
+  title: "The AI Trading Automator",
   subtitle:
-    "Create, backtest, and deploy algorithmic trading strategies with AI assistance. Invest in verified strategies or share your expertise with the world.",
+    "Automate, analyze, operate, and deploy your trades as DeFi.",
   userCount: 2500,
 }

@@ -29,7 +29,7 @@ export default function Home() {
       </section>
 
       {/* Problems & Solutions */}
-      <section id="problems" className="py-20 relative">
+      {/* <section id="problems" className="py-20 relative">
         <div className="absolute top-1/2 left-0 w-[600px] h-[600px] rounded-full bg-purple-900/20 blur-[150px] animate-pulse-slow"></div>
         <div className="container mx-auto px-4">
           <div className="text-center mb-16 max-w-3xl mx-auto">
@@ -43,10 +43,10 @@ export default function Home() {
           </div>
           <ProblemSolution />
         </div>
-      </section>
+      </section> */}
 
       {/* Product Overview */}
-      <section id="product" className="py-20 relative">
+      {/* <section id="product" className="py-20 relative">
         <div className="absolute bottom-0 right-0 w-[500px] h-[500px] rounded-full bg-blue-900/20 blur-[120px] animate-pulse-slow"></div>
         <div className="container mx-auto px-4">
           <div className="text-center mb-16 max-w-3xl mx-auto">
@@ -60,7 +60,7 @@ export default function Home() {
           </div>
           <ProductOverview />
         </div>
-      </section>
+      </section> */}
 
       {/* Waitlist Section */}
       <WaitlistSection />
