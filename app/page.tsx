@@ -1,8 +1,6 @@
-import HeroSection from "@/components/home/hero-section"
-import FeatureGrid from "@/components/home/feature-grid"
-import ProblemSolution from "@/components/home/problem-solution"
-import ProductOverview from "@/components/home/product-overview"
-import WaitlistSection from "@/components/waitlist/waitlist-section"
+import HeroSection from '@/components/home/hero-section'
+import FeatureGrid from '@/components/home/feature-grid'
+import WaitlistSection from '@/components/waitlist/waitlist-section'
 
 export default function Home() {
   return (
@@ -12,7 +10,7 @@ export default function Home() {
 
       {/* Features Section */}
       <section id="features" className="py-20 relative">
-        <div className="absolute top-1/3 right-0 w-[500px] h-[500px] rounded-full bg-blue-900/20 blur-[120px] animate-pulse-slow"></div>
+        <div className="absolute top-1/3 right-0 w-[500px] h-[500px] rounded-full bg-blue-900/20 blur-[120px] animate-pulse-slow" />
         <div className="container mx-auto px-4">
           <div className="text-center mb-16 max-w-3xl mx-auto">
             <div className="inline-block px-4 py-2 rounded-full bg-zinc-800/50 backdrop-blur-sm border border-zinc-700 mb-4">
