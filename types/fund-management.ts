@@ -1,10 +1,10 @@
 // 取引
 export interface Transaction {
   id: number
-  type: "deposit" | "withdraw" | "transfer"
+  type: 'deposit' | 'withdraw' | 'transfer'
   amount: number
   date: string
-  status: "completed" | "pending"
+  status: 'completed' | 'pending'
   description: string
   strategy?: string
 }
@@ -20,7 +20,7 @@ export interface RebalanceChange {
 export interface Rebalance {
   id: number
   date: string
-  type: "manual" | "automatic"
+  type: 'manual' | 'automatic'
   changes: RebalanceChange[]
 }
 
@@ -34,10 +34,10 @@ export interface AutoRebalanceSettings {
 
 // 最近のアクティビティ
 export interface RecentActivity {
-  type: "deposit" | "withdraw" | "transfer"
+  type: 'deposit' | 'withdraw' | 'transfer'
   amount: number
   date: string
-  status: "completed" | "pending"
+  status: 'completed' | 'pending'
   description: string
   strategy?: string
 }
@@ -45,8 +45,8 @@ export interface RecentActivity {
 // 利益処理設定
 export interface ProfitHandlingSettings {
   autoReinvest: boolean
-  profitTaking: "none" | "threshold" | "periodic"
-  withdrawalMethod: "manual" | "scheduled" | "threshold"
+  profitTaking: 'none' | 'threshold' | 'periodic'
+  withdrawalMethod: 'manual' | 'scheduled' | 'threshold'
 }
 
 // ファンド概要

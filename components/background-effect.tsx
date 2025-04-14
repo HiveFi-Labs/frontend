@@ -1,6 +1,6 @@
-"use client"
+'use client'
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef } from 'react'
 
 export default function BackgroundEffect() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -9,7 +9,7 @@ export default function BackgroundEffect() {
     const canvas = canvasRef.current
     if (!canvas) return
 
-    const ctx = canvas.getContext("2d")
+    const ctx = canvas.getContext('2d')
     if (!ctx) return
 
     // Set canvas dimensions
@@ -19,7 +19,7 @@ export default function BackgroundEffect() {
     }
 
     setCanvasDimensions()
-    window.addEventListener("resize", setCanvasDimensions)
+    window.addEventListener('resize', setCanvasDimensions)
 
     // Particle class
     class Particle {
@@ -47,10 +47,10 @@ export default function BackgroundEffect() {
 
       getRandomColor() {
         const colors = [
-          "rgba(147, 51, 234, 1)", // Purple
-          "rgba(79, 70, 229, 1)", // Indigo
-          "rgba(59, 130, 246, 1)", // Blue
-          "rgba(236, 72, 153, 1)", // Pink
+          'rgba(147, 51, 234, 1)', // Purple
+          'rgba(79, 70, 229, 1)', // Indigo
+          'rgba(59, 130, 246, 1)', // Blue
+          'rgba(236, 72, 153, 1)', // Pink
         ]
         return colors[Math.floor(Math.random() * colors.length)]
       }
@@ -77,14 +77,17 @@ export default function BackgroundEffect() {
         if (!ctx) return
         ctx.beginPath()
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2)
-        ctx.fillStyle = this.color.replace("1)", `${this.alpha})`)
+        ctx.fillStyle = this.color.replace('1)', `${this.alpha})`)
         ctx.fill()
       }
     }
 
     // Create particles
     const particlesArray: Particle[] = []
-    const numberOfParticles = Math.min(150, Math.floor((window.innerWidth * window.innerHeight) / 8000))
+    const numberOfParticles = Math.min(
+      150,
+      Math.floor((window.innerWidth * window.innerHeight) / 8000),
+    )
 
     for (let i = 0; i < numberOfParticles; i++) {
       particlesArray.push(new Particle())
@@ -108,8 +111,14 @@ export default function BackgroundEffect() {
               particlesArray[b].x,
               particlesArray[b].y,
             )
-            gradient.addColorStop(0, particlesArray[a].color.replace("1)", `${opacity * 0.3})`))
-            gradient.addColorStop(1, particlesArray[b].color.replace("1)", `${opacity * 0.3})`))
+            gradient.addColorStop(
+              0,
+              particlesArray[a].color.replace('1)', `${opacity * 0.3})`),
+            )
+            gradient.addColorStop(
+              1,
+              particlesArray[b].color.replace('1)', `${opacity * 0.3})`),
+            )
             ctx.strokeStyle = gradient
             ctx.lineWidth = 1
             ctx.beginPath()
@@ -134,9 +143,9 @@ export default function BackgroundEffect() {
         canvas.height / 2,
         canvas.width,
       )
-      gradient.addColorStop(0, "rgba(10, 10, 20, 1)")
-      gradient.addColorStop(0.5, "rgba(5, 5, 15, 1)")
-      gradient.addColorStop(1, "rgba(0, 0, 0, 1)")
+      gradient.addColorStop(0, 'rgba(10, 10, 20, 1)')
+      gradient.addColorStop(0.5, 'rgba(5, 5, 15, 1)')
+      gradient.addColorStop(1, 'rgba(0, 0, 0, 1)')
 
       ctx.fillStyle = gradient
       ctx.fillRect(0, 0, canvas.width, canvas.height)
@@ -154,9 +163,15 @@ export default function BackgroundEffect() {
     animate()
 
     return () => {
-      window.removeEventListener("resize", setCanvasDimensions)
+      window.removeEventListener('resize', setCanvasDimensions)
     }
   }, [])
 
-  return <canvas ref={canvasRef} className="fixed inset-0 w-full h-full -z-10" style={{ pointerEvents: "none" }} />
+  return (
+    <canvas
+      ref={canvasRef}
+      className="fixed inset-0 w-full h-full -z-10"
+      style={{ pointerEvents: 'none' }}
+    />
+  )
 }

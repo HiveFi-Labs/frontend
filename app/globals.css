@@ -105,13 +105,15 @@ body {
 }
 
 .gradient-border::before {
-  content: "";
+  content: '';
   position: absolute;
   inset: -1px;
   border-radius: inherit;
   padding: 1px;
   background: linear-gradient(to right, #9333ea, #3b82f6, #9333ea);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   opacity: 0.5;

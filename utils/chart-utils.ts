@@ -17,7 +17,7 @@ export function generateChartPath<T>(
     maxValue?: number
   } = {},
 ): string {
-  if (dataPoints.length === 0) return ""
+  if (dataPoints.length === 0) return ''
 
   const values = dataPoints.map((item) => Number(item[valueKey]))
   const minValue = options.minValue ?? Math.min(...values) * 0.95
@@ -30,11 +30,14 @@ export function generateChartPath<T>(
 
   const points = dataPoints.map((point, i) => {
     const x = padding + (i / (dataPoints.length - 1)) * (width - 2 * padding)
-    const y = height - padding - ((Number(point[valueKey]) - minValue) / range) * (height - 2 * padding)
+    const y =
+      height -
+      padding -
+      ((Number(point[valueKey]) - minValue) / range) * (height - 2 * padding)
     return `${x},${y}`
   })
 
-  return `M${points.join(" L")}`
+  return `M${points.join(' L')}`
 }
 
 /**
@@ -104,6 +107,13 @@ export function generatePieSegments<T>(
  * @returns 色コード
  */
 function defaultColorForIndex(index: number): string {
-  const colors = ["#9333ea", "#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"]
+  const colors = [
+    '#9333ea',
+    '#3b82f6',
+    '#10b981',
+    '#f59e0b',
+    '#ef4444',
+    '#8b5cf6',
+  ]
   return colors[index % colors.length]
 }

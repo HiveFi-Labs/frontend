@@ -1,10 +1,10 @@
 // Homeページの型定義
-
+import type { IconName } from '@/utils/icon-utils'
 // 機能項目
 export interface Feature {
   title: string
   description: string
-  icon: string
+  icon: IconName
 }
 
 // 問題と解決策の項目
@@ -19,7 +19,7 @@ export interface ProblemSolution {
 export interface ProductFeature {
   title: string
   description: string
-  icon: string
+  icon: IconName
   learnMoreLink: string
 }
 

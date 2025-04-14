@@ -1,7 +1,7 @@
-"use client"
-import { X, Rocket } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import WaitlistForm from "./waitlist-form"
+'use client'
+import { X, Rocket } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import WaitlistForm from './waitlist-form'
 
 interface WaitlistModalProps {
   isOpen: boolean
@@ -29,11 +29,13 @@ export default function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
               <Rocket className="h-8 w-8 text-white" />
             </div>
 
-            <h2 className="text-2xl font-bold gradient-text">Join Our Waitlist</h2>
+            <h2 className="text-2xl font-bold gradient-text">
+              Join Our Waitlist
+            </h2>
 
             <p className="text-zinc-300">
-              Be the first to know when HiveFi launches. Get early access to our algorithmic trading platform and
-              exclusive benefits.
+              Be the first to know when HiveFi launches. Get early access to our
+              algorithmic trading platform and exclusive benefits.
             </p>
           </div>
 

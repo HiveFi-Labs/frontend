@@ -8,10 +8,10 @@ export interface NotificationSettings {
 // アラート
 export interface Alert {
   id: number
-  type: "performance" | "risk" | "strategy" | "market"
+  type: 'performance' | 'risk' | 'strategy' | 'market'
   name: string
   condition: string
-  status: "active" | "inactive"
+  status: 'active' | 'inactive'
   lastTriggered: string | null
   notifications: NotificationSettings
 }
@@ -26,7 +26,7 @@ export interface EmailNotificationSettings {
 // プッシュ通知設定
 export interface PushNotificationSettings {
   enabled: boolean
-  device: "all" | "mobile" | "desktop"
+  device: 'all' | 'mobile' | 'desktop'
   quietHours: boolean
 }
 

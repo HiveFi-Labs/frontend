@@ -1,17 +1,17 @@
-"use client"
+'use client'
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ArrowDownLeft, ArrowUpRight, RefreshCw } from "lucide-react"
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { ArrowDownLeft, ArrowUpRight, RefreshCw } from 'lucide-react'
 
-import FundOverview from "./fund-overview"
-import TransactionHistory from "./transaction-history"
-import RebalanceHistory from "./rebalance-history"
-import FundSettings from "./fund-settings"
-import DepositModal from "./modals/deposit-modal"
-import WithdrawModal from "./modals/withdraw-modal"
-import TransferModal from "./modals/transfer-modal"
+import FundOverview from './fund-overview'
+import TransactionHistory from './transaction-history'
+import RebalanceHistory from './rebalance-history'
+import FundSettings from './fund-settings'
+import DepositModal from './modals/deposit-modal'
+import WithdrawModal from './modals/withdraw-modal'
+import TransferModal from './modals/transfer-modal'
 
 export default function FundManagement() {
   const [showDepositModal, setShowDepositModal] = useState(false)
@@ -39,7 +39,10 @@ export default function FundManagement() {
             <ArrowUpRight className="w-4 h-4 mr-2 text-red-400" />
             Withdraw
           </Button>
-          <Button className="gradient-button" onClick={() => setShowTransferModal(true)}>
+          <Button
+            className="gradient-button"
+            onClick={() => setShowTransferModal(true)}
+          >
             <RefreshCw className="w-4 h-4 mr-2" />
             Transfer
           </Button>
@@ -86,9 +89,15 @@ export default function FundManagement() {
       </Tabs>
 
       {/* Modals */}
-      {showDepositModal && <DepositModal onClose={() => setShowDepositModal(false)} />}
-      {showWithdrawModal && <WithdrawModal onClose={() => setShowWithdrawModal(false)} />}
-      {showTransferModal && <TransferModal onClose={() => setShowTransferModal(false)} />}
+      {showDepositModal && (
+        <DepositModal onClose={() => setShowDepositModal(false)} />
+      )}
+      {showWithdrawModal && (
+        <WithdrawModal onClose={() => setShowWithdrawModal(false)} />
+      )}
+      {showTransferModal && (
+        <TransferModal onClose={() => setShowTransferModal(false)} />
+      )}
     </div>
   )
 }

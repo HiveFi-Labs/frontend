@@ -1,18 +1,18 @@
-"use client";
+'use client'
 
-import { Rocket, DiscIcon as Discord, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Rocket, DiscIcon as Discord, Loader2 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import {
   useLoginWithOAuth,
   usePrivy,
   useSolanaWallets,
-} from "@privy-io/react-auth";
-import Image from "next/image";
+} from '@privy-io/react-auth'
+import Image from 'next/image'
 
 export default function WaitlistSection() {
-  const { wallets, ready: walletReady } = useSolanaWallets();
-  const { authenticated, login } = usePrivy();
-  const desiredWallet = wallets[0]?.address;
+  const { wallets, ready: walletReady } = useSolanaWallets()
+  const { authenticated, login } = usePrivy()
+  const desiredWallet = wallets[0]?.address
   return (
     <section id="waitlist" className="py-20 relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-purple-900/30 to-blue-900/30 backdrop-blur-sm"></div>
@@ -41,7 +41,7 @@ export default function WaitlistSection() {
               variant="outline"
               className="border-zinc-700 text-zinc-300 hover:bg-zinc-800/50 h-12 px-8 text-lg flex items-center gap-2"
               onClick={() =>
-                window.open("https://discord.gg/u93QSsPNd6", "_blank")
+                window.open('https://discord.gg/u93QSsPNd6', '_blank')
               }
             >
               <Discord className="w-5 h-5" />
@@ -61,7 +61,8 @@ export default function WaitlistSection() {
                   </h4>
                 </div>
                 <p className="text-zinc-300 mb-4">
-                  Stay tuned for updates and exclusive offers. We'll notify you as soon as our platform is ready for early adopters.
+                  Stay tuned for updates and exclusive offers. We&apos;ll notify
+                  you as soon as our platform is ready for early adopters.
                 </p>
                 {walletReady && desiredWallet ? (
                   <div className="text-zinc-300 px-3 py-2 bg-zinc-800/50 rounded-md flex flex-wrap items-center justify-center max-w-xl mx-auto overflow-hidden">
@@ -107,5 +108,5 @@ export default function WaitlistSection() {
         </div>
       </div>
     </section>
-  );
+  )
 }

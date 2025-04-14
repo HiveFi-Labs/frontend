@@ -1,7 +1,7 @@
-"use client"
+'use client'
 
-import { useRouter } from "next/navigation"
-import { useEffect } from "react"
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 
 interface ComingSoonModalProps {
   isOpen: boolean
@@ -9,7 +9,11 @@ interface ComingSoonModalProps {
   feature?: string
 }
 
-export default function ComingSoonModal({ isOpen, onClose, feature = "This feature" }: ComingSoonModalProps) {
+export default function ComingSoonModal({
+  isOpen,
+  onClose,
+  feature = 'This feature',
+}: ComingSoonModalProps) {
   const router = useRouter()
 
   useEffect(() => {

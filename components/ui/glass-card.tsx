@@ -1,7 +1,7 @@
-"use client"
+'use client'
 
-import type { ReactNode } from "react"
-import { cn } from "@/lib/utils"
+import type { ReactNode } from 'react'
+import { cn } from '@/lib/utils'
 
 interface GlassCardProps {
   children: ReactNode
@@ -24,9 +24,9 @@ export function GlassCard({
   return (
     <div
       className={cn(
-        "glass-card rounded-xl relative overflow-hidden",
-        hoverEffect && "group transition-all hover:translate-y-[-5px]",
-        onClick && "cursor-pointer",
+        'glass-card rounded-xl relative overflow-hidden',
+        hoverEffect && 'group transition-all hover:translate-y-[-5px]',
+        onClick && 'cursor-pointer',
         className,
       )}
       onClick={onClick}
@@ -48,7 +48,7 @@ interface GlassCardHeaderProps {
  * ガラスカードのヘッダーコンポーネント
  */
 export function GlassCardHeader({ children, className }: GlassCardHeaderProps) {
-  return <div className={cn("p-4 pb-2", className)}>{children}</div>
+  return <div className={cn('p-4 pb-2', className)}>{children}</div>
 }
 
 interface GlassCardContentProps {
@@ -59,8 +59,11 @@ interface GlassCardContentProps {
 /**
  * ガラスカードのコンテンツコンポーネント
  */
-export function GlassCardContent({ children, className }: GlassCardContentProps) {
-  return <div className={cn("p-4 pt-6", className)}>{children}</div>
+export function GlassCardContent({
+  children,
+  className,
+}: GlassCardContentProps) {
+  return <div className={cn('p-4 pt-6', className)}>{children}</div>
 }
 
 interface GlassCardFooterProps {
@@ -72,5 +75,9 @@ interface GlassCardFooterProps {
  * ガラスカードのフッターコンポーネント
  */
 export function GlassCardFooter({ children, className }: GlassCardFooterProps) {
-  return <div className={cn("p-4 pt-0 border-t border-zinc-800/50", className)}>{children}</div>
+  return (
+    <div className={cn('p-4 pt-0 border-t border-zinc-800/50', className)}>
+      {children}
+    </div>
+  )
 }
