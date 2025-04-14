@@ -66,12 +66,12 @@ export default function ActiveStrategies() {
       <div className="space-y-6">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-semibold text-white">My Strategies</h2>
-          <div className="h-10 w-40 bg-zinc-800 rounded-md animate-pulse"></div>
+          <div className="h-10 w-40 bg-zinc-800 rounded-md animate-pulse" />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-64 bg-zinc-800/50 rounded-xl animate-pulse"></div>
+            <div key={i} className="h-64 bg-zinc-800/50 rounded-xl animate-pulse" />
           ))}
         </div>
       </div>
@@ -152,8 +152,8 @@ export default function ActiveStrategies() {
                 <div className="flex items-start gap-2">
                   <AlertTriangle className="w-4 h-4 text-yellow-400 mt-0.5" />
                   <p className="text-xs text-zinc-400">
-                    Changing allocation may affect your portfolio's risk profile. Make sure the new allocation aligns
-                    with your risk tolerance.
+                    Changing allocation may affect your portfolio&apos;s risk profile. Make sure the new allocation
+                    aligns with your risk tolerance.
                   </p>
                 </div>
               </div>
