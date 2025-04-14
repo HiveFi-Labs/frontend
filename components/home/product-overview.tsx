@@ -30,11 +30,11 @@ export default function ProductOverview() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      {productFeatures.map((feature, index) => (
-        <Card key={index} className="glass-card overflow-hidden group">
+      {productFeatures.map((feature) => (
+        <Card key={feature.title} className="glass-card overflow-hidden group">
           <CardHeader>
             <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center mb-4 glow">
-              <Icon name={feature.icon as any} />
+              <Icon name={feature.icon} />
             </div>
             <CardTitle className="text-2xl">{feature.title}</CardTitle>
             <CardDescription className="text-zinc-400 text-base">{feature.description}</CardDescription>
