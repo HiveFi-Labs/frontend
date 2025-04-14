@@ -8,6 +8,9 @@ export default function Home() {
       {/* Hero Section */}
       <HeroSection />
 
+      {/* Waitlist Section */}
+      <WaitlistSection />
+
       {/* Features Section */}
       <section id="features" className="py-20 relative">
         <div className="absolute top-1/3 right-0 w-[500px] h-[500px] rounded-full bg-blue-900/20 blur-[120px] animate-pulse-slow" />
@@ -64,9 +67,6 @@ export default function Home() {
           <ProductOverview />
         </div>
       </section> */}
-
-      {/* Waitlist Section */}
-      <WaitlistSection />
     </>
   )
 }
