@@ -12,7 +12,7 @@ import {
   Lightbulb,
 } from "lucide-react"
 
-type IconName =
+export type IconName =
   | "Code2"
   | "BarChart3"
   | "MessageSquare"
