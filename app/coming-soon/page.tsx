@@ -1,9 +1,9 @@
-'use client'
+"use client"
 
-import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { ArrowLeft, DiscIcon, Rocket, Calendar, Bell } from 'lucide-react'
-import { useEffect } from 'react'
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { ArrowLeft, Rocket, Calendar, Bell } from "lucide-react"
+import { useEffect } from "react"
 
 export default function ComingSoonPage() {
   useEffect(() => {
