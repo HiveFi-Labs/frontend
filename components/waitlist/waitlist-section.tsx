@@ -1,18 +1,14 @@
-"use client";
+"use client"
 
-import { Rocket, DiscIcon as Discord, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  useLoginWithOAuth,
-  usePrivy,
-  useSolanaWallets,
-} from "@privy-io/react-auth";
-import Image from "next/image";
+import { Rocket, DiscIcon as Discord, Loader2 } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { useLoginWithOAuth, usePrivy, useSolanaWallets } from "@privy-io/react-auth"
+import Image from "next/image"
 
 export default function WaitlistSection() {
-  const { wallets, ready: walletReady } = useSolanaWallets();
-  const { authenticated, login } = usePrivy();
-  const desiredWallet = wallets[0]?.address;
+  const { wallets, ready: walletReady } = useSolanaWallets()
+  const { authenticated, login } = usePrivy()
+  const desiredWallet = wallets[0]?.address
   return (
     <section id="waitlist" className="py-20 relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-purple-900/30 to-blue-900/30 backdrop-blur-sm"></div>
@@ -26,23 +22,18 @@ export default function WaitlistSection() {
             </span>
           </div>
 
-          <h2 className="text-3xl md:text-5xl font-bold mb-6 gradient-text glow-text">
-            Join Our Growing Community
-          </h2>
+          <h2 className="text-3xl md:text-5xl font-bold mb-6 gradient-text glow-text">Join Our Growing Community</h2>
 
           <p className="text-zinc-300 text-lg mb-8">
-            Be among the first to experience the future of algorithmic trading
-            in DeFi. Join our Discord server to get early access, exclusive
-            benefits, and connect with like-minded traders.
+            Be among the first to experience the future of algorithmic trading in DeFi. Join our Discord server to get
+            early access, exclusive benefits, and connect with like-minded traders.
           </p>
 
           <div className="flex justify-center">
             <Button
               variant="outline"
               className="border-zinc-700 text-zinc-300 hover:bg-zinc-800/50 h-12 px-8 text-lg flex items-center gap-2"
-              onClick={() =>
-                window.open("https://discord.gg/u93QSsPNd6", "_blank")
-              }
+              onClick={() => window.open("https://discord.gg/u93QSsPNd6", "_blank")}
             >
               <Discord className="w-5 h-5" />
               Join Our Discord
@@ -50,28 +41,19 @@ export default function WaitlistSection() {
           </div>
 
           <div className="mt-8 p-5 rounded-xl bg-zinc-800/40 backdrop-blur-sm border border-purple-500/30">
-            <h3 className="text-xl font-semibold text-white mb-2">
-              Early Adopter Benefits
-            </h3>
+            <h3 className="text-xl font-semibold text-white mb-2">Early Adopter Benefits</h3>
             {authenticated ? (
               <>
                 <div className="mx-auto max-w-md mb-5 mt-3 p-3 bg-gradient-to-r from-purple-600/40 to-blue-600/40 rounded-lg border border-purple-400/50">
-                  <h4 className="text-xl font-bold text-white">
-                    🎉 Registration Completed!
-                  </h4>
+                  <h4 className="text-xl font-bold text-white">🎉 Registration Completed!</h4>
                 </div>
                 <p className="text-zinc-300 mb-4">
-                  Stay tuned for updates and exclusive offers. We'll notify you as soon as our platform is ready for early adopters.
+                  Stay tuned for updates and exclusive offers. We&apos;ll notify you as soon as our platform is ready
+                  for early adopters.
                 </p>
                 {walletReady && desiredWallet ? (
                   <div className="text-zinc-300 px-3 py-2 bg-zinc-800/50 rounded-md flex flex-wrap items-center justify-center max-w-xl mx-auto overflow-hidden">
-                    <Image
-                      src="/solana.webp"
-                      alt="Solana"
-                      width={20}
-                      height={20}
-                      className="mr-2 flex-shrink-0"
-                    />
+                    <Image src="/solana.webp" alt="Solana" width={20} height={20} className="mr-2 flex-shrink-0" />
                     <span className="break-all">{desiredWallet}</span>
                   </div>
                 ) : (
@@ -84,14 +66,10 @@ export default function WaitlistSection() {
             ) : (
               <>
                 <p className="text-zinc-300 mb-4">
-                  Join our waitlist to get exclusive access to limited edition
-                  NFTs that may unlock special features and benefits in our
-                  ecosystem.
+                  Join our waitlist to get exclusive access to limited edition NFTs that may unlock special features and
+                  benefits in our ecosystem.
                 </p>
-                <Button
-                  className="gradient-button text-white border-0 px-8 py-2 text-lg"
-                  onClick={login}
-                >
+                <Button className="gradient-button text-white border-0 px-8 py-2 text-lg" onClick={login}>
                   Join Waitlist
                 </Button>
               </>
@@ -100,12 +78,11 @@ export default function WaitlistSection() {
 
           <div className="mt-8 p-4 rounded-lg bg-zinc-800/30 backdrop-blur-sm inline-block">
             <p className="text-zinc-400 text-sm">
-              Community-driven • Real-time updates • Priority access for early
-              members
+              Community-driven • Real-time updates • Priority access for early members
             </p>
           </div>
         </div>
       </div>
     </section>
-  );
+  )
 }
