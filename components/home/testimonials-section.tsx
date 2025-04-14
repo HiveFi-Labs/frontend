@@ -5,6 +5,7 @@ import { GlassCard, GlassCardContent } from "@/components/ui/glass-card"
 import { Skeleton } from "@/components/ui/skeleton"
 import portfolioData from "@/services/index"
 import type { Testimonial } from "@/types/home"
+import Image from "next/image"
 
 export default function TestimonialsSection() {
   const { data: testimonials, isLoading, error } = useDataFetch<Testimonial[]>(portfolioData.getTestimonials)
@@ -48,7 +49,7 @@ export default function TestimonialsSection() {
           <GlassCardContent className="p-8">
             <div className="flex items-center gap-4 mb-6">
               <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-purple-500 glow">
-                <img
+                <Image
                   src={testimonial.image || "/placeholder.svg?height=80&width=80"}
                   alt={testimonial.name}
                   className="w-full h-full object-cover"
@@ -59,7 +60,7 @@ export default function TestimonialsSection() {
                 <p className="text-zinc-400">{testimonial.role}</p>
               </div>
             </div>
-            <p className="text-zinc-300 italic">"{testimonial.quote}"</p>
+            <p className="text-zinc-300 italic">&quot;{testimonial.quote}&quot;</p>
           </GlassCardContent>
         </GlassCard>
       ))}
