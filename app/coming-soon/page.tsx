@@ -26,8 +26,8 @@ export default function ComingSoonPage() {
               <h1 className="text-3xl md:text-4xl font-bold gradient-text">This feature is on the way</h1>
 
               <p className="text-zinc-300 text-base md:text-lg">
-                We're working hard to bring you this feature. Join our Discord community to get updates and be the first
-                to know when it launches.
+                We&apos;re working hard to bring you this feature. Join our Discord community to get updates and be the
+                first to know when it launches.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4">
