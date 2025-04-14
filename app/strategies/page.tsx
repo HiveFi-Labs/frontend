@@ -1,27 +1,27 @@
-'use client'
+"use client"
 
-import { useState, useEffect } from 'react'
-import { Search, Filter } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { useState, useEffect } from "react"
+import { Search, Filter } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { Slider } from '@/components/ui/slider'
-import MarketplaceStrategies from '@/components/strategies/marketplace-strategies'
-import StrategyPreview from '@/components/strategies/strategy-preview'
-import portfolioData from '@/services/index'
-import type { Strategy } from '@/types/strategies'
+} from "@/components/ui/dropdown-menu"
+import { Slider } from "@/components/ui/slider"
+import MarketplaceStrategies from "@/components/strategies/marketplace-strategies"
+import StrategyPreview from "@/components/strategies/strategy-preview"
+import portfolioData from "@/services/index"
+import type { Strategy } from "@/types/strategies"
 
 export default function StrategiesPage() {
   const [selectedStrategy, setSelectedStrategy] = useState<Strategy | null>(null)
   const [showPreview, setShowPreview] = useState(false)
-  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false)
+  const [showAdvancedFilters] = useState(false)
   const [returnRange, setReturnRange] = useState([0, 100])
   const [sharpRange, setSharpRange] = useState([0, 5])
   const [isLoading, setIsLoading] = useState(true)
@@ -37,8 +37,8 @@ export default function StrategiesPage() {
         setMarketplaceStrategies(strategies)
         setError(null)
       } catch (err) {
-        console.error('Failed to fetch marketplace strategies', err)
-        setError('Failed to load strategy data. Please try again later.')
+        console.error("Failed to fetch marketplace strategies", err)
+        setError("Failed to load strategy data. Please try again later.")
       } finally {
         setIsLoading(false)
       }
