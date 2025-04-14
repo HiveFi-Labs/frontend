@@ -8,6 +8,9 @@ export default function Home() {
       {/* Hero Section */}
       <HeroSection />
 
+      {/* Waitlist Section */}
+      <WaitlistSection />
+
       {/* Features Section */}
       <section id="features" className="py-20 relative">
         <div className="absolute top-1/3 right-0 w-[500px] h-[500px] rounded-full bg-blue-900/20 blur-[120px] animate-pulse-slow" />
@@ -19,12 +22,12 @@ export default function Home() {
               </span>
             </div>
             <h2 className="text-3xl md:text-5xl font-bold mb-6 gradient-text">
-              Cutting-Edge Trading Technology
+              Simple, Smart, and Seamless Trade Automation
             </h2>
             <p className="text-zinc-300 text-lg">
-              HiveFi combines cutting-edge AI technology with user-friendly
-              interfaces to create a revolutionary algorithmic trading platform
-              for DeFi.
+              HiveFi drastically reduces automation costs and revolutionizes
+              monetization, empowering you to focus on a what matters most:
+              strategic ideation.
             </p>
           </div>
           <FeatureGrid />
@@ -64,9 +67,6 @@ export default function Home() {
           <ProductOverview />
         </div>
       </section> */}
-
-      {/* Waitlist Section */}
-      <WaitlistSection />
     </>
   )
 }
