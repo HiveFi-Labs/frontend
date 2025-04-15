@@ -108,7 +108,7 @@ export default function HeroSection() {
                   <div className="flex justify-between items-center mb-6">
                     <div className="space-y-1">
                       <h3 className="font-bold text-lg">
-                        Strategy Performance
+                        Strategy Performance(DEMO)
                       </h3>
                       <p className="text-zinc-400 text-sm">Last 30 days</p>
                     </div>
