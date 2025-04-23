@@ -2,24 +2,49 @@
 
 import { useEffect, useState } from 'react'
 import { TrendingUp } from 'lucide-react'
-import portfolioData from '@/services/index'
 import type { EquityCurvePoint } from '@/types/strategy-development'
 import dynamic from 'next/dynamic'
+import type {
+  Layout as PlotlyLayout,
+  Config as PlotlyConfig,
+  Data as PlotlyData,
+} from 'plotly.js'
 
 // Import Plotly dynamically to avoid SSR issues
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false })
 
+// S3のJSONファイルURL
+const DATA_URL =
+  'https://takdeeegijfftoeggznd.supabase.co/storage/v1/object/public/public-files//fig_data.json'
+
+// データ型定義
+interface FigData {
+  data: Partial<PlotlyData>[]
+  layout: Partial<PlotlyLayout>
+}
+
 export default function EquityCurveChart() {
-  const [equityCurveData, setEquityCurveData] = useState<EquityCurvePoint[]>([])
+  const [figData, setFigData] = useState<FigData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await portfolioData.getEquityCurveData()
-        setEquityCurveData(data)
+        setIsLoading(true)
+        const response = await fetch(DATA_URL)
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch data: ${response.status}`)
+        }
+
+        const data = await response.json()
+        setFigData(data)
       } catch (err) {
-        console.error('Failed to fetch equity curve data', err)
+        console.error('Failed to fetch JSON data', err)
+        setError(
+          err instanceof Error ? err.message : 'An unknown error occurred',
+        )
       } finally {
         setIsLoading(false)
       }
@@ -28,17 +53,7 @@ export default function EquityCurveChart() {
     fetchData()
   }, [])
 
-  // Calculate performance percentage
-  const calculatePerformance = () => {
-    if (equityCurveData.length < 2) return '0.0%'
-
-    const firstValue = equityCurveData[0].value
-    const lastValue = equityCurveData[equityCurveData.length - 1].value
-    const percentChange = ((lastValue - firstValue) / firstValue) * 100
-
-    return `${percentChange > 0 ? '+' : ''}${percentChange.toFixed(1)}%`
-  }
-
+  // レンダリング中の表示
   if (isLoading) {
     return (
       <div className="bg-zinc-800/50 rounded-lg p-4 animate-pulse">
@@ -47,80 +62,85 @@ export default function EquityCurveChart() {
     )
   }
 
-  const performance = calculatePerformance()
-  const isPositive = !performance.startsWith('-')
-
-  return (
-    <div className="bg-zinc-800/50 rounded-lg p-4">
-      <div className="flex justify-between items-center mb-3">
-        <h3 className="text-sm font-medium text-zinc-300">Equity Curve</h3>
-        <div
-          className={`px-3 py-1 rounded-full ${isPositive ? 'bg-green-900/30 border border-green-800/50 text-green-400' : 'bg-red-900/30 border border-red-800/50 text-red-400'} text-xs font-medium flex items-center gap-1`}
-        >
-          <TrendingUp className="w-3 h-3" /> {performance}
+  // エラー表示
+  if (error || !figData) {
+    return (
+      <div className="bg-zinc-800/50 rounded-lg p-4">
+        <div className="text-red-400 text-sm">
+          {error || 'Failed to load data'}
         </div>
       </div>
+    )
+  }
 
-      <div className="h-[200px]">
+  // カスタマイズしたレイアウト
+  const customLayout: Partial<PlotlyLayout> = {
+    ...figData.layout,
+    autosize: true,
+    margin: { t: 10, r: 30, l: 40, b: 40 },
+    paper_bgcolor: 'rgba(0,0,0,0)',
+    plot_bgcolor: 'rgba(0,0,0,0)',
+    font: {
+      color: '#9ca3af',
+      family: 'system-ui, sans-serif',
+    },
+    xaxis: {
+      ...figData.layout.xaxis,
+      showgrid: false,
+      tickfont: {
+        size: 10,
+      },
+      automargin: true,
+    },
+    yaxis: {
+      ...figData.layout.yaxis,
+      showgrid: true,
+      gridcolor: '#374151',
+      gridwidth: 0.5,
+      tickfont: {
+        size: 10,
+      },
+      automargin: true,
+    },
+    height: 300,
+    width: undefined,
+    hovermode: 'x unified' as const,
+    hoverlabel: {
+      bgcolor: '#18181b',
+      bordercolor: '#3f3f46',
+      font: {
+        color: '#d4d4d8',
+      },
+    },
+    legend: {
+      orientation: 'h',
+      y: -0.15,
+      font: {
+        size: 10,
+        color: '#9ca3af',
+      },
+    },
+  }
+
+  return (
+    <div className="bg-zinc-800/50 rounded-lg p-4 overflow-hidden">
+      <div className="flex justify-between items-center mb-3">
+        <h3 className="text-sm font-medium text-zinc-300">
+          Equity Curve Chart
+        </h3>
+      </div>
+
+      <div className="w-full h-[300px]">
         {/* @ts-ignore */}
         <Plot
-          data={[
-            {
-              x: equityCurveData.map((point) => point.date),
-              y: equityCurveData.map((point) => point.value),
-              type: 'scatter',
-              mode: 'lines',
-              line: {
-                color: '#9333ea',
-                width: 2,
-                shape: 'spline',
-              },
-              fill: 'tozeroy',
-              fillcolor: 'rgba(147, 51, 234, 0.1)',
-            },
-          ]}
-          layout={{
-            autosize: true,
-            margin: { t: 0, r: 0, l: 40, b: 40 },
-            paper_bgcolor: 'rgba(0,0,0,0)',
-            plot_bgcolor: 'rgba(0,0,0,0)',
-            font: {
-              color: '#9ca3af',
-            },
-            xaxis: {
-              showgrid: false,
-              zeroline: false,
-              tickfont: {
-                size: 10,
-              },
-            },
-            yaxis: {
-              showgrid: true,
-              gridcolor: '#374151',
-              gridwidth: 0.5,
-              zeroline: false,
-              tickprefix: '$',
-              tickformat: ',d',
-              tickfont: {
-                size: 10,
-              },
-            },
-            height: 200,
-            width: undefined,
-            hovermode: 'x unified',
-            hoverlabel: {
-              bgcolor: '#18181b',
-              bordercolor: '#3f3f46',
-              font: {
-                color: '#d4d4d8',
-              },
-            },
-          }}
+          data={figData.data}
+          layout={customLayout}
           config={{
             displayModeBar: false,
             responsive: true,
           }}
           style={{ width: '100%', height: '100%' }}
+          useResizeHandler={true}
         />
       </div>
     </div>
