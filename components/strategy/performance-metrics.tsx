@@ -1,13 +1,11 @@
-'use client'
+"use client"
 
-import { useEffect, useState } from 'react'
-import portfolioData from '@/services/index'
-import type { PerformanceMetric } from '@/types/strategy-development'
+import { useEffect, useState } from "react"
+import portfolioData from "@/services/index"
+import type { PerformanceMetric } from "@/types/strategy-development"
 
 export default function PerformanceMetrics() {
-  const [performanceMetrics, setPerformanceMetrics] = useState<
-    PerformanceMetric[]
-  >([])
+  const [performanceMetrics, setPerformanceMetrics] = useState<PerformanceMetric[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -16,7 +14,7 @@ export default function PerformanceMetrics() {
         const data = await portfolioData.getPerformanceMetrics()
         setPerformanceMetrics(data)
       } catch (err) {
-        console.error('Failed to fetch performance metrics', err)
+        console.error("Failed to fetch performance metrics", err)
       } finally {
         setIsLoading(false)
       }
@@ -45,11 +43,11 @@ export default function PerformanceMetrics() {
           <div className="text-sm text-zinc-400 mb-1">{metric.name}</div>
           <div
             className={`text-xl font-semibold ${
-              metric.status === 'positive'
-                ? 'text-green-400'
-                : metric.status === 'negative'
-                  ? 'text-red-400'
-                  : 'text-zinc-300'
+              metric.status === "positive"
+                ? "text-green-400"
+                : metric.status === "negative"
+                  ? "text-red-400"
+                  : "text-zinc-300"
             }`}
           >
             {metric.value}

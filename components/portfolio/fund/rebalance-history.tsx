@@ -1,24 +1,12 @@
-'use client'
+"use client"
 
-import { useEffect, useState } from 'react'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { Badge } from '@/components/ui/badge'
-import { Calendar, ArrowRight } from 'lucide-react'
-import portfolioData from '@/services/portfolio-data'
-import type { Rebalance } from '@/types/portfolio'
+import { useEffect, useState } from "react"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Badge } from "@/components/ui/badge"
+import { Calendar, ArrowRight } from "lucide-react"
+import portfolioData from "@/services/portfolio-data"
+import type { Rebalance } from "@/types/portfolio"
 
 export default function RebalanceHistory() {
   const [rebalanceHistory, setRebalanceHistory] = useState<Rebalance[]>([])
@@ -33,8 +21,8 @@ export default function RebalanceHistory() {
         setRebalanceHistory(data)
         setError(null)
       } catch (err) {
-        console.error('Failed to fetch rebalance history', err)
-        setError('Failed to load rebalance data. Please try again later.')
+        console.error("Failed to fetch rebalance history", err)
+        setError("Failed to load rebalance data. Please try again later.")
       } finally {
         setIsLoading(false)
       }
@@ -70,12 +58,8 @@ export default function RebalanceHistory() {
       <CardHeader className="pb-2">
         <div className="flex justify-between items-center">
           <div>
-            <CardTitle className="text-lg text-zinc-300">
-              Rebalance History
-            </CardTitle>
-            <CardDescription>
-              Record of portfolio rebalancing operations
-            </CardDescription>
+            <CardTitle className="text-lg text-zinc-300">Rebalance History</CardTitle>
+            <CardDescription>Record of portfolio rebalancing operations</CardDescription>
           </div>
           <Select defaultValue="all">
             <SelectTrigger className="w-[150px] bg-zinc-900/50 border-zinc-700 text-zinc-300">
@@ -103,26 +87,20 @@ export default function RebalanceHistory() {
                 <Badge
                   variant="outline"
                   className={`
-                    ${rebalance.type === 'automatic' ? 'border-blue-500 text-blue-400 bg-blue-900/20' : 'border-purple-500 text-purple-400 bg-purple-900/20'}
+                    ${rebalance.type === "automatic" ? "border-blue-500 text-blue-400 bg-blue-900/20" : "border-purple-500 text-purple-400 bg-purple-900/20"}
                   `}
                 >
-                  {rebalance.type === 'automatic' ? 'Automatic' : 'Manual'}
+                  {rebalance.type === "automatic" ? "Automatic" : "Manual"}
                 </Badge>
               </div>
               <div className="space-y-3">
                 {rebalance.changes.map((change, index) => (
                   <div key={index} className="flex items-center">
-                    <div className="w-1/3 text-sm text-zinc-300">
-                      {change.strategy}
-                    </div>
+                    <div className="w-1/3 text-sm text-zinc-300">{change.strategy}</div>
                     <div className="w-1/3 flex items-center">
-                      <span className="text-sm text-zinc-400">
-                        {change.before}%
-                      </span>
+                      <span className="text-sm text-zinc-400">{change.before}%</span>
                       <ArrowRight className="w-4 h-4 text-zinc-600 mx-2" />
-                      <span className="text-sm text-zinc-300">
-                        {change.after}%
-                      </span>
+                      <span className="text-sm text-zinc-300">{change.after}%</span>
                     </div>
                     <div className="w-1/3">
                       <div className="w-full bg-zinc-800 rounded-full h-1.5 relative">

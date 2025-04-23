@@ -1,18 +1,26 @@
-'use client'
+"use client"
 
-import { useState } from 'react'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import PortfolioOverview from '@/components/portfolio/portfolio-overview'
-import ActiveStrategies from '@/components/portfolio/active-strategies'
-import RiskManagement from '@/components/portfolio/risk-management'
-import FundManagement from '@/components/portfolio/fund/fund-management'
-import AlertSettings from '@/components/portfolio/alert-settings'
+import { useState, lazy, Suspense } from "react"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { LoadingState } from "@/components/ui/loading-state"
+
+// 遅延ロードでコンポーネントをインポート
+const PortfolioOverview = lazy(() => import("@/components/portfolio/portfolio-overview"))
+const ActiveStrategies = lazy(() => import("@/components/portfolio/active-strategies"))
+const RiskManagement = lazy(() => import("@/components/portfolio/risk-management"))
+const FundManagement = lazy(() => import("@/components/portfolio/fund/fund-management"))
+const AlertSettings = lazy(() => import("@/components/portfolio/alert-settings"))
 
 // タブの型定義
-type PortfolioTab = 'overview' | 'strategies' | 'risk' | 'funds' | 'alerts'
+type PortfolioTab = "overview" | "strategies" | "risk" | "funds" | "alerts"
 
 export default function PortfolioPage() {
-  const [activeTab, setActiveTab] = useState<PortfolioTab>('overview')
+  const [activeTab, setActiveTab] = useState<PortfolioTab>("overview")
+
+  // タブが変更されたときのハンドラー
+  const handleTabChange = (value: string) => {
+    setActiveTab(value as PortfolioTab)
+  }
 
   return (
     <div className="min-h-screen bg-black text-white pt-20 pb-10">
@@ -20,18 +28,11 @@ export default function PortfolioPage() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold gradient-text">My Portfolio</h1>
-            <p className="text-zinc-400 mt-2">
-              Manage your active strategies and monitor your portfolio
-              performance
-            </p>
+            <p className="text-zinc-400 mt-2">Manage your active strategies and monitor your portfolio performance</p>
           </div>
         </div>
 
-        <Tabs
-          value={activeTab}
-          onValueChange={(value) => setActiveTab(value as PortfolioTab)}
-          className="w-full"
-        >
+        <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
           <TabsList className="bg-zinc-800/50 border border-zinc-700/50 p-1 mb-6 w-full flex justify-start overflow-x-auto">
             <TabsTrigger
               value="overview"
@@ -65,24 +66,35 @@ export default function PortfolioPage() {
             </TabsTrigger>
           </TabsList>
 
+          {/* Suspenseを使用して各タブコンテンツをラップし、ローディング状態を表示 */}
           <TabsContent value="overview" className="mt-0">
-            <PortfolioOverview />
+            <Suspense fallback={<LoadingState text="Loading portfolio overview..." />}>
+              {activeTab === "overview" && <PortfolioOverview />}
+            </Suspense>
           </TabsContent>
 
           <TabsContent value="strategies" className="mt-0">
-            <ActiveStrategies />
+            <Suspense fallback={<LoadingState text="Loading active strategies..." />}>
+              {activeTab === "strategies" && <ActiveStrategies />}
+            </Suspense>
           </TabsContent>
 
           <TabsContent value="risk" className="mt-0">
-            <RiskManagement />
+            <Suspense fallback={<LoadingState text="Loading risk management..." />}>
+              {activeTab === "risk" && <RiskManagement />}
+            </Suspense>
           </TabsContent>
 
           <TabsContent value="funds" className="mt-0">
-            <FundManagement />
+            <Suspense fallback={<LoadingState text="Loading fund management..." />}>
+              {activeTab === "funds" && <FundManagement />}
+            </Suspense>
           </TabsContent>
 
           <TabsContent value="alerts" className="mt-0">
-            <AlertSettings />
+            <Suspense fallback={<LoadingState text="Loading alert settings..." />}>
+              {activeTab === "alerts" && <AlertSettings />}
+            </Suspense>
           </TabsContent>
         </Tabs>
       </div>

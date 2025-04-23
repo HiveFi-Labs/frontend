@@ -1,4 +1,4 @@
-import type { TimeSeriesData } from './common'
+import type { TimeSeriesData } from "./common"
 
 // ポートフォリオ配分
 export interface PortfolioAllocation {
@@ -14,7 +14,7 @@ export interface PortfolioSummary {
   change: {
     value: number
     percent: number
-    trend: 'up' | 'down'
+    trend: "up" | "down"
   }
   allocation: PortfolioAllocation[]
   historicalPerformance: TimeSeriesData[]

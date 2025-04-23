@@ -1,6 +1,6 @@
 // 戦略パフォーマンス
 export interface StrategyPerformance {
-  trend: 'up' | 'down'
+  trend: "up" | "down"
   return: string
   sharpe: string
   winRate: string
@@ -25,10 +25,10 @@ export interface StrategyPopularity {
 export interface Strategy {
   id: number
   name: string
-  type: 'trend' | 'mean' | 'breakout'
+  type: "trend" | "mean" | "breakout"
   pair: string
   timeframe: string
-  status: 'live' | 'testing' | 'draft'
+  status: "live" | "testing" | "draft"
   isPublic: boolean
   indicators: string[]
   performance: StrategyPerformance

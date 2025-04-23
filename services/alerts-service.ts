@@ -1,5 +1,5 @@
-import type { Alert, NotificationPreferences } from '@/types/alerts'
-import { alertsData, notificationPreferencesData } from '@/data/alerts-data'
+import type { Alert, NotificationPreferences } from "@/types/alerts"
+import { alertsData, notificationPreferencesData } from "@/data/alerts-data"
 
 class AlertsService {
   private cache: Record<string, any> = {}

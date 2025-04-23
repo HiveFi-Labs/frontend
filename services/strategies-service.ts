@@ -1,8 +1,5 @@
-import type { Strategy } from '@/types/strategies'
-import {
-  userStrategiesData,
-  marketplaceStrategiesData,
-} from '@/data/strategies-data'
+import type { Strategy } from "@/types/strategies"
+import { userStrategiesData, marketplaceStrategiesData } from "@/data/strategies-data"
 
 class StrategiesService {
   private cache: Record<string, any> = {}

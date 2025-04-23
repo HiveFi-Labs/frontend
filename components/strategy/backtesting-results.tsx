@@ -1,29 +1,21 @@
-'use client'
+"use client"
 
-import { useState } from 'react'
-import { Play, Pause, Code } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
-import StrategyCode from '@/components/strategy/strategy-code-modal'
-import EquityCurveChart from '@/components/strategy/charts/equity-curve-chart'
-import MonthlyReturnsChart from '@/components/strategy/charts/monthly-returns-chart'
-import PerformanceMetrics from '@/components/strategy/performance-metrics'
-import PriceChart from '@/components/strategy/charts/price-chart'
-import TradeHistory from '@/components/strategy/trade-history'
-import ParameterOptimization from '@/components/strategy/parameter-optimization'
+import { useState } from "react"
+import { Play, Pause, Code } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import StrategyCode from "@/components/strategy/strategy-code-modal"
+import UnifiedChartView from "@/components/strategy/charts/unified-chart-view"
+import PerformanceMetrics from "@/components/strategy/performance-metrics"
+import TradeHistory from "@/components/strategy/trade-history"
+import ParameterOptimization from "@/components/strategy/parameter-optimization"
 
 export default function BacktestingResults({ showCode, setShowCode }) {
   const [isRunningBacktest, setIsRunningBacktest] = useState(false)
 
   return (
     <>
-      <Card className="glass-card overflow-hidden">
+      <Card className="glass-card overflow-hidden h-full flex flex-col">
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <CardTitle className="text-xl">Backtesting Results</CardTitle>
@@ -38,13 +30,9 @@ export default function BacktestingResults({ showCode, setShowCode }) {
                 Edit Code
               </Button>
               <Button
-                variant={isRunningBacktest ? 'destructive' : 'default'}
+                variant={isRunningBacktest ? "destructive" : "default"}
                 size="sm"
-                className={
-                  isRunningBacktest
-                    ? 'bg-red-600 hover:bg-red-700'
-                    : 'gradient-button'
-                }
+                className={isRunningBacktest ? "bg-red-600 hover:bg-red-700" : "gradient-button"}
                 onClick={() => setIsRunningBacktest(!isRunningBacktest)}
               >
                 {isRunningBacktest ? (
@@ -61,22 +49,14 @@ export default function BacktestingResults({ showCode, setShowCode }) {
               </Button>
             </div>
           </div>
-          <CardDescription className="text-zinc-400">
-            Analyze the performance of your trading strategy
-          </CardDescription>
+          <CardDescription className="text-zinc-400">Analyze the performance of your trading strategy</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Equity Curve and Monthly Returns at the top */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <EquityCurveChart />
-            <MonthlyReturnsChart />
-          </div>
+        <CardContent className="space-y-6 overflow-auto flex-1 pb-6">
+          {/* Unified Chart View - Shows price, trades, and equity on the same timeline */}
+          <UnifiedChartView />
 
           {/* Performance Metrics */}
           <PerformanceMetrics />
-
-          {/* Price Chart with Signals */}
-          <PriceChart />
 
           {/* Trade History */}
           <TradeHistory />

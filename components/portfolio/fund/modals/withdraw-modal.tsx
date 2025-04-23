@@ -1,18 +1,12 @@
-'use client'
+"use client"
 
-import { useEffect, useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { DollarSign, Clock } from 'lucide-react'
-import portfolioData from '@/services/portfolio-data'
-import type { ModalProps, FundSummary } from '@/types/portfolio'
+import { useEffect, useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { DollarSign, Clock } from "lucide-react"
+import portfolioData from "@/services/portfolio-data"
+import type { ModalProps, FundSummary } from "@/types/portfolio"
 
 export default function WithdrawModal({ onClose }: ModalProps) {
   const [fundSummary, setFundSummary] = useState<FundSummary | null>(null)
@@ -24,7 +18,7 @@ export default function WithdrawModal({ onClose }: ModalProps) {
         const data = await portfolioData.getFundSummary()
         setFundSummary(data)
       } catch (err) {
-        console.error('Failed to fetch fund summary', err)
+        console.error("Failed to fetch fund summary", err)
       } finally {
         setIsLoading(false)
       }
@@ -49,9 +43,7 @@ export default function WithdrawModal({ onClose }: ModalProps) {
       <div className="bg-zinc-900 rounded-xl w-full max-w-md">
         <div className="p-4 border-b border-zinc-800">
           <h3 className="text-lg font-semibold text-white">Withdraw Funds</h3>
-          <p className="text-sm text-zinc-400">
-            Withdraw funds from your portfolio
-          </p>
+          <p className="text-sm text-zinc-400">Withdraw funds from your portfolio</p>
         </div>
         <div className="p-6 space-y-4">
           <div className="space-y-2">
@@ -92,9 +84,7 @@ export default function WithdrawModal({ onClose }: ModalProps) {
           </div>
 
           <div className="space-y-2">
-            <span className="text-sm text-zinc-400">
-              Description (Optional)
-            </span>
+            <span className="text-sm text-zinc-400">Description (Optional)</span>
             <Input
               placeholder="Add a note"
               defaultValue=""
@@ -106,18 +96,13 @@ export default function WithdrawModal({ onClose }: ModalProps) {
             <div className="flex items-start gap-2">
               <Clock className="w-4 h-4 text-yellow-400 mt-0.5" />
               <p className="text-xs text-zinc-400">
-                Withdrawals typically take 1-3 business days to process
-                depending on your withdrawal method.
+                Withdrawals typically take 1-3 business days to process depending on your withdrawal method.
               </p>
             </div>
           </div>
         </div>
         <div className="p-4 border-t border-zinc-800 flex justify-end gap-2">
-          <Button
-            variant="outline"
-            className="border-zinc-700 text-zinc-300"
-            onClick={onClose}
-          >
+          <Button variant="outline" className="border-zinc-700 text-zinc-300" onClick={onClose}>
             Cancel
           </Button>
           <Button className="gradient-button" onClick={onClose}>

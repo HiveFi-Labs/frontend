@@ -1,5 +1,5 @@
-import type { PortfolioSummary } from '@/types/portfolio-overview'
-import { portfolioSummaryData } from '@/data/portfolio-overview-data'
+import type { PortfolioSummary } from "@/types/portfolio-overview"
+import { portfolioSummaryData } from "@/data/portfolio-overview-data"
 
 class PortfolioOverviewService {
   // キャッシュをクラスプロパティとして初期化

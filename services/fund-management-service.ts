@@ -1,15 +1,10 @@
-import type {
-  Transaction,
-  Rebalance,
-  FundSummary,
-  ProfitHandlingSettings,
-} from '@/types/fund-management'
+import type { Transaction, Rebalance, FundSummary, ProfitHandlingSettings } from "@/types/fund-management"
 import {
   transactionsData,
   rebalanceHistoryData,
   fundSummaryData,
   profitHandlingSettingsData,
-} from '@/data/fund-management-data'
+} from "@/data/fund-management-data"
 
 class FundManagementService {
   private cache: Record<string, any> = {}

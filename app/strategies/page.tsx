@@ -1,42 +1,32 @@
-'use client'
+"use client"
 
-import { useState, useEffect } from 'react'
-import { Search, Filter } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { useState, useEffect } from "react"
+import { Search, Filter } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { Slider } from '@/components/ui/slider'
-import MarketplaceStrategies from '@/components/strategies/marketplace-strategies'
-import StrategyPreview from '@/components/strategies/strategy-preview'
-import portfolioData from '@/services/index'
-import type { Strategy } from '@/types/strategies'
+} from "@/components/ui/dropdown-menu"
+import { Slider } from "@/components/ui/slider"
+import MarketplaceStrategies from "@/components/strategies/marketplace-strategies"
+import StrategyPreview from "@/components/strategies/strategy-preview"
+import portfolioData from "@/services/index"
+import type { Strategy } from "@/types/strategies"
 
 export default function StrategiesPage() {
-  const [selectedStrategy, setSelectedStrategy] = useState<Strategy | null>(
-    null,
-  )
+  const [selectedStrategy, setSelectedStrategy] = useState<Strategy | null>(null)
   const [showPreview, setShowPreview] = useState(false)
-  const [showAdvancedFilters] = useState(false)
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false)
   const [returnRange, setReturnRange] = useState([0, 100])
   const [sharpRange, setSharpRange] = useState([0, 5])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [marketplaceStrategies, setMarketplaceStrategies] = useState<
-    Strategy[]
-  >([])
+  const [marketplaceStrategies, setMarketplaceStrategies] = useState<Strategy[]>([])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -47,8 +37,8 @@ export default function StrategiesPage() {
         setMarketplaceStrategies(strategies)
         setError(null)
       } catch (err) {
-        console.error('Failed to fetch marketplace strategies', err)
-        setError('Failed to load strategy data. Please try again later.')
+        console.error("Failed to fetch marketplace strategies", err)
+        setError("Failed to load strategy data. Please try again later.")
       } finally {
         setIsLoading(false)
       }
@@ -71,31 +61,25 @@ export default function StrategiesPage() {
       <div className="min-h-screen bg-black text-white pt-20 pb-10">
         <div className="container mx-auto px-4 max-w-7xl">
           <div className="flex items-center justify-between mb-8">
-            <div className="h-10 bg-zinc-800 rounded w-64 animate-pulse" />
+            <div className="h-10 bg-zinc-800 rounded w-64 animate-pulse"></div>
           </div>
 
           <div className="space-y-4">
             <div className="flex flex-col md:flex-row gap-4">
-              <div className="relative flex-1 h-10 bg-zinc-800 rounded animate-pulse" />
+              <div className="relative flex-1 h-10 bg-zinc-800 rounded animate-pulse"></div>
               <div className="flex gap-2">
                 {[1, 2, 3, 4].map((i) => (
-                  <div
-                    key={i}
-                    className="h-10 w-32 bg-zinc-800 rounded animate-pulse"
-                  />
+                  <div key={i} className="h-10 w-32 bg-zinc-800 rounded animate-pulse"></div>
                 ))}
               </div>
             </div>
           </div>
 
           <div className="mt-6">
-            <div className="h-8 bg-zinc-800 rounded w-48 mb-6 animate-pulse" />
+            <div className="h-8 bg-zinc-800 rounded w-48 mb-6 animate-pulse"></div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div
-                  key={i}
-                  className="h-64 bg-zinc-800/50 rounded-xl animate-pulse"
-                />
+                <div key={i} className="h-64 bg-zinc-800/50 rounded-xl animate-pulse"></div>
               ))}
             </div>
           </div>
@@ -129,13 +113,8 @@ export default function StrategiesPage() {
       <div className="container mx-auto px-4 max-w-7xl">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold gradient-text">
-              Strategy Marketplace
-            </h1>
-            <p className="text-zinc-400 mt-2">
-              Discover and invest in high-performing algorithmic trading
-              strategies
-            </p>
+            <h1 className="text-3xl font-bold gradient-text">Strategy Marketplace</h1>
+            <p className="text-zinc-400 mt-2">Discover and invest in high-performing algorithmic trading strategies</p>
           </div>
         </div>
 
@@ -192,10 +171,7 @@ export default function StrategiesPage() {
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="border-zinc-700 text-zinc-300 hover:bg-zinc-800/50"
-                  >
+                  <Button variant="outline" className="border-zinc-700 text-zinc-300 hover:bg-zinc-800/50">
                     <Filter className="h-4 w-4 mr-2" />
                     Filters
                   </Button>
@@ -206,9 +182,7 @@ export default function StrategiesPage() {
                   <div className="p-4 space-y-6">
                     <div className="space-y-2">
                       <div className="flex justify-between">
-                        <span className="text-sm text-zinc-400">
-                          Return Range
-                        </span>
+                        <span className="text-sm text-zinc-400">Return Range</span>
                         <span className="text-sm text-zinc-300">
                           {returnRange[0]}% - {returnRange[1]}%
                         </span>
@@ -225,9 +199,7 @@ export default function StrategiesPage() {
 
                     <div className="space-y-2">
                       <div className="flex justify-between">
-                        <span className="text-sm text-zinc-400">
-                          Sharpe Ratio
-                        </span>
+                        <span className="text-sm text-zinc-400">Sharpe Ratio</span>
                         <span className="text-sm text-zinc-300">
                           {sharpRange[0]} - {sharpRange[1]}
                         </span>
@@ -243,9 +215,7 @@ export default function StrategiesPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <span className="text-sm text-zinc-400">
-                        Max Drawdown
-                      </span>
+                      <span className="text-sm text-zinc-400">Max Drawdown</span>
                       <Select defaultValue="any">
                         <SelectTrigger className="w-full bg-zinc-800/50 border-zinc-700 text-zinc-300">
                           <SelectValue placeholder="Max Drawdown" />
@@ -253,9 +223,7 @@ export default function StrategiesPage() {
                         <SelectContent className="bg-zinc-900 border-zinc-800">
                           <SelectItem value="any">Any</SelectItem>
                           <SelectItem value="low">Low (&lt; 10%)</SelectItem>
-                          <SelectItem value="medium">
-                            Medium (10-20%)
-                          </SelectItem>
+                          <SelectItem value="medium">Medium (10-20%)</SelectItem>
                           <SelectItem value="high">High (&gt; 20%)</SelectItem>
                         </SelectContent>
                       </Select>
@@ -300,19 +268,11 @@ export default function StrategiesPage() {
         </div>
 
         <div className="mt-6">
-          <MarketplaceStrategies
-            strategies={marketplaceStrategies}
-            onStrategySelect={handleStrategySelect}
-          />
+          <MarketplaceStrategies strategies={marketplaceStrategies} onStrategySelect={handleStrategySelect} />
         </div>
       </div>
 
-      {showPreview && selectedStrategy && (
-        <StrategyPreview
-          strategy={selectedStrategy}
-          onClose={handleClosePreview}
-        />
-      )}
+      {showPreview && selectedStrategy && <StrategyPreview strategy={selectedStrategy} onClose={handleClosePreview} />}
     </div>
   )
 }

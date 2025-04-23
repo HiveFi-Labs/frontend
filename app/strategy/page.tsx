@@ -1,26 +1,21 @@
-'use client'
+"use client"
 
-import { useState } from 'react'
-import { Upload, Save } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import AICollaboration from '@/components/strategy/ai-collaboration'
-import BacktestingResults from '@/components/strategy/backtesting-results'
+import { useState } from "react"
+import { Upload, Save } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import AICollaboration from "@/components/strategy/ai-collaboration"
+import BacktestingResults from "@/components/strategy/backtesting-results"
 
 export default function StrategyPage() {
   const [showCode, setShowCode] = useState(false)
 
   return (
     <div className="min-h-screen bg-black text-white pt-20 pb-10">
-      <div className="container mx-auto px-4 max-w-7xl">
+      <div className="container mx-auto px-4 max-w-full">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold gradient-text">
-              Strategy Development & Backtesting
-            </h1>
-            <p className="text-zinc-400 mt-2">
-              Create, test, and optimize your trading strategies with AI
-              assistance
-            </p>
+            <h1 className="text-3xl font-bold gradient-text">Strategy Development & Backtesting</h1>
+            <p className="text-zinc-400 mt-2">Create, test, and optimize your trading strategies with AI assistance</p>
           </div>
           <div className="flex gap-4">
             <Button
@@ -37,14 +32,17 @@ export default function StrategyPage() {
           </div>
         </div>
 
-        {/* AI Collaboration with integrated Strategy Settings */}
-        <div className="mb-6">
-          <AICollaboration />
-        </div>
+        {/* Split layout: Left side for results, right side for AI chat */}
+        <div className="flex flex-col lg:flex-row gap-6 h-[calc(100vh-180px)] overflow-hidden">
+          {/* Left side - Backtesting Results */}
+          <div className="lg:w-3/5 overflow-auto">
+            <BacktestingResults showCode={showCode} setShowCode={setShowCode} />
+          </div>
 
-        {/* Backtesting Results - Full width */}
-        <div>
-          <BacktestingResults showCode={showCode} setShowCode={setShowCode} />
+          {/* Right side - AI Collaboration */}
+          <div className="lg:w-2/5 overflow-hidden flex flex-col">
+            <AICollaboration />
+          </div>
         </div>
       </div>
     </div>

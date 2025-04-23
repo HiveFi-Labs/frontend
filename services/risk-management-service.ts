@@ -1,5 +1,5 @@
-import type { RiskMetrics } from '@/types/risk-management'
-import { riskMetricsData } from '@/data/risk-management-data'
+import type { RiskMetrics } from "@/types/risk-management"
+import { riskMetricsData } from "@/data/risk-management-data"
 
 class RiskManagementService {
   private cache: Record<string, any> = {}
