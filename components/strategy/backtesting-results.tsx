@@ -28,7 +28,7 @@ export default function BacktestingResults({ showCode, setShowCode }) {
           <div className="flex items-center justify-between">
             <CardTitle className="text-xl">Backtesting Results</CardTitle>
             <div className="flex items-center gap-2">
-              <Button
+              {/* <Button
                 variant="outline"
                 size="sm"
                 className="border-zinc-700 text-zinc-300 hover:bg-zinc-800/50 flex items-center gap-2"
@@ -36,7 +36,7 @@ export default function BacktestingResults({ showCode, setShowCode }) {
               >
                 <Code className="w-4 h-4 mr-1" />
                 Edit Code
-              </Button>
+              </Button> */}
               <Button
                 variant={isRunningBacktest ? 'destructive' : 'default'}
                 size="sm"
