@@ -63,14 +63,14 @@ export default function AICollaboration() {
     return (
       <Card className="glass-card overflow-hidden animate-pulse">
         <CardHeader className="pb-3">
-          <div className="h-6 bg-zinc-800 rounded w-1/4 mb-2"></div>
-          <div className="h-4 bg-zinc-800 rounded w-1/2"></div>
+          <div className="h-6 bg-zinc-800 rounded w-1/4 mb-2" />
+          <div className="h-4 bg-zinc-800 rounded w-1/2" />
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <div className="h-10 bg-zinc-800 rounded w-full"></div>
-            <div className="h-[400px] bg-zinc-800/50 rounded"></div>
-            <div className="h-20 bg-zinc-800/50 rounded"></div>
+            <div className="h-10 bg-zinc-800 rounded w-full" />
+            <div className="h-[400px] bg-zinc-800/50 rounded" />
+            <div className="h-20 bg-zinc-800/50 rounded" />
           </div>
         </CardContent>
       </Card>
