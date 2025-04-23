@@ -63,13 +63,13 @@ export default function Header() {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8">
-            <button
-              onClick={() => showComingSoon('Strategy Builder')}
+            <Link
+              href="/strategy"
               className="text-zinc-300 hover:text-white transition-colors relative group"
             >
               <span>Strategy</span>
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-500 to-blue-500 transition-all duration-300 group-hover:w-full"></span>
-            </button>
+            </Link>
             <button
               onClick={() => showComingSoon('Strategy Marketplace')}
               className="text-zinc-300 hover:text-white transition-colors relative group"
@@ -144,15 +144,13 @@ export default function Header() {
         {mobileMenuOpen && (
           <div className="md:hidden absolute top-full left-0 w-full bg-black/95 backdrop-blur-lg border-b border-zinc-800/50 py-4">
             <div className="container mx-auto px-4 flex flex-col space-y-4">
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false)
-                  showComingSoon('Strategy Builder')
-                }}
+              <Link
+                href="/strategy"
+                onClick={() => setMobileMenuOpen(false)}
                 className="text-zinc-300 hover:text-white transition-colors py-2"
               >
                 Strategy
-              </button>
+              </Link>
               <button
                 onClick={() => {
                   setMobileMenuOpen(false)

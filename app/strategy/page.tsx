@@ -33,7 +33,7 @@ export default function StrategyPage() {
         </div>
 
         {/* Split layout: Left side for results, right side for AI chat */}
-        <div className="flex flex-col lg:flex-row gap-6 h-[calc(100vh-180px)] overflow-hidden">
+        <div className="flex flex-col lg:flex-row gap-6 h-[calc(100vh-100px)] overflow-hidden">
           {/* Left side - Backtesting Results */}
           <div className="lg:w-3/5 overflow-auto">
             <BacktestingResults showCode={showCode} setShowCode={setShowCode} />

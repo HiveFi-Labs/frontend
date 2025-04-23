@@ -16,55 +16,47 @@ import {
 import StrategySettingsModal from "@/components/strategy/strategy-settings-modal"
 import portfolioData from "@/services/index"
 import type { ChatMessage } from "@/types/strategy-development"
+import useChat from "@/hooks/useChat"
 
 export default function AICollaboration() {
-  const [activeAgent, setActiveAgent] = useState("strategist")
+  const [activeAgent] = useState("strategist")
   const [showSettingsModal, setShowSettingsModal] = useState(false)
-  const [conversations, setConversations] = useState<ChatMessage[]>([])
-  const [isLoading, setIsLoading] = useState(true)
   const [inputMessage, setInputMessage] = useState("")
+  const [isDataLoaded, setIsDataLoaded] = useState(false)
+  
+  // Using the useChat hook
+  const { messages: conversations, postChat, isLoading: isSendingMessage } = useChat({
+    initialMessages: []
+  })
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // Initial conversation data fetching remains the same
         const data = await portfolioData.getChatConversations()
-        setConversations(data)
+        // If you want to set initial messages, pass them when initializing the useChat hook
       } catch (err) {
         console.error("Failed to fetch chat conversations", err)
       } finally {
-        setIsLoading(false)
+        setIsDataLoaded(true)
       }
     }
 
     fetchData()
   }, [])
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!inputMessage.trim()) return
 
-    // Add user message to conversations
-    const userMessage: ChatMessage = {
-      agent: "user",
-      message: inputMessage,
-      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-    }
-
-    setConversations([...conversations, userMessage])
+    // Clear input field
+    const messageToSend = inputMessage
     setInputMessage("")
-
-    // In a real app, you would send this message to an API and get a response
-    // For now, we'll just simulate a response after a short delay
-    setTimeout(() => {
-      const agentMessage: ChatMessage = {
-        agent: activeAgent as "strategist" | "developer" | "analyst" | "optimizer",
-        message: `This is a simulated response from the ${activeAgent} agent.`,
-        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-      }
-      setConversations((prev) => [...prev, agentMessage])
-    }, 1000)
+    
+    // Use the useChat hook to send message
+    await postChat(messageToSend)
   }
 
-  if (isLoading) {
+  if (!isDataLoaded) {
     return (
       <Card className="glass-card overflow-hidden animate-pulse h-full">
         <CardHeader className="pb-3">
@@ -115,113 +107,6 @@ export default function AICollaboration() {
       <CardContent className="flex-1 flex flex-col h-full overflow-hidden">
         {/* Key Strategy Settings */}
         <div className="bg-zinc-900/30 rounded-lg p-4 mb-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <label className="text-sm text-zinc-400">Trading Pair</label>
-              <Select defaultValue="btcusdt">
-                <SelectTrigger className="bg-zinc-900/50 border-zinc-800 text-zinc-300">
-                  <SelectValue placeholder="Select trading pair" />
-                </SelectTrigger>
-                <SelectContent className="bg-zinc-900 border-zinc-800">
-                  <SelectItem value="btcusdt">BTC/USDT</SelectItem>
-                  <SelectItem value="ethusdt">ETH/USDT</SelectItem>
-                  <SelectItem value="solusdt">SOL/USDT</SelectItem>
-                  <SelectItem value="bnbusdt">BNB/USDT</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm text-zinc-400">Timeframe</label>
-              <Select defaultValue="1h">
-                <SelectTrigger className="bg-zinc-900/50 border-zinc-800 text-zinc-300">
-                  <SelectValue placeholder="Select timeframe" />
-                </SelectTrigger>
-                <SelectContent className="bg-zinc-900 border-zinc-800">
-                  <SelectItem value="5m">5 minutes</SelectItem>
-                  <SelectItem value="15m">15 minutes</SelectItem>
-                  <SelectItem value="1h">1 hour</SelectItem>
-                  <SelectItem value="4h">4 hours</SelectItem>
-                  <SelectItem value="1d">1 day</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm text-zinc-400">Strategy Template</label>
-              <Select defaultValue="trend">
-                <SelectTrigger className="bg-zinc-900/50 border-zinc-800 text-zinc-300">
-                  <SelectValue placeholder="Select strategy template" />
-                </SelectTrigger>
-                <SelectContent className="bg-zinc-900 border-zinc-800">
-                  <SelectItem value="trend">Trend Following</SelectItem>
-                  <SelectItem value="mean">Mean Reversion</SelectItem>
-                  <SelectItem value="breakout">Breakout</SelectItem>
-                  <SelectItem value="custom">Custom Strategy</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <div className="mt-4 flex justify-end">
-            <Button
-              variant="outline"
-              size="sm"
-              className="border-zinc-700 text-zinc-300 hover:bg-zinc-800/50"
-              onClick={() => setShowSettingsModal(true)}
-            >
-              <Sliders className="w-4 h-4 mr-2" />
-              Advanced Settings
-            </Button>
-          </div>
-        </div>
-
-        {/* AI Collaboration */}
-        <div className="flex gap-2 mb-4">
-          <Button
-            variant={activeAgent === "strategist" ? "default" : "outline"}
-            size="sm"
-            className={
-              activeAgent === "strategist" ? "gradient-button" : "border-zinc-700 text-zinc-300 hover:bg-zinc-800/50"
-            }
-            onClick={() => setActiveAgent("strategist")}
-          >
-            <Lightbulb className="w-4 h-4 mr-1" />
-            Strategist
-          </Button>
-          <Button
-            variant={activeAgent === "developer" ? "default" : "outline"}
-            size="sm"
-            className={
-              activeAgent === "developer" ? "gradient-button" : "border-zinc-700 text-zinc-300 hover:bg-zinc-800/50"
-            }
-            onClick={() => setActiveAgent("developer")}
-          >
-            <Code className="w-4 h-4 mr-1" />
-            Developer
-          </Button>
-          <Button
-            variant={activeAgent === "analyst" ? "default" : "outline"}
-            size="sm"
-            className={
-              activeAgent === "analyst" ? "gradient-button" : "border-zinc-700 text-zinc-300 hover:bg-zinc-800/50"
-            }
-            onClick={() => setActiveAgent("analyst")}
-          >
-            <BarChart4 className="w-4 h-4 mr-1" />
-            Analyst
-          </Button>
-          <Button
-            variant={activeAgent === "optimizer" ? "default" : "outline"}
-            size="sm"
-            className={
-              activeAgent === "optimizer" ? "gradient-button" : "border-zinc-700 text-zinc-300 hover:bg-zinc-800/50"
-            }
-            onClick={() => setActiveAgent("optimizer")}
-          >
-            <RefreshCw className="w-4 h-4 mr-1" />
-            Optimizer
-          </Button>
         </div>
 
         {/* Chat messages - flex-1 to take available space */}
@@ -293,6 +178,7 @@ export default function AICollaboration() {
               rows={3}
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
+              disabled={isSendingMessage}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault()
@@ -304,16 +190,18 @@ export default function AICollaboration() {
               <Button
                 className="h-8 w-8 rounded-full gradient-button p-0 flex items-center justify-center"
                 onClick={handleSendMessage}
+                disabled={isSendingMessage || !inputMessage.trim()}
               >
-                <ArrowRight className="w-4 h-4" />
+                {isSendingMessage ? (
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <ArrowRight className="w-4 h-4" />
+                )}
               </Button>
             </div>
           </div>
         </div>
       </CardContent>
-
-      {/* Strategy Settings Modal */}
-      {showSettingsModal && <StrategySettingsModal onClose={() => setShowSettingsModal(false)} />}
     </Card>
   )
 }
