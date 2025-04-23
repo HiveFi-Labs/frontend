@@ -119,7 +119,7 @@ export default function AICollaboration() {
                 <label htmlFor="trading-pair" className="text-sm text-zinc-400">
                   Trading Pair
                 </label>
-                <Select defaultValue="btcusdt">
+                <Select defaultValue="solusdt">
                   <SelectTrigger
                     id="trading-pair"
                     className="bg-zinc-900/50 border-zinc-800 text-zinc-300"
@@ -127,10 +127,9 @@ export default function AICollaboration() {
                     <SelectValue placeholder="Select trading pair" />
                   </SelectTrigger>
                   <SelectContent className="bg-zinc-900 border-zinc-800">
-                    <SelectItem value="btcusdt">BTC/USDT</SelectItem>
-                    <SelectItem value="ethusdt">ETH/USDT</SelectItem>
                     <SelectItem value="solusdt">SOL/USDT</SelectItem>
-                    <SelectItem value="bnbusdt">BNB/USDT</SelectItem>
+                    {/* <SelectItem value="btcusdt">BTC/USDT</SelectItem>
+                    <SelectItem value="ethusdt">ETH/USDT</SelectItem> */}
                   </SelectContent>
                 </Select>
               </div>
@@ -147,7 +146,7 @@ export default function AICollaboration() {
                     <SelectValue placeholder="Select timeframe" />
                   </SelectTrigger>
                   <SelectContent className="bg-zinc-900 border-zinc-800">
-                    <SelectItem value="5m">5 minutes</SelectItem>
+                    {/* <SelectItem value="5m">5 minutes</SelectItem> */}
                     <SelectItem value="15m">15 minutes</SelectItem>
                     <SelectItem value="1h">1 hour</SelectItem>
                     <SelectItem value="4h">4 hours</SelectItem>
@@ -163,7 +162,7 @@ export default function AICollaboration() {
                 >
                   Strategy Template
                 </label>
-                <Select defaultValue="trend">
+                <Select defaultValue="breakout">
                   <SelectTrigger
                     id="strategy-template"
                     className="bg-zinc-900/50 border-zinc-800 text-zinc-300"
@@ -171,16 +170,16 @@ export default function AICollaboration() {
                     <SelectValue placeholder="Select strategy template" />
                   </SelectTrigger>
                   <SelectContent className="bg-zinc-900 border-zinc-800">
-                    <SelectItem value="trend">Trend Following</SelectItem>
-                    <SelectItem value="mean">Mean Reversion</SelectItem>
+                    {/* <SelectItem value="trend">Trend Following</SelectItem>
+                    <SelectItem value="mean">Mean Reversion</SelectItem> */}
                     <SelectItem value="breakout">Breakout</SelectItem>
-                    <SelectItem value="custom">Custom Strategy</SelectItem>
+                    {/* <SelectItem value="custom">Custom Strategy</SelectItem> */}
                   </SelectContent>
                 </Select>
               </div>
             </div>
 
-            <div className="mt-4 flex justify-end">
+            {/* <div className="mt-4 flex justify-end">
               <Button
                 variant="outline"
                 size="sm"
@@ -190,7 +189,7 @@ export default function AICollaboration() {
                 <Sliders className="w-4 h-4 mr-2" />
                 Advanced Settings
               </Button>
-            </div>
+            </div> */}
           </div>
 
           {/* AI Collaboration */}
