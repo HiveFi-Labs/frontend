@@ -116,9 +116,14 @@ export default function AICollaboration() {
           <div className="bg-zinc-900/30 rounded-lg p-4 mb-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
-                <label className="text-sm text-zinc-400">Trading Pair</label>
+                <label htmlFor="trading-pair" className="text-sm text-zinc-400">
+                  Trading Pair
+                </label>
                 <Select defaultValue="btcusdt">
-                  <SelectTrigger className="bg-zinc-900/50 border-zinc-800 text-zinc-300">
+                  <SelectTrigger
+                    id="trading-pair"
+                    className="bg-zinc-900/50 border-zinc-800 text-zinc-300"
+                  >
                     <SelectValue placeholder="Select trading pair" />
                   </SelectTrigger>
                   <SelectContent className="bg-zinc-900 border-zinc-800">
@@ -131,9 +136,14 @@ export default function AICollaboration() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm text-zinc-400">Timeframe</label>
+                <label htmlFor="timeframe" className="text-sm text-zinc-400">
+                  Timeframe
+                </label>
                 <Select defaultValue="1h">
-                  <SelectTrigger className="bg-zinc-900/50 border-zinc-800 text-zinc-300">
+                  <SelectTrigger
+                    id="timeframe"
+                    className="bg-zinc-900/50 border-zinc-800 text-zinc-300"
+                  >
                     <SelectValue placeholder="Select timeframe" />
                   </SelectTrigger>
                   <SelectContent className="bg-zinc-900 border-zinc-800">
@@ -147,11 +157,17 @@ export default function AICollaboration() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm text-zinc-400">
+                <label
+                  htmlFor="strategy-template"
+                  className="text-sm text-zinc-400"
+                >
                   Strategy Template
                 </label>
                 <Select defaultValue="trend">
-                  <SelectTrigger className="bg-zinc-900/50 border-zinc-800 text-zinc-300">
+                  <SelectTrigger
+                    id="strategy-template"
+                    className="bg-zinc-900/50 border-zinc-800 text-zinc-300"
+                  >
                     <SelectValue placeholder="Select strategy template" />
                   </SelectTrigger>
                   <SelectContent className="bg-zinc-900 border-zinc-800">
