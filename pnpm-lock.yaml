@@ -98,6 +98,9 @@ importers:
       '@radix-ui/react-tooltip':
         specifier: ^1.1.6
         version: 1.2.0(@types/react-dom@19.1.2(@types/react@19.1.0))(@types/react@19.1.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@tanstack/react-query':
+        specifier: ^5.74.4
+        version: 5.74.4(react@19.1.0)
       '@types/plotly.js':
         specifier: ^2.35.5
         version: 2.35.5
@@ -170,7 +173,13 @@ importers:
       zod:
         specifier: latest
         version: 3.24.2
+      zustand:
+        specifier: ^5.0.3
+        version: 5.0.3(@types/react@19.1.0)(react@19.1.0)(use-sync-external-store@1.5.0(react@19.1.0))
     devDependencies:
+      '@tanstack/react-query-devtools':
+        specifier: ^5.74.6
+        version: 5.74.6(@tanstack/react-query@5.74.4(react@19.1.0))(react@19.1.0)
       '@types/node':
         specifier: ^22
         version: 22.14.0
@@ -1622,6 +1631,23 @@ packages:
 
   '@swc/helpers@0.5.15':
     resolution: {integrity: sha512-JQ5TuMi45Owi4/BIMAJBoSQoOJu12oOk/gADqlcUL9JEdHB8vyjUSsxqeNXnmXHjYKMi2WcYtezGEEhqUI/E2g==}
+
+  '@tanstack/query-core@5.74.4':
+    resolution: {integrity: sha512-YuG0A0+3i9b2Gfo9fkmNnkUWh5+5cFhWBN0pJAHkHilTx6A0nv8kepkk4T4GRt4e5ahbtFj2eTtkiPcVU1xO4A==}
+
+  '@tanstack/query-devtools@5.74.6':
+    resolution: {integrity: sha512-djaFT11mVCOW3e0Ezfyiq7T6OoHy2LRI1fUFQvj+G6+/4A1FkuRMNUhQkdP1GXlx8id0f1/zd5fgDpIy5SU/Iw==}
+
+  '@tanstack/react-query-devtools@5.74.6':
+    resolution: {integrity: sha512-vlsDwz4/FsblK0h7VAlXUdJ+9OV+i1n8OLb8CLLAZqu0M9GCnbajytZwsRmns33PXBZ6wQBJ859kg6aajx+e9Q==}
+    peerDependencies:
+      '@tanstack/react-query': ^5.74.4
+      react: ^18 || ^19
+
+  '@tanstack/react-query@5.74.4':
+    resolution: {integrity: sha512-mAbxw60d4ffQ4qmRYfkO1xzRBPUEf/72Dgo3qqea0J66nIKuDTLEqQt0ku++SDFlMGMnB6uKDnEG1xD/TDse4Q==}
+    peerDependencies:
+      react: ^18 || ^19
 
   '@tanstack/react-virtual@3.13.6':
     resolution: {integrity: sha512-WT7nWs8ximoQ0CDx/ngoFP7HbQF9Q2wQe4nh2NB+u2486eX3nZRE40P9g6ccCVq7ZfTSH5gFOuCoVH5DLNS/aA==}
@@ -7064,6 +7090,21 @@ snapshots:
   '@swc/helpers@0.5.15':
     dependencies:
       tslib: 2.8.1
+
+  '@tanstack/query-core@5.74.4': {}
+
+  '@tanstack/query-devtools@5.74.6': {}
+
+  '@tanstack/react-query-devtools@5.74.6(@tanstack/react-query@5.74.4(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      '@tanstack/query-devtools': 5.74.6
+      '@tanstack/react-query': 5.74.4(react@19.1.0)
+      react: 19.1.0
+
+  '@tanstack/react-query@5.74.4(react@19.1.0)':
+    dependencies:
+      '@tanstack/query-core': 5.74.4
+      react: 19.1.0
 
   '@tanstack/react-virtual@3.13.6(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
     dependencies:
