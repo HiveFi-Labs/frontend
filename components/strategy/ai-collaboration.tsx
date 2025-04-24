@@ -30,6 +30,7 @@ import {
 import type { ChatMessage } from '@/types/strategy-development'
 import useChat from '@/hooks/useChat'
 import { useStrategyStore } from '@/stores/strategyStore'
+import ReactMarkdown from 'react-markdown'
 
 interface AICollaborationProps {
   sessionId: string
@@ -142,9 +143,15 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
                     {message.timestamp}
                   </span>
                 </div>
-                <p className="text-sm text-zinc-300 whitespace-pre-wrap">
-                  {message.message}
-                </p>
+                {message.agent === 'user' ? (
+                  <p className="text-sm text-zinc-300 whitespace-pre-wrap">
+                    {message.message}
+                  </p>
+                ) : (
+                  <div className="prose prose-sm prose-invert max-w-none">
+                    <ReactMarkdown>{message.message}</ReactMarkdown>
+                  </div>
+                )}
 
                 {message.attachment && message.attachment.type === 'chart' && (
                   <div className="mt-3 p-3 bg-zinc-800/50 rounded-lg">
@@ -154,7 +161,7 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
                     <div className="grid grid-cols-3 gap-2">
                       {Object.entries(message.attachment.data.metrics).map(
                         ([key, value], i) => (
-                          <div key={i} className="text-center">
+                          <div key={key} className="text-center">
                             <div className="text-xs text-zinc-400 capitalize">
                               {key.replace(/([A-Z])/g, ' $1').trim()}
                             </div>
