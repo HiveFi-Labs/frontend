@@ -1,10 +1,31 @@
-"use client"
+'use client'
 
-import { useState, useEffect } from "react"
-import { Settings, MessageSquare, Lightbulb, Code, BarChart4, RefreshCw, ArrowRight, Sliders } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useState, useEffect } from 'react'
+import {
+  Settings,
+  MessageSquare,
+  Lightbulb,
+  Code,
+  BarChart4,
+  RefreshCw,
+  ArrowRight,
+  Sliders,
+} from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,21 +33,30 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import StrategySettingsModal from "@/components/strategy/strategy-settings-modal"
-import portfolioData from "@/services/index"
-import type { ChatMessage } from "@/types/strategy-development"
-import useChat from "@/hooks/useChat"
+} from '@/components/ui/dropdown-menu'
+import StrategySettingsModal from '@/components/strategy/strategy-settings-modal'
+import portfolioData from '@/services/index'
+import type { ChatMessage } from '@/types/strategy-development'
+import useChat from '@/hooks/useChat'
 
-export default function AICollaboration() {
-  const [activeAgent] = useState("strategist")
+interface AICollaborationProps {
+  sessionId: string
+}
+
+export default function AICollaboration({ sessionId }: AICollaborationProps) {
+  const [activeAgent] = useState('strategist')
   const [showSettingsModal, setShowSettingsModal] = useState(false)
-  const [inputMessage, setInputMessage] = useState("")
+  const [inputMessage, setInputMessage] = useState('')
   const [isDataLoaded, setIsDataLoaded] = useState(false)
-  
+
   // Using the useChat hook
-  const { messages: conversations, postChat, isLoading: isSendingMessage } = useChat({
-    initialMessages: []
+  const {
+    messages: conversations,
+    postChat,
+    isLoading: isSendingMessage,
+  } = useChat({
+    sessionId: sessionId,
+    initialMessages: [],
   })
 
   useEffect(() => {
@@ -36,7 +66,7 @@ export default function AICollaboration() {
         const data = await portfolioData.getChatConversations()
         // If you want to set initial messages, pass them when initializing the useChat hook
       } catch (err) {
-        console.error("Failed to fetch chat conversations", err)
+        console.error('Failed to fetch chat conversations', err)
       } finally {
         setIsDataLoaded(true)
       }
@@ -50,8 +80,8 @@ export default function AICollaboration() {
 
     // Clear input field
     const messageToSend = inputMessage
-    setInputMessage("")
-    
+    setInputMessage('')
+
     // Use the useChat hook to send message
     await postChat(messageToSend)
   }
@@ -85,7 +115,10 @@ export default function AICollaboration() {
                 <Settings className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-zinc-900 border-zinc-800">
+            <DropdownMenuContent
+              align="end"
+              className="bg-zinc-900 border-zinc-800"
+            >
               <DropdownMenuLabel>Settings</DropdownMenuLabel>
               <DropdownMenuSeparator className="bg-zinc-800" />
               <DropdownMenuItem className="text-zinc-300 focus:text-white focus:bg-zinc-800">
@@ -106,53 +139,72 @@ export default function AICollaboration() {
       </CardHeader>
       <CardContent className="flex-1 flex flex-col h-full overflow-hidden">
         {/* Key Strategy Settings */}
-        <div className="bg-zinc-900/30 rounded-lg p-4 mb-4">
-        </div>
+        <div className="bg-zinc-900/30 rounded-lg p-4 mb-4"></div>
 
         {/* Chat messages - flex-1 to take available space */}
-        <div className="flex-1 overflow-y-auto pr-2 space-y-4 mb-4" style={{ maxHeight: "calc(100% - 200px)" }}>
+        <div
+          className="flex-1 overflow-y-auto pr-2 space-y-4 mb-4"
+          style={{ maxHeight: 'calc(100% - 200px)' }}
+        >
           {conversations.map((message, index) => (
-            <div key={index} className={`flex gap-3 ${message.agent === "user" ? "justify-end" : ""}`}>
-              {message.agent !== "user" && (
+            <div
+              key={index}
+              className={`flex gap-3 ${message.agent === 'user' ? 'justify-end' : ''}`}
+            >
+              {message.agent !== 'user' && (
                 <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-blue-500 flex items-center justify-center flex-shrink-0">
-                  {message.agent === "strategist" && <Lightbulb className="w-4 h-4 text-white" />}
-                  {message.agent === "developer" && <Code className="w-4 h-4 text-white" />}
-                  {message.agent === "analyst" && <BarChart4 className="w-4 h-4 text-white" />}
-                  {message.agent === "optimizer" && <RefreshCw className="w-4 h-4 text-white" />}
+                  {message.agent === 'strategist' && (
+                    <Lightbulb className="w-4 h-4 text-white" />
+                  )}
+                  {message.agent === 'developer' && (
+                    <Code className="w-4 h-4 text-white" />
+                  )}
+                  {message.agent === 'analyst' && (
+                    <BarChart4 className="w-4 h-4 text-white" />
+                  )}
+                  {message.agent === 'optimizer' && (
+                    <RefreshCw className="w-4 h-4 text-white" />
+                  )}
                 </div>
               )}
               <div
-                className={`glass-card p-3 rounded-xl max-w-[85%] ${message.agent === "user" ? "bg-purple-900/30" : "bg-zinc-900/30"}`}
+                className={`glass-card p-3 rounded-xl max-w-[85%] ${message.agent === 'user' ? 'bg-purple-900/30' : 'bg-zinc-900/30'}`}
               >
                 <div className="flex justify-between items-start mb-1">
                   <span className="text-sm font-semibold capitalize">
-                    {message.agent === "user" ? "You" : message.agent}
+                    {message.agent === 'user' ? 'You' : message.agent}
                   </span>
-                  <span className="text-xs text-zinc-500">{message.timestamp}</span>
+                  <span className="text-xs text-zinc-500">
+                    {message.timestamp}
+                  </span>
                 </div>
                 <p className="text-sm text-zinc-300">{message.message}</p>
 
-                {message.attachment && message.attachment.type === "chart" && (
+                {message.attachment && message.attachment.type === 'chart' && (
                   <div className="mt-3 p-3 bg-zinc-800/50 rounded-lg">
-                    <div className="text-sm font-medium mb-2">{message.attachment.data.title}</div>
+                    <div className="text-sm font-medium mb-2">
+                      {message.attachment.data.title}
+                    </div>
                     <div className="grid grid-cols-3 gap-2">
-                      {Object.entries(message.attachment.data.metrics).map(([key, value], i) => (
-                        <div key={i} className="text-center">
-                          <div className="text-xs text-zinc-400 capitalize">
-                            {key.replace(/([A-Z])/g, " $1").trim()}
+                      {Object.entries(message.attachment.data.metrics).map(
+                        ([key, value], i) => (
+                          <div key={i} className="text-center">
+                            <div className="text-xs text-zinc-400 capitalize">
+                              {key.replace(/([A-Z])/g, ' $1').trim()}
+                            </div>
+                            <div
+                              className={`text-sm font-medium ${(value as string).startsWith('+') ? 'text-green-400' : (value as string).startsWith('-') ? 'text-red-400' : 'text-zinc-300'}`}
+                            >
+                              {value as React.ReactNode}
+                            </div>
                           </div>
-                          <div
-                            className={`text-sm font-medium ${(value as string).startsWith("+") ? "text-green-400" : (value as string).startsWith("-") ? "text-red-400" : "text-zinc-300"}`}
-                          >
-                            {value as React.ReactNode}
-                          </div>
-                        </div>
-                      ))}
+                        ),
+                      )}
                     </div>
                   </div>
                 )}
 
-                {message.attachment && message.attachment.type === "code" && (
+                {message.attachment && message.attachment.type === 'code' && (
                   <div className="mt-3 p-3 bg-zinc-800/50 rounded-lg overflow-x-auto">
                     <pre className="text-xs text-zinc-300 font-mono">
                       <code>{message.attachment.data}</code>
@@ -160,7 +212,7 @@ export default function AICollaboration() {
                   </div>
                 )}
               </div>
-              {message.agent === "user" && (
+              {message.agent === 'user' && (
                 <div className="w-8 h-8 rounded-full bg-purple-600/80 flex items-center justify-center flex-shrink-0">
                   <MessageSquare className="w-4 h-4 text-white" />
                 </div>
@@ -180,7 +232,7 @@ export default function AICollaboration() {
               onChange={(e) => setInputMessage(e.target.value)}
               disabled={isSendingMessage}
               onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
+                if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault()
                   handleSendMessage()
                 }
