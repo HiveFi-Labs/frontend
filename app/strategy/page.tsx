@@ -54,22 +54,11 @@ export default function StrategyPage() {
   useEffect(() => {
     if (isSuccess && fetchedResultsJson) {
       if (!backtestResultsJson) {
-        console.log('Fetched backtest results JSON:', fetchedResultsJson)
-
-        const filteredDataArray = fetchedResultsJson.data.filter(
-          (trace: any) =>
-            trace &&
-            typeof trace === 'object' &&
-            (trace.name === 'Value' || trace.name === 'Benchmark'),
+        console.log(
+          'Fetched backtest results JSON (Saving full data):',
+          fetchedResultsJson,
         )
-
-        const filteredPlotlyData: PlotlyDataObject = {
-          ...fetchedResultsJson,
-          data: filteredDataArray,
-        }
-
-        console.log('Filtered Plotly data:', filteredPlotlyData)
-        setBacktestResultsJson(filteredPlotlyData)
+        setBacktestResultsJson(fetchedResultsJson)
       }
     }
   }, [
