@@ -38,10 +38,12 @@ interface ResetSessionResponse {
   message: string
 }
 
-// For GET /results/{session_id} response
-// The response is the raw JSON, so its structure depends on the backtest output.
-// Using 'any' or 'unknown' here, refine if the structure is known.
-type BacktestResultsJsonResponse = Record<string, unknown>
+interface PlotlyDataObject {
+  data: Array<Record<string, unknown>>
+  layout: Record<string, unknown>
+}
+
+export type BacktestResultsJsonResponse = PlotlyDataObject
 
 /**
  * Sends a message to the chat API endpoint.
@@ -137,11 +139,12 @@ export const resetSession = async (
 /**
  * Retrieves the raw JSON backtest results for a specific chat session.
  * @param sessionId The unique identifier for the chat session.
- * @returns A promise that resolves with the backtest results JSON.
+ * @returns A promise that resolves with the backtest results JSON (as PlotlyDataObject).
  */
 export const getBacktestResults = async (
   sessionId: string,
-): Promise<BacktestResultsJsonResponse> => {
+): Promise<PlotlyDataObject> => {
+  // Return type updated
   const url = `${API_BASE_URL}/results/${sessionId}`
   try {
     const response = await fetch(url, { method: 'GET' })
@@ -152,8 +155,8 @@ export const getBacktestResults = async (
         `API request failed with status ${response.status}: ${responseData?.detail || response.statusText}`,
       )
     }
-    // Consider adding validation if the JSON structure is known
-    return responseData as BacktestResultsJsonResponse
+    // Type assertion updated
+    return responseData as PlotlyDataObject
   } catch (error) {
     console.error('Error fetching backtest results:', error)
     throw error

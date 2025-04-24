@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import {
   Card,
   CardContent,
@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import dynamic from 'next/dynamic'
+import { useStrategyStore } from '@/stores/strategyStore'
 
 // Dynamically import Plotly to avoid SSR issues
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false })
@@ -29,68 +30,32 @@ interface PlotlyDataObject {
 
 export default function UnifiedChartView() {
   const [timeRange, setTimeRange] = useState('3m')
-  const [chartData, setChartData] = useState<PlotlyDataObject | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true)
-        // TODO: Replace with an actual backtest result
-        const response = await fetch(
-          'https://takdeeegijfftoeggznd.supabase.co/storage/v1/object/public/public-files//fig_data.json',
-        )
-        const data = await response.json()
-        setChartData(data)
-      } catch (error) {
-        console.error('Error fetching chart data:', error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
+  const chartData = useStrategyStore((state) => state.backtestResultsJson)
 
-    fetchData()
-  }, [])
-
-  // Apply time range filter if needed
   const filterDataByTimeRange = (data: PlotlyDataObject | null) => {
-    if (!data) return data
-
-    // For now, returning the original data
-    // You can implement time filtering based on the timeRange state
+    if (!data) return null
+    console.log('Applying time range (not implemented yet):', timeRange)
     return data
   }
-
   const filteredData = filterDataByTimeRange(chartData)
-
-  if (isLoading) {
-    return (
-      <Card className="glass-card animate-pulse">
-        <CardHeader className="pb-2">
-          <div className="h-6 bg-zinc-800 rounded w-1/4 mb-2" />
-          <div className="h-4 bg-zinc-800 rounded w-1/2" />
-        </CardHeader>
-        <CardContent>
-          <div className="h-[600px] bg-zinc-800/50 rounded-lg" />
-        </CardContent>
-      </Card>
-    )
-  }
 
   if (!chartData) {
     return (
       <Card className="glass-card">
         <CardHeader className="pb-2">
-          <CardTitle className="text-lg text-zinc-300">
-            Strategy Performance
-          </CardTitle>
-          <CardDescription>No data available</CardDescription>
+          <div className="flex justify-between items-center">
+            <div>
+              <CardTitle className="text-lg text-zinc-300">
+                Strategy Performance
+              </CardTitle>
+              <CardDescription>Price, trades, and equity curve</CardDescription>
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
-          <div className="p-6 text-center">
-            <p className="text-zinc-400">
-              No chart data available. Failed to load chart data.
-            </p>
+          <div className="h-[600px] flex items-center justify-center text-zinc-500">
+            Waiting for backtest results...
           </div>
         </CardContent>
       </Card>

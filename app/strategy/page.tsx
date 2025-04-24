@@ -2,15 +2,27 @@
 
 import { useEffect, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
+import { useQuery } from '@tanstack/react-query'
 import { Upload, Save } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import AICollaboration from '@/components/strategy/ai-collaboration'
 import BacktestingResults from '@/components/strategy/backtesting-results'
 import { useStrategyStore } from '@/stores/strategyStore'
+import {
+  getBacktestResults,
+  type BacktestResultsJsonResponse,
+} from '@/lib/backtest.api'
 
 export default function StrategyPage() {
   const sessionId = useStrategyStore((state) => state.sessionId)
   const setSessionId = useStrategyStore((state) => state.setSessionId)
+  const backtestResults = useStrategyStore((state) => state.backtestResults)
+  const backtestResultsJson = useStrategyStore(
+    (state) => state.backtestResultsJson,
+  )
+  const setBacktestResultsJson = useStrategyStore(
+    (state) => state.setBacktestResultsJson,
+  )
 
   const [showCode, setShowCode] = useState(false)
 
@@ -19,6 +31,47 @@ export default function StrategyPage() {
       setSessionId(uuidv4())
     }
   }, [sessionId, setSessionId])
+
+  const {
+    data: fetchedResultsJson,
+    isLoading: isLoadingResultsJson,
+    error: errorResultsJson,
+    isSuccess,
+  } = useQuery<BacktestResultsJsonResponse, Error>({
+    queryKey: ['backtestResultsJson', sessionId],
+    queryFn: () => {
+      if (!sessionId) {
+        return Promise.reject(new Error('Session ID is required'))
+      }
+      return getBacktestResults(sessionId)
+    },
+    enabled: !!sessionId && !!backtestResults && !backtestResultsJson,
+    staleTime: Number.POSITIVE_INFINITY,
+    refetchOnWindowFocus: false,
+  })
+
+  useEffect(() => {
+    if (isSuccess && fetchedResultsJson) {
+      if (!backtestResultsJson) {
+        console.log(
+          'Fetched backtest results JSON via useEffect:',
+          fetchedResultsJson,
+        )
+        setBacktestResultsJson(fetchedResultsJson)
+      }
+    }
+  }, [
+    isSuccess,
+    fetchedResultsJson,
+    setBacktestResultsJson,
+    backtestResultsJson,
+  ])
+
+  useEffect(() => {
+    if (errorResultsJson) {
+      console.error('Error fetching backtest results JSON:', errorResultsJson)
+    }
+  }, [errorResultsJson])
 
   return (
     <div className="min-h-screen bg-black text-white pt-20 pb-10">
