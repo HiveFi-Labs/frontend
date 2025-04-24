@@ -1,41 +1,34 @@
-import { useCallback, useState } from 'react'
+import { useCallback } from 'react'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import type { ChatMessage } from '@/types/strategy-development'
 import { postChatMessage } from '@/lib/backtest.api'
+import { useStrategyStore } from '@/stores/strategyStore'
 
 type UseChatResponse = {
-  messages: ChatMessage[]
-  error?: Error
-  postChat: (input: string) => Promise<void>
-  isLoading: boolean
+  postChat: (input: string) => void
+  isPending: boolean
+  error: Error | null
 }
 
 type UseChatProps = {
   sessionId: string
-  onSuccess?: (messages: ChatMessage[]) => void
-  initialMessages?: ChatMessage[]
 }
 
-export default function useChat({
-  sessionId,
-  onSuccess,
-  initialMessages = [],
-}: UseChatProps): UseChatResponse {
-  const [messages, setMessages] = useState<ChatMessage[]>(initialMessages)
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<Error | undefined>()
+export default function useChat({ sessionId }: UseChatProps): UseChatResponse {
+  const queryClient = useQueryClient()
 
-  const postChat = useCallback(
-    async (input: string) => {
+  const addMessage = useStrategyStore((state) => state.addMessage)
+  const setParams = useStrategyStore((state) => state.setParams)
+  const setResults = useStrategyStore((state) => state.setResults)
+
+  const chatMutation = useMutation({
+    mutationFn: (input: string) => {
       if (!sessionId) {
-        console.error('Session ID is missing.')
-        setError(new Error('Session ID is missing.'))
-        return
+        throw new Error('Session ID is required for chat mutation.')
       }
-
-      setIsLoading(true)
-      setError(undefined)
-
-      // Add user message
+      return postChatMessage(sessionId, input)
+    },
+    onMutate: async (input: string) => {
       const userMessage: ChatMessage = {
         agent: 'user',
         message: input,
@@ -44,53 +37,48 @@ export default function useChat({
           minute: '2-digit',
         }),
       }
-
-      const updatedMessages = [...messages, userMessage]
-      setMessages(updatedMessages)
-
-      try {
-        // ---------------------------------------------
-        // API Call using the new function
-        // ---------------------------------------------
-        const apiResponse = await postChatMessage(sessionId, input)
-
-        if (apiResponse.status === 'success' && apiResponse.response) {
-          // Add AI response
-          const aiMessage: ChatMessage = {
-            agent: 'strategist',
-            message: apiResponse.response,
-            timestamp: new Date().toLocaleTimeString([], {
-              hour: '2-digit',
-              minute: '2-digit',
-            }),
-          }
-
-          const finalMessages = [...updatedMessages, aiMessage]
-          setMessages(finalMessages)
-
-          if (onSuccess) {
-            onSuccess(finalMessages)
-          }
-        } else {
-          // Handle API errors reported in the response body
-          const errorMessage =
-            apiResponse.message || 'API returned an error without a message.'
-          console.error('API Error:', errorMessage)
-          setError(new Error(errorMessage))
+      addMessage(userMessage)
+    },
+    onSuccess: (data, variables, context) => {
+      if (data.status === 'success' && data.response) {
+        const aiMessage: ChatMessage = {
+          agent: 'strategist',
+          message: data.response,
+          timestamp: new Date().toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit',
+          }),
         }
-      } catch (err) {
-        const error =
-          err instanceof Error
-            ? err
-            : new Error('An error occurred while sending chat')
-        setError(error)
-        console.error('Chat sending error:', error)
-      } finally {
-        setIsLoading(false)
+        addMessage(aiMessage)
+
+        if (data.current_params !== undefined) {
+          setParams(data.current_params)
+        }
+        if (data.result_metrics !== undefined) {
+          setResults(data.result_metrics)
+        }
+      } else if (data.status === 'error') {
+        console.error(
+          'API Error reported:',
+          data.message || 'Unknown API error',
+        )
       }
     },
-    [messages, onSuccess, sessionId],
+    onError: (error: Error, variables, context) => {
+      console.error('Chat Mutation Network/Fetch Error:', error.message)
+    },
+  })
+
+  const postChat = useCallback(
+    (input: string) => {
+      chatMutation.mutate(input)
+    },
+    [chatMutation],
   )
 
-  return { messages, error, postChat, isLoading }
+  return {
+    postChat,
+    isPending: chatMutation.isPending,
+    error: chatMutation.error,
+  }
 }

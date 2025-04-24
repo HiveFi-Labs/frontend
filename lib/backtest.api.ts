@@ -1,11 +1,10 @@
 // lib/backtest.api.ts
 
-// Assume API base URL comes from environment variables or config.
-// Adjust as needed.
-// Updated base path to /api/v0/foobar
-const API_BASE_URL =
-  `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/v0` ||
-  'http://localhost:8000/api/v0'
+// Updated base path to /api/v0
+// Corrected fallback logic for environment variable
+const backendApiUrl =
+  process.env.NEXT_PUBLIC_BACKEND_API_URL || 'http://localhost:8000'
+const API_BASE_URL = `${backendApiUrl}/api/v0`
 
 interface ChatMessage {
   message: string
