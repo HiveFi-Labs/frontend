@@ -2,8 +2,10 @@
 
 // Assume API base URL comes from environment variables or config.
 // Adjust as needed.
+// Updated base path to /api/v0/foobar
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_BACKEND_API_URL || 'http://localhost:8000'
+  `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/v0` ||
+  'http://localhost:8000/api/v0'
 
 interface ChatMessage {
   message: string
@@ -20,6 +22,28 @@ interface ChatResponse {
   message?: string // Used for error messages from the API
 }
 
+// For GET /status/{session_id} response
+interface SessionStatusResponse {
+  session_id: string
+  has_parameters: boolean
+  has_backtest_results: boolean
+  chat_history_length: number
+  current_params: Record<string, unknown> | null // Or a more specific type
+  // Note: API doc uses 'backtest_results', ChatResponse uses 'result_metrics'. Clarify which key is correct for status.
+  backtest_results: Record<string, unknown> | null // Or a more specific type
+}
+
+// For POST /reset/{session_id} response
+interface ResetSessionResponse {
+  status: 'success'
+  message: string
+}
+
+// For GET /results/{session_id} response
+// The response is the raw JSON, so its structure depends on the backtest output.
+// Using 'any' or 'unknown' here, refine if the structure is known.
+type BacktestResultsJsonResponse = Record<string, unknown>
+
 /**
  * Sends a message to the chat API endpoint.
  * @param sessionId The unique identifier for the chat session.
@@ -30,7 +54,8 @@ export const postChatMessage = async (
   sessionId: string,
   message: string,
 ): Promise<ChatResponse> => {
-  const url = `${API_BASE_URL}/api/v0/chat/${sessionId}`
+  // Construct URL using the updated base URL
+  const url = `${API_BASE_URL}/chat/${sessionId}`
   const payload: ChatMessage = { message }
 
   try {
@@ -38,7 +63,6 @@ export const postChatMessage = async (
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        // Add any other necessary headers like Authorization if needed
       },
       body: JSON.stringify(payload),
     })
@@ -46,38 +70,93 @@ export const postChatMessage = async (
     const responseData = await response.json()
 
     if (!response.ok) {
-      // Log the detailed error from the API if available
       console.error(`API Error (${response.status}):`, responseData)
       throw new Error(
-        `API request failed with status ${response.status}: ${responseData?.message || response.statusText}`,
+        `API request failed with status ${response.status}: ${responseData?.message || responseData?.detail || response.statusText}`,
       )
     }
 
     return responseData as ChatResponse
   } catch (error) {
     console.error('Error sending chat message:', error)
-    // Propagate the error so the caller can handle it
-    throw error // Or return a standardized error object
+    throw error
   }
 }
 
-// Placeholder for other API functions - you can add implementations for
-// getStatus, resetSession, getResults here following a similar pattern.
+// --- New API Client Functions ---
 
-// Example structure for getStatus
-// export const getSessionStatus = async (sessionId: string): Promise<any> => {
-//   const url = `${API_BASE_URL}/api/v0/status/${sessionId}`;
-//   // ... fetch logic ...
-// };
+/**
+ * Retrieves the current status of a specific chat session.
+ * @param sessionId The unique identifier for the chat session.
+ * @returns A promise that resolves with the session status.
+ */
+export const getSessionStatus = async (
+  sessionId: string,
+): Promise<SessionStatusResponse> => {
+  const url = `${API_BASE_URL}/status/${sessionId}`
+  try {
+    const response = await fetch(url, { method: 'GET' })
+    const responseData = await response.json()
+    if (!response.ok) {
+      console.error(`API Error (${response.status}):`, responseData)
+      throw new Error(
+        `API request failed with status ${response.status}: ${responseData?.detail || response.statusText}`,
+      )
+    }
+    return responseData as SessionStatusResponse
+  } catch (error) {
+    console.error('Error fetching session status:', error)
+    throw error
+  }
+}
 
-// Example structure for resetSession
-// export const resetSession = async (sessionId: string): Promise<any> => {
-//   const url = `${API_BASE_URL}/api/v0/reset/${sessionId}`;
-//   // ... fetch logic for POST request ...
-// };
+/**
+ * Resets a specific chat session.
+ * @param sessionId The unique identifier for the chat session.
+ * @returns A promise that resolves with the reset confirmation.
+ */
+export const resetSession = async (
+  sessionId: string,
+): Promise<ResetSessionResponse> => {
+  const url = `${API_BASE_URL}/reset/${sessionId}`
+  try {
+    const response = await fetch(url, { method: 'POST' }) // Corrected method to POST
+    const responseData = await response.json()
+    if (!response.ok) {
+      console.error(`API Error (${response.status}):`, responseData)
+      throw new Error(
+        `API request failed with status ${response.status}: ${responseData?.detail || response.statusText}`,
+      )
+    }
+    return responseData as ResetSessionResponse
+  } catch (error) {
+    console.error('Error resetting session:', error)
+    throw error
+  }
+}
 
-// Example structure for getResults
-// export const getBacktestResults = async (sessionId: string): Promise<any> => {
-//   const url = `${API_BASE_URL}/api/v0/results/${sessionId}`;
-//   // ... fetch logic ...
-// };
+/**
+ * Retrieves the raw JSON backtest results for a specific chat session.
+ * @param sessionId The unique identifier for the chat session.
+ * @returns A promise that resolves with the backtest results JSON.
+ */
+export const getBacktestResults = async (
+  sessionId: string,
+): Promise<BacktestResultsJsonResponse> => {
+  const url = `${API_BASE_URL}/results/${sessionId}`
+  try {
+    const response = await fetch(url, { method: 'GET' })
+    const responseData = await response.json()
+    if (!response.ok) {
+      console.error(`API Error (${response.status}):`, responseData)
+      throw new Error(
+        `API request failed with status ${response.status}: ${responseData?.detail || response.statusText}`,
+      )
+    }
+    // Consider adding validation if the JSON structure is known
+    return responseData as BacktestResultsJsonResponse
+  } catch (error) {
+    console.error('Error fetching backtest results:', error)
+    throw error
+  }
+}
