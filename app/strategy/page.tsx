@@ -11,6 +11,7 @@ import { useStrategyStore } from '@/stores/strategyStore'
 import {
   getBacktestResults,
   type BacktestResultsJsonResponse,
+  type PlotlyDataObject,
 } from '@/lib/backtest.api'
 
 export default function StrategyPage() {
@@ -37,7 +38,7 @@ export default function StrategyPage() {
     isLoading: isLoadingResultsJson,
     error: errorResultsJson,
     isSuccess,
-  } = useQuery<BacktestResultsJsonResponse, Error>({
+  } = useQuery<PlotlyDataObject, Error>({
     queryKey: ['backtestResultsJson', sessionId],
     queryFn: () => {
       if (!sessionId) {
@@ -53,11 +54,22 @@ export default function StrategyPage() {
   useEffect(() => {
     if (isSuccess && fetchedResultsJson) {
       if (!backtestResultsJson) {
-        console.log(
-          'Fetched backtest results JSON via useEffect:',
-          fetchedResultsJson,
+        console.log('Fetched backtest results JSON:', fetchedResultsJson)
+
+        const filteredDataArray = fetchedResultsJson.data.filter(
+          (trace: any) =>
+            trace &&
+            typeof trace === 'object' &&
+            (trace.name === 'Value' || trace.name === 'Benchmark'),
         )
-        setBacktestResultsJson(fetchedResultsJson)
+
+        const filteredPlotlyData: PlotlyDataObject = {
+          ...fetchedResultsJson,
+          data: filteredDataArray,
+        }
+
+        console.log('Filtered Plotly data:', filteredPlotlyData)
+        setBacktestResultsJson(filteredPlotlyData)
       }
     }
   }, [

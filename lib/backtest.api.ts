@@ -38,7 +38,8 @@ interface ResetSessionResponse {
   message: string
 }
 
-interface PlotlyDataObject {
+// Export the interface
+export interface PlotlyDataObject {
   data: Array<Record<string, unknown>>
   layout: Record<string, unknown>
 }
