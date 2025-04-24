@@ -1,21 +1,91 @@
-"use client"
+'use client'
 
-import { useState } from "react"
-import { Upload, Save } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import AICollaboration from "@/components/strategy/ai-collaboration"
-import BacktestingResults from "@/components/strategy/backtesting-results"
+import { useEffect, useState } from 'react'
+import { v4 as uuidv4 } from 'uuid'
+import { useQuery } from '@tanstack/react-query'
+import { Upload, Save } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import AICollaboration from '@/components/strategy/ai-collaboration'
+import BacktestingResults from '@/components/strategy/backtesting-results'
+import { useStrategyStore } from '@/stores/strategyStore'
+import {
+  getBacktestResults,
+  type BacktestResultsJsonResponse,
+  type PlotlyDataObject,
+} from '@/lib/backtest.api'
 
 export default function StrategyPage() {
+  const sessionId = useStrategyStore((state) => state.sessionId)
+  const setSessionId = useStrategyStore((state) => state.setSessionId)
+  const backtestResults = useStrategyStore((state) => state.backtestResults)
+  const backtestResultsJson = useStrategyStore(
+    (state) => state.backtestResultsJson,
+  )
+  const setBacktestResultsJson = useStrategyStore(
+    (state) => state.setBacktestResultsJson,
+  )
+
   const [showCode, setShowCode] = useState(false)
+
+  useEffect(() => {
+    if (!sessionId) {
+      setSessionId(uuidv4())
+    }
+  }, [sessionId, setSessionId])
+
+  const {
+    data: fetchedResultsJson,
+    isLoading: isLoadingResultsJson,
+    error: errorResultsJson,
+    isSuccess,
+  } = useQuery<PlotlyDataObject, Error>({
+    queryKey: ['backtestResultsJson', sessionId],
+    queryFn: () => {
+      if (!sessionId) {
+        return Promise.reject(new Error('Session ID is required'))
+      }
+      return getBacktestResults(sessionId)
+    },
+    enabled: !!sessionId && !!backtestResults && !backtestResultsJson,
+    staleTime: Number.POSITIVE_INFINITY,
+    refetchOnWindowFocus: false,
+  })
+
+  useEffect(() => {
+    if (isSuccess && fetchedResultsJson) {
+      if (!backtestResultsJson) {
+        console.log(
+          'Fetched backtest results JSON (Saving full data):',
+          fetchedResultsJson,
+        )
+        setBacktestResultsJson(fetchedResultsJson)
+      }
+    }
+  }, [
+    isSuccess,
+    fetchedResultsJson,
+    setBacktestResultsJson,
+    backtestResultsJson,
+  ])
+
+  useEffect(() => {
+    if (errorResultsJson) {
+      console.error('Error fetching backtest results JSON:', errorResultsJson)
+    }
+  }, [errorResultsJson])
 
   return (
     <div className="min-h-screen bg-black text-white pt-20 pb-10">
       <div className="container mx-auto px-4 max-w-full">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold gradient-text">Strategy Development & Backtesting</h1>
-            <p className="text-zinc-400 mt-2">Create, test, and optimize your trading strategies with AI assistance</p>
+            <h1 className="text-3xl font-bold gradient-text">
+              Strategy Development & Backtesting
+            </h1>
+            <p className="text-zinc-400 mt-2">
+              Create, test, and optimize your trading strategies with AI
+              assistance
+            </p>
           </div>
           <div className="flex gap-4">
             <Button
@@ -41,7 +111,13 @@ export default function StrategyPage() {
 
           {/* Right side - AI Collaboration */}
           <div className="lg:w-2/5 overflow-hidden flex flex-col">
-            <AICollaboration />
+            {sessionId ? (
+              <AICollaboration sessionId={sessionId} />
+            ) : (
+              <div className="flex justify-center items-center h-full">
+                Generating session...
+              </div>
+            )}
           </div>
         </div>
       </div>
