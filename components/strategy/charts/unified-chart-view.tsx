@@ -120,7 +120,7 @@ export default function UnifiedChartView() {
               Price, trades, and equity curve aligned on the same timeline
             </CardDescription>
           </div>
-          <div className="flex items-center gap-2">
+          {/* <div className="flex items-center gap-2">
             <Select value={timeRange} onValueChange={setTimeRange}>
               <SelectTrigger className="w-[120px] bg-zinc-900/50 border-zinc-700 text-zinc-300">
                 <SelectValue placeholder="Time Range" />
@@ -133,13 +133,13 @@ export default function UnifiedChartView() {
                 <SelectItem value="all">All Time</SelectItem>
               </SelectContent>
             </Select>
-          </div>
+          </div> */}
         </div>
       </CardHeader>
       <CardContent>
         <div className="bg-zinc-900/70 rounded-lg p-4">
           <PlotlyChartView data={filteredDataForDisplay} />
-          <div className="mt-4 grid grid-cols-3 gap-4">
+          {/* <div className="mt-4 grid grid-cols-3 gap-4">
             <div className="glass-card p-4 rounded-lg">
               <div className="text-sm text-zinc-400 mb-1">Current Position</div>
               <div className="text-lg font-semibold text-green-400">Long</div>
@@ -152,7 +152,7 @@ export default function UnifiedChartView() {
               <div className="text-sm text-zinc-400 mb-1">Current P&L</div>
               <div className="text-lg font-semibold text-red-400">-1.3%</div>
             </div>
-          </div>
+          </div> */}
         </div>
       </CardContent>
     </Card>
