@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useRef } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import type { ChatMessage } from '@/types/strategy-development'
 import { postChatMessage } from '@/lib/backtest.api'
@@ -8,6 +8,7 @@ type UseChatResponse = {
   postChat: (input: string) => void
   isPending: boolean
   error: Error | null
+  cancelRequest: () => void
 }
 
 type UseChatProps = {
@@ -16,17 +17,23 @@ type UseChatProps = {
 
 export default function useChat({ sessionId }: UseChatProps): UseChatResponse {
   const queryClient = useQueryClient()
+  const abortControllerRef = useRef<AbortController | null>(null)
 
   const addMessage = useStrategyStore((state) => state.addMessage)
   const setParams = useStrategyStore((state) => state.setParams)
   const setResults = useStrategyStore((state) => state.setResults)
 
   const chatMutation = useMutation({
-    mutationFn: (input: string) => {
+    mutationFn: async (input: string) => {
       if (!sessionId) {
         throw new Error('Session ID is required for chat mutation.')
       }
-      return postChatMessage(sessionId, input)
+      
+      // Create a new AbortController for this request
+      abortControllerRef.current = new AbortController();
+      const signal = abortControllerRef.current.signal;
+      
+      return postChatMessage(sessionId, input, signal);
     },
     onMutate: async (input: string) => {
       const userMessage: ChatMessage = {
@@ -65,6 +72,12 @@ export default function useChat({ sessionId }: UseChatProps): UseChatResponse {
       }
     },
     onError: (error: Error, variables, context) => {
+      // Skip adding error message if it was cancelled intentionally
+      if (error.name === 'AbortError') {
+        console.log('Request was cancelled');
+        return;
+      }
+      
       console.error('Chat Mutation Network/Fetch Error:', error.message)
     },
   })
@@ -75,10 +88,32 @@ export default function useChat({ sessionId }: UseChatProps): UseChatResponse {
     },
     [chatMutation],
   )
+  
+  const cancelRequest = useCallback(() => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort('User cancelled request');
+      abortControllerRef.current = null;
+      
+      // Reset the mutation state
+      chatMutation.reset();
+      
+      // Optionally add a system message indicating cancellation
+      const cancelMessage: ChatMessage = {
+        agent: 'strategist',
+        message: "_Request cancelled by user_",
+        timestamp: new Date().toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+        }),
+      }
+      addMessage(cancelMessage);
+    }
+  }, [addMessage, chatMutation]);
 
   return {
     postChat,
     isPending: chatMutation.isPending,
     error: chatMutation.error,
+    cancelRequest,
   }
 }

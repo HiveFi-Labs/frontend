@@ -44,7 +44,7 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
   const conversations = useStrategyStore((state) => state.messages)
   const resetSessionState = useStrategyStore((state) => state.resetSessionState)
 
-  const { postChat, isPending, error } = useChat({ sessionId })
+  const { postChat, isPending, error, cancelRequest } = useChat({ sessionId })
 
   useEffect(() => {
     if (messagesContainerRef.current) {
@@ -63,6 +63,10 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
   const handleResetConversation = () => {
     console.log('Resetting session:', sessionId)
     resetSessionState()
+  }
+
+  const handleCancelRequest = () => {
+    cancelRequest()
   }
 
   return (
@@ -240,22 +244,36 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
               }}
             />
             <div className="absolute bottom-2 right-2">
-              <Button
-                className="h-8 w-8 rounded-full gradient-button p-0 flex items-center justify-center"
-                onClick={handleSendMessage}
-                disabled={!inputMessage.trim()}
-                aria-label="Send message"
-              >
-                {isPending ? (
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                ) : (
+              {isPending ? (
+                <Button
+                  className="h-8 w-8 rounded-full bg-red-400 hover:bg-red-500 p-0 flex items-center justify-center"
+                  onClick={handleCancelRequest}
+                  aria-label="Cancel request"
+                >
+                  <div className="w-4 h-4 flex items-center justify-center">
+                    <span className="text-white text-xs font-bold">✕</span>
+                  </div>
+                </Button>
+              ) : (
+                <Button
+                  className="h-8 w-8 rounded-full gradient-button p-0 flex items-center justify-center"
+                  onClick={handleSendMessage}
+                  disabled={!inputMessage.trim()}
+                  aria-label="Send message"
+                >
                   <ArrowRight className="w-4 h-4" />
-                )}
-              </Button>
+                </Button>
+              )}
             </div>
           </div>
+          {isPending && (
+            <div className="text-xs text-zinc-400 mt-1 text-center">
+              You can cancel the request or continue typing while waiting
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
   )
 }
+

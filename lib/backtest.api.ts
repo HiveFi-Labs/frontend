@@ -50,11 +50,13 @@ export type BacktestResultsJsonResponse = PlotlyDataObject
  * Sends a message to the chat API endpoint.
  * @param sessionId The unique identifier for the chat session.
  * @param message The user's message content.
+ * @param signal An optional AbortSignal to cancel the request
  * @returns A promise that resolves with the API response.
  */
 export const postChatMessage = async (
   sessionId: string,
   message: string,
+  signal?: AbortSignal
 ): Promise<ChatResponse> => {
   // Construct URL using the updated base URL
   const url = `${API_BASE_URL}/chat/${sessionId}`
@@ -67,6 +69,7 @@ export const postChatMessage = async (
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(payload),
+      signal: signal,
     })
 
     const responseData = await response.json()
