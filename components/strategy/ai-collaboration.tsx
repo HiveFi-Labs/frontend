@@ -148,7 +148,7 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
                 className={`glass-card p-3 rounded-xl max-w-[85%] ${message.agent === 'user' ? 'bg-purple-900/30' : 'bg-zinc-900/30'}`}
               >
                 <div className="flex justify-between items-start mb-1">
-                  <span className="text-sm font-semibold capitalize">
+                  <span className="text-sm font-semibold capitalize mr-2">
                     {message.agent === 'user' ? 'You' : message.agent}
                   </span>
                   <span className="text-xs text-zinc-500">
@@ -215,7 +215,6 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
                   <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
                   <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse delay-150"></div>
                   <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse delay-300"></div>
-                  <span className="text-xs text-zinc-400 ml-1">Generating response...</span>
                 </div>
               </div>
             </div>
