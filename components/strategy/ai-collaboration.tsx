@@ -56,8 +56,8 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
     if (!inputMessage.trim() || isPending) return
 
     const messageToSend = inputMessage
-    setInputMessage('')
     postChat(messageToSend)
+    setInputMessage('')
   }
 
   const handleResetConversation = () => {
@@ -240,6 +240,7 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
                 if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault()
                   handleSendMessage()
+                  setTimeout(() => setInputMessage(''), 0)
                 }
               }}
             />
@@ -257,7 +258,10 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
               ) : (
                 <Button
                   className="h-8 w-8 rounded-full gradient-button p-0 flex items-center justify-center"
-                  onClick={handleSendMessage}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleSendMessage();
+                  }}
                   disabled={!inputMessage.trim()}
                   aria-label="Send message"
                 >
@@ -266,11 +270,6 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
               )}
             </div>
           </div>
-          {isPending && (
-            <div className="text-xs text-zinc-400 mt-1 text-center">
-              You can cancel the request or continue typing while waiting
-            </div>
-          )}
         </div>
       </CardContent>
     </Card>
