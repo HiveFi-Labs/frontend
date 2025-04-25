@@ -26,6 +26,7 @@ export default function StrategyPage() {
   )
 
   const [showCode, setShowCode] = useState(false)
+  const [splitRatio, setSplitRatio] = useState(60)
 
   useEffect(() => {
     if (!sessionId) {
@@ -74,6 +75,16 @@ export default function StrategyPage() {
     }
   }, [errorResultsJson])
 
+  const handleResize = (e: MouseEvent) => {
+    const splitContainer = document.querySelector('.split-container');
+    if (!splitContainer) return;
+    
+    const containerWidth = splitContainer.clientWidth;
+    const mouseX = e.clientX - splitContainer.getBoundingClientRect().left;
+    const newRatio = Math.min(Math.max((mouseX / containerWidth) * 100, 20), 80);
+    setSplitRatio(newRatio);
+  };
+
   return (
     <div className="min-h-screen bg-black text-white pt-20 pb-10">
       <div className="container mx-auto px-4 max-w-full">
@@ -103,14 +114,40 @@ export default function StrategyPage() {
         </div>
 
         {/* Split layout: Left side for results, right side for AI chat */}
-        <div className="flex flex-col lg:flex-row gap-6 h-[calc(100vh-100px)] overflow-hidden">
+        <div className="flex flex-col lg:flex-row gap-0 h-[calc(100vh-100px)] overflow-hidden relative split-container">
           {/* Left side - Backtesting Results */}
-          <div className="lg:w-3/5 overflow-auto">
+          <div 
+            className="lg:overflow-auto" 
+            style={{ width: `${splitRatio}%` }}
+          >
             <BacktestingResults showCode={showCode} setShowCode={setShowCode} />
           </div>
 
+          {/* リサイズハンドラー */}
+          <div
+            className="hidden lg:block w-1 bg-zinc-700 hover:bg-blue-500 cursor-col-resize"
+            onMouseDown={(e: React.MouseEvent) => {
+              e.preventDefault(); // ドラッグ操作を防止
+              
+              const handleMouseMove = (moveEvent: MouseEvent) => {
+                handleResize(moveEvent);
+              };
+              
+              const handleMouseUp = () => {
+                document.removeEventListener('mousemove', handleMouseMove);
+                document.removeEventListener('mouseup', handleMouseUp);
+              };
+              
+              document.addEventListener('mousemove', handleMouseMove);
+              document.addEventListener('mouseup', handleMouseUp);
+            }}
+          />
+
           {/* Right side - AI Collaboration */}
-          <div className="lg:w-2/5 overflow-hidden flex flex-col">
+          <div 
+            className="lg:overflow-hidden flex flex-col" 
+            style={{ width: `${100 - splitRatio}%` }}
+          >
             {sessionId ? (
               <AICollaboration sessionId={sessionId} />
             ) : (
