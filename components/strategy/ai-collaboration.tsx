@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import {
   Settings,
   MessageSquare,
@@ -39,11 +39,18 @@ interface AICollaborationProps {
 export default function AICollaboration({ sessionId }: AICollaborationProps) {
   const [activeAgent] = useState('strategist')
   const [inputMessage, setInputMessage] = useState('')
+  const messagesContainerRef = useRef<HTMLDivElement>(null)
 
   const conversations = useStrategyStore((state) => state.messages)
   const resetSessionState = useStrategyStore((state) => state.resetSessionState)
 
   const { postChat, isPending, error } = useChat({ sessionId })
+
+  useEffect(() => {
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight
+    }
+  }, [conversations])
 
   const handleSendMessage = () => {
     if (!inputMessage.trim() || isPending) return
@@ -108,6 +115,7 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
       </CardHeader>
       <CardContent className="flex-1 flex flex-col h-full overflow-hidden">
         <div
+          ref={messagesContainerRef}
           className="flex-1 overflow-y-auto pr-2 space-y-4 mb-4"
           style={{ maxHeight: 'calc(100vh - 350px)' }}
         >
