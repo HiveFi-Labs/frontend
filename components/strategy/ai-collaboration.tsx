@@ -200,6 +200,23 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
               )}
             </div>
           ))}
+          
+          {isPending && (
+            <div className="flex gap-3">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-blue-500 flex items-center justify-center flex-shrink-0">
+                <Lightbulb className="w-4 h-4 text-white" />
+              </div>
+              <div className="glass-card p-3 rounded-xl max-w-[85%] bg-zinc-900/30">
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+                  <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse delay-150"></div>
+                  <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse delay-300"></div>
+                  <span className="text-xs text-zinc-400 ml-1">Generating response...</span>
+                </div>
+              </div>
+            </div>
+          )}
+          
           {error && (
             <div className="text-red-500 text-sm p-2 text-center">
               Failed to get response: {error.message}
@@ -215,9 +232,8 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
               rows={2}
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
-              disabled={isPending}
               onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey && !isPending) {
+                if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault()
                   handleSendMessage()
                 }
@@ -227,7 +243,7 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
               <Button
                 className="h-8 w-8 rounded-full gradient-button p-0 flex items-center justify-center"
                 onClick={handleSendMessage}
-                disabled={isPending || !inputMessage.trim()}
+                disabled={!inputMessage.trim()}
                 aria-label="Send message"
               >
                 {isPending ? (
