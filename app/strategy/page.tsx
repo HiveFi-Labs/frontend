@@ -114,10 +114,10 @@ export default function StrategyPage() {
         </div>
 
         {/* Split layout: Left side for results, right side for AI chat */}
-        <div className="flex flex-col lg:flex-row gap-0 h-[calc(100vh-100px)] overflow-hidden relative split-container">
+        <div className="flex flex-col lg:flex-row gap-0 h-[calc(100vh-180px)] overflow-hidden relative split-container">
           {/* Left side - Backtesting Results */}
           <div 
-            className="lg:overflow-auto" 
+            className="lg:overflow-hidden flex flex-col" 
             style={{ width: `${splitRatio}%` }}
           >
             <BacktestingResults showCode={showCode} setShowCode={setShowCode} />
@@ -125,7 +125,7 @@ export default function StrategyPage() {
 
           {/* リサイズハンドラー */}
           <div
-            className="hidden lg:block w-1 bg-zinc-700 hover:bg-blue-500 cursor-col-resize"
+            className="hidden lg:block w-1 cursor-col-resize"
             onMouseDown={(e: React.MouseEvent) => {
               e.preventDefault(); // ドラッグ操作を防止
               
