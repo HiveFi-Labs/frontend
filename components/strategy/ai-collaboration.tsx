@@ -10,6 +10,7 @@ import {
   RefreshCw,
   ArrowRight,
   Sliders,
+  Trash2,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -27,7 +28,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import type { ChatMessage } from '@/types/strategy-development'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import useChat from '@/hooks/useChat'
 import { useStrategyStore } from '@/stores/strategyStore'
 import ReactMarkdown from 'react-markdown'
@@ -39,6 +46,11 @@ interface AICollaborationProps {
 export default function AICollaboration({ sessionId }: AICollaborationProps) {
   const [activeAgent] = useState('strategist')
   const [inputMessage, setInputMessage] = useState('')
+  const [tradingPair, setTradingPair] = useState('solusdc')
+  const [timeframe, setTimeframe] = useState('1h')
+  const [startDate, setStartDate] = useState('2023-01-01')
+  const [endDate, setEndDate] = useState('2023-12-31')
+
   const messagesContainerRef = useRef<HTMLDivElement>(null)
 
   const conversations = useStrategyStore((state) => state.messages)
@@ -48,7 +60,8 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
 
   useEffect(() => {
     if (messagesContainerRef.current) {
-      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight
+      messagesContainerRef.current.scrollTop =
+        messagesContainerRef.current.scrollHeight
     }
   }, [conversations])
 
@@ -69,54 +82,107 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
     cancelRequest()
   }
 
+  const tradingPairDisplay: Record<string, string> = {
+    btcusdt: 'BTC/USDT',
+    ethusdt: 'ETH/USDT',
+    solusdc: 'SOL/USDC',
+    bnbusdt: 'BNB/USDT',
+  }
+
+  const timeframeDisplay: Record<string, string> = {
+    '5m': '5m',
+    '15m': '15m',
+    '1h': '1h',
+    '4h': '4h',
+    '1d': '1d',
+  }
+
   return (
     <Card className="glass-card overflow-hidden h-full flex flex-col mt-2">
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-xl">Strategy Development</CardTitle>
+      {/* Status Bar */}
+      <div className="bg-zinc-900/80 border-b border-zinc-800 py-2 px-4 flex items-center justify-between">
+        <div className="flex items-center text-xs">
+          <div className="flex items-center">
+            <Select value={tradingPair} onValueChange={setTradingPair}>
+              <SelectTrigger className="bg-transparent border-0 text-zinc-300 h-6 p-0 min-w-20 w-auto text-xs font-medium hover:text-purple-400 transition-colors">
+                <SelectValue>{tradingPairDisplay[tradingPair]}</SelectValue>
+              </SelectTrigger>
+              <SelectContent className="bg-zinc-900 border-zinc-800">
+                <SelectItem value="btcusdt">BTC/USDT</SelectItem>
+                <SelectItem value="ethusdt">ETH/USDT</SelectItem>
+                <SelectItem value="solusdc">SOL/USDC</SelectItem>
+                <SelectItem value="bnbusdt">BNB/USDT</SelectItem>
+              </SelectContent>
+            </Select>
+            <span className="text-zinc-500 mx-2">|</span>
+          </div>
+
+          <div className="flex items-center">
+            <Select value={timeframe} onValueChange={setTimeframe}>
+              <SelectTrigger className="bg-transparent border-0 text-zinc-300 h-6 p-0 min-w-8 w-auto text-xs font-medium hover:text-purple-400 transition-colors">
+                <SelectValue>{timeframeDisplay[timeframe]}</SelectValue>
+              </SelectTrigger>
+              <SelectContent className="bg-zinc-900 border-zinc-800">
+                <SelectItem value="5m">5m</SelectItem>
+                <SelectItem value="15m">15m</SelectItem>
+                <SelectItem value="1h">1h</SelectItem>
+                <SelectItem value="4h">4h</SelectItem>
+                <SelectItem value="1d">1d</SelectItem>
+              </SelectContent>
+            </Select>
+            <span className="text-zinc-500 mx-2">|</span>
+          </div>
+
+          <div className="flex items-center">
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="bg-transparent text-zinc-300 border-0 p-0 w-auto text-xs font-medium hover:text-purple-400 transition-colors"
+            />
+            <span className="text-zinc-500 mx-2">→</span>
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              className="bg-transparent text-zinc-300 border-0 p-0 w-auto text-xs font-medium hover:text-purple-400 transition-colors"
+            />
+          </div>
+        </div>
+
+        {/* 設定ボタン */}
+        <div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8"
-                disabled={isPending}
+                className="h-6 w-6 text-zinc-400 hover:text-purple-400 transition-colors"
               >
-                <Settings className="h-4 w-4" />
+                <Settings className="h-3.5 w-3.5" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align="end"
               className="bg-zinc-900 border-zinc-800"
             >
-              <DropdownMenuLabel>Settings</DropdownMenuLabel>
+              <DropdownMenuLabel className="text-xs">
+                Chat Settings
+              </DropdownMenuLabel>
               <DropdownMenuSeparator className="bg-zinc-800" />
               <DropdownMenuItem
-                className="text-zinc-300 focus:text-white focus:bg-zinc-800 cursor-pointer"
+                className="text-xs text-zinc-300 focus:text-white focus:bg-zinc-800 cursor-pointer"
                 onClick={handleResetConversation}
                 disabled={isPending}
               >
-                Reset Conversation
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className="text-zinc-300 focus:text-white focus:bg-zinc-800"
-                disabled
-              >
-                Change Agent Behavior
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className="text-zinc-300 focus:text-white focus:bg-zinc-800"
-                disabled
-              >
-                Export Conversation
+                <Trash2 className="h-3.5 w-3.5 mr-2 text-zinc-400" />
+                Clear Chat
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <CardDescription className="text-zinc-400">
-          Configure and develop your trading strategy with AI assistance
-        </CardDescription>
-      </CardHeader>
+      </div>
+
       <CardContent className="flex-1 flex flex-col h-full overflow-hidden">
         <div
           ref={messagesContainerRef}
@@ -204,7 +270,7 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
               )}
             </div>
           ))}
-          
+
           {isPending && (
             <div className="flex gap-3">
               <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-blue-500 flex items-center justify-center flex-shrink-0">
@@ -219,7 +285,7 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
               </div>
             </div>
           )}
-          
+
           {error && (
             <div className="text-red-500 text-sm p-2 text-center">
               Failed to get response: {error.message}
@@ -258,8 +324,8 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
                 <Button
                   className="h-8 w-8 rounded-full gradient-button p-0 flex items-center justify-center"
                   onClick={(e) => {
-                    e.preventDefault();
-                    handleSendMessage();
+                    e.preventDefault()
+                    handleSendMessage()
                   }}
                   disabled={!inputMessage.trim()}
                   aria-label="Send message"
@@ -274,4 +340,3 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
     </Card>
   )
 }
-
