@@ -70,7 +70,7 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
   }
 
   return (
-    <Card className="glass-card overflow-hidden h-full flex flex-col">
+    <Card className="glass-card overflow-hidden h-full flex flex-col mt-2">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-xl">Strategy Development</CardTitle>
