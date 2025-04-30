@@ -192,7 +192,7 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
           {conversations.map((message, index) => (
             <div
               key={`${message.agent}-${message.timestamp}-${index}`}
-              className={`flex gap-3 ${message.agent === 'user' ? 'justify-end' : ''}`}
+              className={`flex gap-3 mt-3 ${message.agent === 'user' ? 'justify-end' : ''}`}
             >
               {message.agent !== 'user' && (
                 <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-blue-500 flex items-center justify-center flex-shrink-0">

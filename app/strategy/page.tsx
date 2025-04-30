@@ -84,6 +84,18 @@ export default function StrategyPage() {
     setSplitRatio(newRatio);
   };
 
+  const showSplitLayout = !!backtestResults || !!backtestResultsJson;
+
+  // バックテスト開始時にsplitRatioを調整
+  useEffect(() => {
+    if (backtestResults || backtestResultsJson) {
+      setSplitRatio(50); // バックテスト結果が揃った時に50%に設定
+    } else {
+      setSplitRatio(100); // バックテスト未開始時はチャットUIを100%に
+    }
+  }, [backtestResults, backtestResultsJson]);
+
+  console.log('backtestResults', backtestResults)
   return (
     <div className="min-h-screen bg-black text-white pt-20 pb-10">
       <div className="container mx-auto px-4 max-w-full">
@@ -112,12 +124,12 @@ export default function StrategyPage() {
           </div>
         </div>
 
-        {/* Split layout: Left side for AI chat, right side for results */}
-        <div className="flex flex-col lg:flex-row gap-0 h-[calc(100vh-180px)] overflow-hidden relative split-container">
+        {/* 条件付きレイアウト - showSplitLayoutがfalseの時は中央配置と最大幅制限 */}
+        <div className={`flex flex-row gap-0 max-h-[calc(100vh-180px)] min-h-[calc(40vh)] overflow-hidden relative split-container ${!showSplitLayout ? 'justify-center' : ''}`}>
           {/* Left side - AI Collaboration */}
           <div 
-            className="lg:overflow-hidden flex flex-col" 
-            style={{ width: `${splitRatio}%` }}
+            className={`overflow-hidden flex flex-col ${!showSplitLayout ? 'max-w-3xl' : ''}`} 
+            style={{ width: showSplitLayout ? `${splitRatio}%` : '100%' }}
           >
             {sessionId ? (
               <AICollaboration sessionId={sessionId} />
@@ -128,33 +140,37 @@ export default function StrategyPage() {
             )}
           </div>
 
-          {/* リサイズハンドラー */}
-          <div
-            className="hidden lg:block w-1 cursor-col-resize"
-            onMouseDown={(e: React.MouseEvent) => {
-              e.preventDefault(); // ドラッグ操作を防止
-              
-              const handleMouseMove = (moveEvent: MouseEvent) => {
-                handleResize(moveEvent);
-              };
-              
-              const handleMouseUp = () => {
-                document.removeEventListener('mousemove', handleMouseMove);
-                document.removeEventListener('mouseup', handleMouseUp);
-              };
-              
-              document.addEventListener('mousemove', handleMouseMove);
-              document.addEventListener('mouseup', handleMouseUp);
-            }}
-          />
+          {/* リサイズハンドラー - showSplitLayoutがtrueの時のみ表示 */}
+          {showSplitLayout && (
+            <div
+              className="w-1 cursor-col-resize"
+              onMouseDown={(e: React.MouseEvent) => {
+                e.preventDefault();
+                
+                const handleMouseMove = (moveEvent: MouseEvent) => {
+                  handleResize(moveEvent);
+                };
+                
+                const handleMouseUp = () => {
+                  document.removeEventListener('mousemove', handleMouseMove);
+                  document.removeEventListener('mouseup', handleMouseUp);
+                };
+                
+                document.addEventListener('mousemove', handleMouseMove);
+                document.addEventListener('mouseup', handleMouseUp);
+              }}
+            />
+          )}
 
-          {/* Right side - Backtesting Results */}
-          <div 
-            className="lg:overflow-hidden flex flex-col" 
-            style={{ width: `${100 - splitRatio}%` }}
-          >
-            <BacktestingResults />
-          </div>
+          {/* Right side - Backtesting Results - showSplitLayoutがtrueの時のみ表示 */}
+          {showSplitLayout && (
+            <div 
+              className="overflow-hidden flex flex-col" 
+              style={{ width: `${100 - splitRatio}%` }}
+            >
+              <BacktestingResults />
+            </div>
+          )}
         </div>
       </div>
     </div>
