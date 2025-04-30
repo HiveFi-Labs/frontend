@@ -1,6 +1,7 @@
 import HeroSection from '@/components/home/hero-section'
 import FeatureGrid from '@/components/home/feature-grid'
 import WaitlistSection from '@/components/waitlist/waitlist-section'
+import VideoUpdateSection from '@/components/home/video-update-section'
 
 export default function Home() {
   return (
@@ -33,6 +34,10 @@ export default function Home() {
           <FeatureGrid />
         </div>
       </section>
+
+
+      {/* Video Update Section */}
+      <VideoUpdateSection />
 
       {/* Problems & Solutions */}
       {/* <section id="problems" className="py-20 relative">
