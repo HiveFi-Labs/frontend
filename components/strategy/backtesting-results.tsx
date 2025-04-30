@@ -87,13 +87,12 @@ export default function BacktestingResults() {
           {activeView === 'preview' ? (
             <>
               {/* Unified Chart View - Shows price, trades, and equity on the same timeline */}
-              <UnifiedChartView />
+              <TradeHistory />
 
               {/* Performance Metrics */}
               <PerformanceMetrics />
 
               {/* Trade History */}
-              <TradeHistory />
 
               {/* Parameter Optimization */}
               <ParameterOptimization />

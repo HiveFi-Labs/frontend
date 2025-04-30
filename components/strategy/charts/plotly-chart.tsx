@@ -17,7 +17,7 @@ export default function PlotlyChartView({
   data,
   title = 'Chart',
   description,
-  height = 600,
+  height = 400,
 }: PlotlyChartProps) {
   const layout = data?.layout || {}
 
@@ -30,7 +30,7 @@ export default function PlotlyChartView({
       family: 'Inter, sans-serif',
       color: '#d4d4d8', // zinc-300
     },
-    margin: layout.margin || { t: 50, b: 40, l: 50, r: 30 }, // Adjusted margins
+    margin: layout.margin || { t: 10, b: 10, l: 50, r: 30 }, // Adjusted margins
     autosize: true,
     height: height, // Use prop height
     xaxis: layout.xaxis
@@ -76,11 +76,12 @@ export default function PlotlyChartView({
     <div className="w-full" style={{ height: `${height}px` }}>
       <Plot
         data={data?.data || []}
-        layout={customLayout}
+        layout={{ ...customLayout, dragmode: 'pan' }}
         config={{
           responsive: true,
           displayModeBar: true,
           displaylogo: false,
+          scrollZoom: true, 
           modeBarButtonsToRemove: ['lasso2d', 'select2d', 'toggleSpikelines'],
         }}
         className="w-full h-full"
