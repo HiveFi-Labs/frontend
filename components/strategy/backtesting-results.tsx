@@ -1,38 +1,73 @@
-"use client"
+'use client'
 
-import { useState } from "react"
-import { Play, Pause, Code } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import StrategyCode from "@/components/strategy/strategy-code-modal"
-import UnifiedChartView from "@/components/strategy/charts/unified-chart-view"
-import PerformanceMetrics from "@/components/strategy/performance-metrics"
-import TradeHistory from "@/components/strategy/trade-history"
-import ParameterOptimization from "@/components/strategy/parameter-optimization"
+import { useState } from 'react'
+import { Play, Pause, Code, MonitorSmartphone } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import StrategyCode from '@/components/strategy/strategy-code'
+import UnifiedChartView from '@/components/strategy/charts/unified-chart-view'
+import PerformanceMetrics from '@/components/strategy/performance-metrics'
+import TradeHistory from '@/components/strategy/trade-history'
+import ParameterOptimization from '@/components/strategy/parameter-optimization'
 
-export default function BacktestingResults({ showCode, setShowCode }) {
+export default function BacktestingResults() {
   const [isRunningBacktest, setIsRunningBacktest] = useState(false)
+  const [activeView, setActiveView] = useState('preview')
+
+  // activeViewの変更を検知して親コンポーネントのshowCodeを更新
+  const handleViewChange = (value: string) => {
+    setActiveView(value)
+  }
 
   return (
     <>
       <Card className="glass-card overflow-hidden h-full flex flex-col mt-2">
-        <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-xl">Backtesting Results</CardTitle>
+        <CardHeader className="pt-2 pb-3">
+          {/* View Toggle Tabs */}
+          <div className="mt-1">
+            <Tabs
+              value={activeView}
+              onValueChange={handleViewChange}
+              className="w-full"
+            >
+              <TabsList className="grid w-[240px] grid-cols-2 bg-zinc-800/50 backdrop-blur-sm">
+                <TabsTrigger
+                  value="preview"
+                  className="flex items-center gap-2 data-[state=active]:bg-zinc-700"
+                >
+                  <MonitorSmartphone className="w-4 h-4" />
+                  Backtest
+                </TabsTrigger>
+                <TabsTrigger
+                  value="code"
+                  className="flex items-center gap-2 data-[state=active]:bg-zinc-700"
+                >
+                  <Code className="w-4 h-4" />
+                  Code
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
+        </CardHeader>
+
+        <CardContent className="space-y-6 overflow-auto flex-1 pb-6">
+          {/* <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Button
-                variant="outline"
+                variant={isRunningBacktest ? 'destructive' : 'default'}
                 size="sm"
-                className="border-zinc-700 text-zinc-300 hover:bg-zinc-800/50 flex items-center gap-2"
-                onClick={() => setShowCode(true)}
-              >
-                <Code className="w-4 h-4 mr-1" />
-                Edit Code
-              </Button>
-              <Button
-                variant={isRunningBacktest ? "destructive" : "default"}
-                size="sm"
-                className={isRunningBacktest ? "bg-red-600 hover:bg-red-700" : "gradient-button"}
+                className={
+                  isRunningBacktest
+                    ? 'bg-red-600 hover:bg-red-700'
+                    : 'gradient-button'
+                }
                 onClick={() => setIsRunningBacktest(!isRunningBacktest)}
               >
                 {isRunningBacktest ? (
@@ -48,26 +83,28 @@ export default function BacktestingResults({ showCode, setShowCode }) {
                 )}
               </Button>
             </div>
-          </div>
-          <CardDescription className="text-zinc-400">Analyze the performance of your trading strategy</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6 overflow-auto flex-1 pb-6">
-          {/* Unified Chart View - Shows price, trades, and equity on the same timeline */}
-          <UnifiedChartView />
+          </div> */}
+          {activeView === 'preview' ? (
+            <>
+              {/* Unified Chart View - Shows price, trades, and equity on the same timeline */}
+              <UnifiedChartView />
 
-          {/* Performance Metrics */}
-          <PerformanceMetrics />
+              {/* Performance Metrics */}
+              <PerformanceMetrics />
 
-          {/* Trade History */}
-          <TradeHistory />
+              {/* Trade History */}
+              <TradeHistory />
 
-          {/* Parameter Optimization */}
-          <ParameterOptimization />
+              {/* Parameter Optimization */}
+              <ParameterOptimization />
+            </>
+          ) : (
+            <div className="h-full">
+              <StrategyCode />
+            </div>
+          )}
         </CardContent>
       </Card>
-
-      {/* Strategy Code Modal */}
-      {showCode && <StrategyCode onClose={() => setShowCode(false)} />}
     </>
   )
 }

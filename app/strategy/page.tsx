@@ -25,7 +25,6 @@ export default function StrategyPage() {
     (state) => state.setBacktestResultsJson,
   )
 
-  const [showCode, setShowCode] = useState(false)
   const [splitRatio, setSplitRatio] = useState(60)
 
   useEffect(() => {
@@ -120,7 +119,7 @@ export default function StrategyPage() {
             className="lg:overflow-hidden flex flex-col" 
             style={{ width: `${splitRatio}%` }}
           >
-            <BacktestingResults showCode={showCode} setShowCode={setShowCode} />
+            <BacktestingResults />
           </div>
 
           {/* リサイズハンドラー */}

@@ -2,13 +2,6 @@
 
 import { useState } from 'react'
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
-import {
   Select,
   SelectContent,
   SelectItem,
@@ -50,38 +43,38 @@ export default function UnifiedChartView() {
 
   if (!fullChartData) {
     return (
-      <Card className="glass-card">
-        <CardHeader className="pb-2">
+      <div className="bg-zinc-900/60 backdrop-blur-md border border-zinc-800/50 rounded-xl overflow-hidden">
+        <div className="p-4 border-b border-zinc-800/50">
           <div className="flex justify-between items-center">
             <div>
-              <CardTitle className="text-lg text-zinc-300">
+              <h2 className="text-lg font-semibold text-zinc-300">
                 Strategy Performance
-              </CardTitle>
-              <CardDescription>Price, trades, and equity curve</CardDescription>
+              </h2>
+              <p className="text-sm text-zinc-500">Price, trades, and equity curve</p>
             </div>
           </div>
-        </CardHeader>
-        <CardContent>
+        </div>
+        <div className="p-4">
           <div className="h-[600px] flex items-center justify-center text-zinc-500">
             Waiting for backtest results...
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     )
   }
 
   if (!filteredDataForDisplay) {
     return (
-      <Card className="glass-card">
-        <CardHeader className="pb-2">
+      <div className="bg-zinc-900/60 backdrop-blur-md border border-zinc-800/50 rounded-xl overflow-hidden">
+        <div className="p-4 border-b border-zinc-800/50">
           <div className="flex justify-between items-center">
             <div>
-              <CardTitle className="text-lg text-zinc-300">
+              <h2 className="text-lg font-semibold text-zinc-300">
                 Strategy Performance
-              </CardTitle>
-              <CardDescription>
+              </h2>
+              <p className="text-sm text-zinc-500">
                 Price, trades, and equity curve aligned on the same timeline
-              </CardDescription>
+              </p>
             </div>
             <div className="flex items-center gap-2">
               <Select value={timeRange} onValueChange={setTimeRange}>
@@ -98,29 +91,29 @@ export default function UnifiedChartView() {
               </Select>
             </div>
           </div>
-        </CardHeader>
-        <CardContent>
+        </div>
+        <div className="p-4">
           <div className="h-[600px] flex items-center justify-center text-zinc-500">
             No 'Value' or 'Benchmark' data found in results.
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     )
   }
 
   return (
-    <Card className="glass-card">
-      <CardHeader className="pb-2">
+    <div className="bg-zinc-900/60 backdrop-blur-md border border-zinc-800/50 rounded-xl overflow-hidden">
+      <div className="p-4 border-b border-zinc-800/50">
         <div className="flex justify-between items-center">
           <div>
-            <CardTitle className="text-lg text-zinc-300">
+            <h2 className="text-lg font-semibold text-zinc-300">
               Strategy Performance
-            </CardTitle>
-            <CardDescription>
+            </h2>
+            <p className="text-sm text-zinc-500">
               Price, trades, and equity curve aligned on the same timeline
-            </CardDescription>
+            </p>
           </div>
-          {/* <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2">
             <Select value={timeRange} onValueChange={setTimeRange}>
               <SelectTrigger className="w-[120px] bg-zinc-900/50 border-zinc-700 text-zinc-300">
                 <SelectValue placeholder="Time Range" />
@@ -133,28 +126,14 @@ export default function UnifiedChartView() {
                 <SelectItem value="all">All Time</SelectItem>
               </SelectContent>
             </Select>
-          </div> */}
+          </div>
         </div>
-      </CardHeader>
-      <CardContent>
+      </div>
+      <div className="p-4">
         <div className="bg-zinc-900/70 rounded-lg p-4">
           <PlotlyChartView data={filteredDataForDisplay} />
-          {/* <div className="mt-4 grid grid-cols-3 gap-4">
-            <div className="glass-card p-4 rounded-lg">
-              <div className="text-sm text-zinc-400 mb-1">Current Position</div>
-              <div className="text-lg font-semibold text-green-400">Long</div>
-            </div>
-            <div className="glass-card p-4 rounded-lg">
-              <div className="text-sm text-zinc-400 mb-1">Entry Price</div>
-              <div className="text-lg font-semibold text-white">$36,450</div>
-            </div>
-            <div className="glass-card p-4 rounded-lg">
-              <div className="text-sm text-zinc-400 mb-1">Current P&L</div>
-              <div className="text-lg font-semibold text-red-400">-1.3%</div>
-            </div>
-          </div> */}
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }
