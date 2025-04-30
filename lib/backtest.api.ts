@@ -46,6 +46,11 @@ export interface PlotlyDataObject {
 
 export type BacktestResultsJsonResponse = PlotlyDataObject
 
+
+interface CsvGenerationResponse {
+  status: 'success' | 'error';
+}
+
 /**
  * Sends a message to the chat API endpoint.
  * @param sessionId The unique identifier for the chat session.
@@ -164,5 +169,57 @@ export const getBacktestResults = async (
   } catch (error) {
     console.error('Error fetching backtest results:', error)
     throw error
+  }
+}
+
+/**
+ * バックテスト用のCSVデータを生成するリクエストを送信します
+ * @param sessionId セッションの一意識別子
+ * @param symbol トレーディングペア
+ * @param timeframe 時間枠
+ * @param start_date 開始日
+ * @param end_date 終了日
+ * @returns 生成結果を含むレスポンス
+ */
+export const generateCsvData = async (
+  sessionId: string,
+  symbol: string,
+  timeframe: string,
+  start_date: Date,
+  end_date: Date,
+): Promise<CsvGenerationResponse> => {
+  const url = `${API_BASE_URL}/generate-csv/${sessionId}`;
+  
+  const formattedParams = {
+    symbol: symbol,
+    timeframe: timeframe,
+    start_date: start_date.toISOString().split('T')[0],
+    end_date: end_date.toISOString().split('T')[0]
+  };
+
+  console.log("formattedParams", formattedParams);
+  
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formattedParams),
+    });
+    
+    const responseData = await response.json();
+    
+    if (!response.ok) {
+      console.error(`API Error (${response.status}):`, responseData);
+      throw new Error(
+        `API request failed with status ${response.status}: ${responseData?.message || responseData?.detail || response.statusText}`
+      );
+    }
+    
+    return responseData as CsvGenerationResponse;
+  } catch (error) {
+    console.error('CSVデータ生成中にエラーが発生しました:', error);
+    throw error;
   }
 }
