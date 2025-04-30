@@ -25,7 +25,7 @@ export default function StrategyPage() {
     (state) => state.setBacktestResultsJson,
   )
 
-  const [splitRatio, setSplitRatio] = useState(60)
+  const [splitRatio, setSplitRatio] = useState(50)
 
   useEffect(() => {
     if (!sessionId) {
@@ -112,14 +112,20 @@ export default function StrategyPage() {
           </div>
         </div>
 
-        {/* Split layout: Left side for results, right side for AI chat */}
+        {/* Split layout: Left side for AI chat, right side for results */}
         <div className="flex flex-col lg:flex-row gap-0 h-[calc(100vh-180px)] overflow-hidden relative split-container">
-          {/* Left side - Backtesting Results */}
+          {/* Left side - AI Collaboration */}
           <div 
             className="lg:overflow-hidden flex flex-col" 
             style={{ width: `${splitRatio}%` }}
           >
-            <BacktestingResults />
+            {sessionId ? (
+              <AICollaboration sessionId={sessionId} />
+            ) : (
+              <div className="flex justify-center items-center h-full">
+                Generating session...
+              </div>
+            )}
           </div>
 
           {/* リサイズハンドラー */}
@@ -142,18 +148,12 @@ export default function StrategyPage() {
             }}
           />
 
-          {/* Right side - AI Collaboration */}
+          {/* Right side - Backtesting Results */}
           <div 
             className="lg:overflow-hidden flex flex-col" 
             style={{ width: `${100 - splitRatio}%` }}
           >
-            {sessionId ? (
-              <AICollaboration sessionId={sessionId} />
-            ) : (
-              <div className="flex justify-center items-center h-full">
-                Generating session...
-              </div>
-            )}
+            <BacktestingResults />
           </div>
         </div>
       </div>
