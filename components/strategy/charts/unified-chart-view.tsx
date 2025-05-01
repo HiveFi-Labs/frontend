@@ -50,7 +50,9 @@ export default function UnifiedChartView() {
               <h2 className="text-lg font-semibold text-zinc-300">
                 Strategy Performance
               </h2>
-              <p className="text-sm text-zinc-500">Price, trades, and equity curve</p>
+              <p className="text-sm text-zinc-500">
+                Price, trades, and equity curve
+              </p>
             </div>
           </div>
         </div>

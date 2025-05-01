@@ -54,9 +54,9 @@ export default function BacktestingResults() {
               </TabsList>
             </Tabs>
           </div>
-          
+
           {/* Save Strategy Button */}
-          <Button 
+          <Button
             className="gradient-button text-white border-0 h-8 py-3 px-3 text-xs flex items-center gap-1"
             size="sm"
           >

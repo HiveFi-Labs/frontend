@@ -1,23 +1,25 @@
-"use client"
+'use client'
 
-import { useState, useEffect } from "react"
-import { PlusCircle, AlertTriangle } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Slider } from "@/components/ui/slider"
-import { LoadingState } from "@/components/ui/loading-state"
-import { ErrorDisplay } from "@/components/ui/error-display"
-import { useDataFetch } from "@/hooks/use-data-fetch"
-import { portfolioService } from "@/services"
-import StrategyCard from "@/components/strategies/strategy-card"
-import StrategyPreview from "@/components/strategies/strategy-preview"
-import type { Strategy } from "@/types/portfolio"
+import { useState, useEffect } from 'react'
+import { PlusCircle, AlertTriangle } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Slider } from '@/components/ui/slider'
+import { LoadingState } from '@/components/ui/loading-state'
+import { ErrorDisplay } from '@/components/ui/error-display'
+import { useDataFetch } from '@/hooks/use-data-fetch'
+import { portfolioService } from '@/services'
+import StrategyCard from '@/components/strategies/strategy-card'
+import StrategyPreview from '@/components/strategies/strategy-preview'
+import type { Strategy } from '@/types/portfolio'
 
 export default function ActiveStrategies() {
   const [strategies, setStrategies] = useState<Strategy[]>([])
   const [portfolioTotal, setPortfolioTotal] = useState<number>(0)
 
   const [showAllocationModal, setShowAllocationModal] = useState(false)
-  const [selectedStrategy, setSelectedStrategy] = useState<Strategy | null>(null)
+  const [selectedStrategy, setSelectedStrategy] = useState<Strategy | null>(
+    null,
+  )
   const [showPreview, setShowPreview] = useState(false)
   const [newAllocation, setNewAllocation] = useState<number>(0)
 
@@ -78,13 +80,15 @@ export default function ActiveStrategies() {
   }
 
   if (isLoading) {
-    return <LoadingState text="Loading your active strategies..." height={400} />
+    return (
+      <LoadingState text="Loading your active strategies..." height={400} />
+    )
   }
 
   if (error) {
     return (
       <ErrorDisplay
-        message={error.message || "Failed to load strategies"}
+        message={error.message || 'Failed to load strategies'}
         onRetry={refetch}
         title="Strategy Loading Error"
       />
@@ -103,7 +107,9 @@ export default function ActiveStrategies() {
 
       {strategies.length === 0 ? (
         <div className="p-8 text-center bg-zinc-900/30 rounded-lg border border-zinc-800/50">
-          <p className="text-zinc-400 mb-4">You don't have any active strategies yet.</p>
+          <p className="text-zinc-400 mb-4">
+            You don't have any active strategies yet.
+          </p>
           <Button className="gradient-button">
             <PlusCircle className="w-4 h-4 mr-2" />
             Create Your First Strategy
@@ -112,13 +118,22 @@ export default function ActiveStrategies() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {strategies.map((strategy) => (
-            <StrategyCard key={strategy.id} strategy={strategy} onSelect={handleStrategySelect} />
+            <StrategyCard
+              key={strategy.id}
+              strategy={strategy}
+              onSelect={handleStrategySelect}
+            />
           ))}
         </div>
       )}
 
       {/* Strategy Preview Modal */}
-      {showPreview && selectedStrategy && <StrategyPreview strategy={selectedStrategy} onClose={handleClosePreview} />}
+      {showPreview && selectedStrategy && (
+        <StrategyPreview
+          strategy={selectedStrategy}
+          onClose={handleClosePreview}
+        />
+      )}
 
       {/* Allocation Change Modal */}
       {showAllocationModal && selectedStrategy && (
@@ -130,25 +145,43 @@ export default function ActiveStrategies() {
         >
           <div className="bg-zinc-900 rounded-xl w-full max-w-md">
             <div className="p-4 border-b border-zinc-800">
-              <h3 id="allocation-modal-title" className="text-lg font-semibold text-white">
+              <h3
+                id="allocation-modal-title"
+                className="text-lg font-semibold text-white"
+              >
                 Adjust Allocation
               </h3>
-              <p className="text-sm text-zinc-400">Change the allocation for {selectedStrategy.name}</p>
+              <p className="text-sm text-zinc-400">
+                Change the allocation for {selectedStrategy.name}
+              </p>
             </div>
             <div className="p-6 space-y-4">
               <div className="space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-sm text-zinc-400">Current Allocation</span>
+                  <span className="text-sm text-zinc-400">
+                    Current Allocation
+                  </span>
                   <span className="text-sm font-medium text-zinc-300">
-                    ${selectedStrategy.allocation ? selectedStrategy.allocation.toLocaleString() : "0"}
-                    {selectedStrategy.allocationPercent ? ` (${selectedStrategy.allocationPercent}%)` : ""}
+                    $
+                    {selectedStrategy.allocation
+                      ? selectedStrategy.allocation.toLocaleString()
+                      : '0'}
+                    {selectedStrategy.allocationPercent
+                      ? ` (${selectedStrategy.allocationPercent}%)`
+                      : ''}
                   </span>
                 </div>
                 <div className="space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-sm text-zinc-400">New Allocation</span>
+                    <span className="text-sm text-zinc-400">
+                      New Allocation
+                    </span>
                     <span className="text-sm font-medium text-zinc-300">
-                      ${Math.round((newAllocation / 100) * portfolioTotal).toLocaleString()} ({newAllocation.toFixed(1)}
+                      $
+                      {Math.round(
+                        (newAllocation / 100) * portfolioTotal,
+                      ).toLocaleString()}{' '}
+                      ({newAllocation.toFixed(1)}
                       %)
                     </span>
                   </div>
@@ -167,8 +200,9 @@ export default function ActiveStrategies() {
                 <div className="flex items-start gap-2">
                   <AlertTriangle className="w-4 h-4 text-yellow-400 mt-0.5" />
                   <p className="text-xs text-zinc-400">
-                    Changing allocation may affect your portfolio's risk profile. Make sure the new allocation aligns
-                    with your risk tolerance.
+                    Changing allocation may affect your portfolio's risk
+                    profile. Make sure the new allocation aligns with your risk
+                    tolerance.
                   </p>
                 </div>
               </div>
@@ -181,7 +215,10 @@ export default function ActiveStrategies() {
               >
                 Cancel
               </Button>
-              <Button className="gradient-button" onClick={handleSaveAllocation}>
+              <Button
+                className="gradient-button"
+                onClick={handleSaveAllocation}
+              >
                 Save Changes
               </Button>
             </div>

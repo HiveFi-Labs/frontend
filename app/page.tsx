@@ -35,7 +35,6 @@ export default function Home() {
         </div>
       </section>
 
-
       {/* Video Update Section */}
       <VideoUpdateSection />
 

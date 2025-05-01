@@ -1,4 +1,4 @@
-import type { TimeSeriesData } from "./common"
+import type { TimeSeriesData } from './common'
 
 /**
  * ポートフォリオ関連の型定義
@@ -18,7 +18,7 @@ export interface PortfolioSummary {
   change: {
     value: number
     percent: number
-    trend: "up" | "down"
+    trend: 'up' | 'down'
   }
   allocation: PortfolioAllocation[]
   historicalPerformance: TimeSeriesData[]
@@ -26,7 +26,7 @@ export interface PortfolioSummary {
 
 // 戦略パフォーマンス
 export interface StrategyPerformance {
-  trend: "up" | "down"
+  trend: 'up' | 'down'
   return: string
   sharpe: string
   winRate: string
@@ -51,10 +51,10 @@ export interface StrategyPopularity {
 export interface Strategy {
   id: number
   name: string
-  type: "trend" | "mean" | "breakout"
+  type: 'trend' | 'mean' | 'breakout'
   pair: string
   timeframe: string
-  status: "live" | "testing" | "draft"
+  status: 'live' | 'testing' | 'draft'
   isPublic: boolean
   indicators: string[]
   performance: StrategyPerformance
@@ -100,10 +100,10 @@ export interface RiskMetrics {
 // 取引
 export interface Transaction {
   id: number
-  type: "deposit" | "withdraw" | "transfer"
+  type: 'deposit' | 'withdraw' | 'transfer'
   amount: number
   date: string
-  status: "completed" | "pending"
+  status: 'completed' | 'pending'
   description: string
   strategy?: string
 }
@@ -119,7 +119,7 @@ export interface RebalanceChange {
 export interface Rebalance {
   id: number
   date: string
-  type: "manual" | "automatic"
+  type: 'manual' | 'automatic'
   changes: RebalanceChange[]
 }
 
@@ -133,10 +133,10 @@ export interface AutoRebalanceSettings {
 
 // 最近のアクティビティ
 export interface RecentActivity {
-  type: "deposit" | "withdraw" | "transfer"
+  type: 'deposit' | 'withdraw' | 'transfer'
   amount: number
   date: string
-  status: "completed" | "pending"
+  status: 'completed' | 'pending'
   description: string
   strategy?: string
 }
@@ -144,8 +144,8 @@ export interface RecentActivity {
 // 利益処理設定
 export interface ProfitHandlingSettings {
   autoReinvest: boolean
-  profitTaking: "none" | "threshold" | "periodic"
-  withdrawalMethod: "manual" | "scheduled" | "threshold"
+  profitTaking: 'none' | 'threshold' | 'periodic'
+  withdrawalMethod: 'manual' | 'scheduled' | 'threshold'
 }
 
 // ファンド概要
@@ -168,10 +168,10 @@ export interface NotificationSettings {
 // アラート
 export interface Alert {
   id: number
-  type: "performance" | "risk" | "strategy" | "market"
+  type: 'performance' | 'risk' | 'strategy' | 'market'
   name: string
   condition: string
-  status: "active" | "inactive"
+  status: 'active' | 'inactive'
   lastTriggered: string | null
   notifications: NotificationSettings
 }
@@ -186,7 +186,7 @@ export interface EmailNotificationSettings {
 // プッシュ通知設定
 export interface PushNotificationSettings {
   enabled: boolean
-  device: "all" | "mobile" | "desktop"
+  device: 'all' | 'mobile' | 'desktop'
   quietHours: boolean
 }
 

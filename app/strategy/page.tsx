@@ -75,36 +75,37 @@ export default function StrategyPage() {
   }, [errorResultsJson])
 
   const handleResize = (e: MouseEvent) => {
-    const splitContainer = document.querySelector('.split-container');
-    if (!splitContainer) return;
-    
-    const containerWidth = splitContainer.clientWidth;
-    const mouseX = e.clientX - splitContainer.getBoundingClientRect().left;
-    const newRatio = Math.min(Math.max((mouseX / containerWidth) * 100, 20), 80);
-    setSplitRatio(newRatio);
-  };
+    const splitContainer = document.querySelector('.split-container')
+    if (!splitContainer) return
 
-  const showSplitLayout = !!backtestResults || !!backtestResultsJson;
+    const containerWidth = splitContainer.clientWidth
+    const mouseX = e.clientX - splitContainer.getBoundingClientRect().left
+    const newRatio = Math.min(Math.max((mouseX / containerWidth) * 100, 20), 80)
+    setSplitRatio(newRatio)
+  }
+
+  const showSplitLayout = !!backtestResults || !!backtestResultsJson
 
   // バックテスト開始時にsplitRatioを調整
   useEffect(() => {
     if (backtestResults || backtestResultsJson) {
-      setSplitRatio(50); // バックテスト結果が揃った時に50%に設定
+      setSplitRatio(50) // バックテスト結果が揃った時に50%に設定
     } else {
-      setSplitRatio(100); // バックテスト未開始時はチャットUIを100%に
+      setSplitRatio(100) // バックテスト未開始時はチャットUIを100%に
     }
-  }, [backtestResults, backtestResultsJson]);
+  }, [backtestResults, backtestResultsJson])
 
   console.log('backtestResults', backtestResults)
   return (
     <div className="min-h-screen bg-black text-white pt-20 pb-10">
       <div className="container mx-auto px-4 max-w-full">
-
         {/* 条件付きレイアウト - showSplitLayoutがfalseの時は中央配置と最大幅制限 */}
-        <div className={`flex flex-row gap-0 mt-5 max-h-[calc(100vh-200px)] min-h-[calc(100px)] overflow-hidden relative split-container ${!showSplitLayout ? 'justify-center' : ''}`}>
+        <div
+          className={`flex flex-row gap-0 max-h-[calc(100vh-200px)] min-h-[calc(100px)] overflow-hidden relative split-container ${!showSplitLayout ? 'justify-center h-[calc(100vh-200px)]' : ''}`}
+        >
           {/* Left side - AI Collaboration */}
-          <div 
-            className={`overflow-hidden flex flex-col ${!showSplitLayout ? 'max-w-3xl' : ''}`} 
+          <div
+            className={`overflow-hidden flex flex-col ${!showSplitLayout ? 'max-w-3xl self-center' : ''}`}
             style={{ width: showSplitLayout ? `${splitRatio}%` : '100%' }}
           >
             {sessionId ? (
@@ -121,27 +122,27 @@ export default function StrategyPage() {
             <div
               className="w-1 cursor-col-resize"
               onMouseDown={(e: React.MouseEvent) => {
-                e.preventDefault();
-                
+                e.preventDefault()
+
                 const handleMouseMove = (moveEvent: MouseEvent) => {
-                  handleResize(moveEvent);
-                };
-                
+                  handleResize(moveEvent)
+                }
+
                 const handleMouseUp = () => {
-                  document.removeEventListener('mousemove', handleMouseMove);
-                  document.removeEventListener('mouseup', handleMouseUp);
-                };
-                
-                document.addEventListener('mousemove', handleMouseMove);
-                document.addEventListener('mouseup', handleMouseUp);
+                  document.removeEventListener('mousemove', handleMouseMove)
+                  document.removeEventListener('mouseup', handleMouseUp)
+                }
+
+                document.addEventListener('mousemove', handleMouseMove)
+                document.addEventListener('mouseup', handleMouseUp)
               }}
             />
           )}
 
           {/* Right side - Backtesting Results - showSplitLayoutがtrueの時のみ表示 */}
           {showSplitLayout && (
-            <div 
-              className="overflow-hidden flex flex-col" 
+            <div
+              className="overflow-hidden flex flex-col"
               style={{ width: `${100 - splitRatio}%` }}
             >
               <BacktestingResults />

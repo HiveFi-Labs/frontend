@@ -26,7 +26,12 @@ const buildTradesFromSignals = (chart: PlotlyDataObject | null): Trade[] => {
   if (!chart?.data?.length) return []
 
   /* ---- 1) シグナル点をフラットな配列にする -------------------------------- */
-  type RawSignal = { time: string; price: number; kind: 'Buy' | 'Sell' | 'Close'; qty: number }
+  type RawSignal = {
+    time: string
+    price: number
+    kind: 'Buy' | 'Sell' | 'Close'
+    qty: number
+  }
   const signals: RawSignal[] = []
 
   chart.data.forEach((trace: any) => {
@@ -37,10 +42,10 @@ const buildTradesFromSignals = (chart: PlotlyDataObject | null): Trade[] => {
 
     xs.forEach((t, idx) => {
       signals.push({
-        time : t,
+        time: t,
         price: ys[idx],
-        kind : trace.name,
-        qty  : cds[idx]?.qty ?? 1, // customdata.qty があれば採用
+        kind: trace.name,
+        qty: cds[idx]?.qty ?? 1, // customdata.qty があれば採用
       })
     })
   })
@@ -48,7 +53,9 @@ const buildTradesFromSignals = (chart: PlotlyDataObject | null): Trade[] => {
   if (!signals.length) return []
 
   /* ---- 2) 時系列順に並べて疑似的な約定ペアリング -------------------------- */
-  signals.sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime())
+  signals.sort(
+    (a, b) => new Date(a.time).getTime() - new Date(b.time).getTime(),
+  )
 
   const trades: Trade[] = []
   let open: { entry: RawSignal; side: 'LONG' | 'SHORT' } | null = null
@@ -64,7 +71,8 @@ const buildTradesFromSignals = (chart: PlotlyDataObject | null): Trade[] => {
         const pnl = entry.price - sig.price
         const pnlPct = pnl / entry.price
         const duration =
-          (new Date(sig.time).getTime() - new Date(entry.time).getTime()) / 60000
+          (new Date(sig.time).getTime() - new Date(entry.time).getTime()) /
+          60000
 
         trades.push({
           id: trades.length + 1,
@@ -91,7 +99,8 @@ const buildTradesFromSignals = (chart: PlotlyDataObject | null): Trade[] => {
         const pnl = sig.price - entry.price
         const pnlPct = pnl / entry.price
         const duration =
-          (new Date(sig.time).getTime() - new Date(entry.time).getTime()) / 60000
+          (new Date(sig.time).getTime() - new Date(entry.time).getTime()) /
+          60000
 
         trades.push({
           id: trades.length + 1,
@@ -112,9 +121,7 @@ const buildTradesFromSignals = (chart: PlotlyDataObject | null): Trade[] => {
       // 任意の Close シグナルで強制決済
       const { entry, side } = open
       const pnl =
-        side === 'LONG'
-          ? sig.price - entry.price
-          : entry.price - sig.price
+        side === 'LONG' ? sig.price - entry.price : entry.price - sig.price
       const pnlPct = pnl / entry.price
       const duration =
         (new Date(sig.time).getTime() - new Date(entry.time).getTime()) / 60000
@@ -146,8 +153,7 @@ const buildTradesFromSignals = (chart: PlotlyDataObject | null): Trade[] => {
       exitPrice: null,
       pnl: 0,
       pnlPct: 0,
-      durationMin:
-        (Date.now() - new Date(entry.time).getTime()) / 60000,
+      durationMin: (Date.now() - new Date(entry.time).getTime()) / 60000,
     })
   }
 
@@ -210,7 +216,7 @@ export default function TradeHistoryTable() {
     <div className="bg-zinc-900/70 rounded-lg p-6 overflow-x-auto">
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-lg font-medium text-white">Trade History</h3>
-        
+
         {trades.length > 0 && (
           <div className="flex items-center space-x-2 text-xs text-zinc-400">
             <span>Rows per page:</span>
@@ -222,8 +228,10 @@ export default function TradeHistoryTable() {
               }}
               className="bg-zinc-800 border border-zinc-700 rounded px-2 py-1"
             >
-              {[10, 25, 50, 100].map(num => (
-                <option key={num} value={num}>{num}</option>
+              {[10, 25, 50, 100].map((num) => (
+                <option key={num} value={num}>
+                  {num}
+                </option>
               ))}
             </select>
           </div>
@@ -255,7 +263,9 @@ export default function TradeHistoryTable() {
                 key={t.id}
                 className="border-b border-zinc-800/50 hover:bg-zinc-800/30 text-xs"
               >
-                <td className={`py-3 px-4 font-medium ${sideColor}`}>{t.side}</td>
+                <td className={`py-3 px-4 font-medium ${sideColor}`}>
+                  {t.side}
+                </td>
                 <td className="py-3 px-4 text-zinc-300">
                   {new Date(t.entryTime).toLocaleString()}
                 </td>
@@ -289,42 +299,42 @@ export default function TradeHistoryTable() {
               onClick={() => paginate(1)}
               disabled={currentPage === 1}
               className={`px-3 py-1 rounded ${
-                currentPage === 1 
-                  ? 'bg-zinc-800/50 text-zinc-600 cursor-not-allowed' 
+                currentPage === 1
+                  ? 'bg-zinc-800/50 text-zinc-600 cursor-not-allowed'
                   : 'bg-zinc-800 hover:bg-zinc-700'
               }`}
             >
               &laquo;
             </button>
-            
+
             <button
               onClick={() => paginate(currentPage - 1)}
               disabled={currentPage === 1}
               className={`px-3 py-1 rounded ${
-                currentPage === 1 
-                  ? 'bg-zinc-800/50 text-zinc-600 cursor-not-allowed' 
+                currentPage === 1
+                  ? 'bg-zinc-800/50 text-zinc-600 cursor-not-allowed'
                   : 'bg-zinc-800 hover:bg-zinc-700'
               }`}
             >
               &lsaquo;
             </button>
-            
+
             {/* 現在のページの周辺のページ番号を表示 */}
             {Array.from({ length: Math.min(5, totalPages) }).map((_, idx) => {
               // 表示するページ番号を決定（現在のページを中心に最大5ページ表示）
-              let pageNum: number;
+              let pageNum: number
               if (totalPages <= 5) {
                 // 全部で5ページ以下なら全ページ表示
-                pageNum = idx + 1;
+                pageNum = idx + 1
               } else if (currentPage <= 3) {
                 // 現在のページが先頭付近なら1〜5を表示
-                pageNum = idx + 1;
+                pageNum = idx + 1
               } else if (currentPage >= totalPages - 2) {
                 // 現在のページが末尾付近ならtotalPages-4〜totalPagesを表示
-                pageNum = totalPages - 4 + idx;
+                pageNum = totalPages - 4 + idx
               } else {
                 // それ以外なら現在のページを中心に前後2ページずつ表示
-                pageNum = currentPage - 2 + idx;
+                pageNum = currentPage - 2 + idx
               }
 
               return (
@@ -339,36 +349,37 @@ export default function TradeHistoryTable() {
                 >
                   {pageNum}
                 </button>
-              );
+              )
             })}
-            
+
             <button
               onClick={() => paginate(currentPage + 1)}
               disabled={currentPage === totalPages}
               className={`px-3 py-1 rounded ${
-                currentPage === totalPages 
-                  ? 'bg-zinc-800/50 text-zinc-600 cursor-not-allowed' 
+                currentPage === totalPages
+                  ? 'bg-zinc-800/50 text-zinc-600 cursor-not-allowed'
                   : 'bg-zinc-800 hover:bg-zinc-700'
               }`}
             >
               &rsaquo;
             </button>
-            
+
             <button
               onClick={() => paginate(totalPages)}
               disabled={currentPage === totalPages}
               className={`px-3 py-1 rounded ${
-                currentPage === totalPages 
-                  ? 'bg-zinc-800/50 text-zinc-600 cursor-not-allowed' 
+                currentPage === totalPages
+                  ? 'bg-zinc-800/50 text-zinc-600 cursor-not-allowed'
                   : 'bg-zinc-800 hover:bg-zinc-700'
               }`}
             >
               &raquo;
             </button>
           </div>
-          
+
           <div>
-            Showing {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, trades.length)} of {trades.length} trades
+            Showing {indexOfFirstItem + 1}-
+            {Math.min(indexOfLastItem, trades.length)} of {trades.length} trades
           </div>
         </div>
       )}

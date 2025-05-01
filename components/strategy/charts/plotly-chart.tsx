@@ -81,7 +81,7 @@ export default function PlotlyChartView({
           responsive: true,
           displayModeBar: true,
           displaylogo: false,
-          scrollZoom: true, 
+          scrollZoom: true,
           modeBarButtonsToRemove: ['lasso2d', 'select2d', 'toggleSpikelines'],
         }}
         className="w-full h-full"

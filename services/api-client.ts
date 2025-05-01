@@ -5,7 +5,7 @@
  * 実際のアプリケーションでは、このクラスが実際のAPIエンドポイントにリクエストを送信します
  */
 class ApiClient {
-  private baseUrl = "/api"
+  private baseUrl = '/api'
   private cache: Record<string, { data: any; timestamp: number }> = {}
   private cacheTTL: number = 5 * 60 * 1000 // 5分のキャッシュ有効期限
 
@@ -105,7 +105,9 @@ class ApiClient {
   private async getMockData<T>(endpoint: string): Promise<T> {
     // 実際のアプリケーションではこのメソッドは不要
     // ここでは簡易的にインポートしたモックデータを返す
-    const mockDataMap = await import("@/data/mock-data-map").then((module) => module.default)
+    const mockDataMap = await import('@/data/mock-data-map').then(
+      (module) => module.default,
+    )
     const data = mockDataMap[endpoint]
 
     if (!data) {
