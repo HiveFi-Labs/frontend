@@ -57,7 +57,7 @@ export default function BacktestingResults() {
           
           {/* Save Strategy Button */}
           <Button 
-            className="gradient-button text-white border-0 h-6 py-0 px-3 text-xs flex items-center gap-1"
+            className="gradient-button text-white border-0 h-8 py-3 px-3 text-xs flex items-center gap-1"
             size="sm"
           >
             <Save className="w-3.5 h-3.5" />
