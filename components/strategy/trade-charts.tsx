@@ -64,8 +64,8 @@ export default function TradeCharts() {
 
   // --- トレースを区分ごとに抽出 ----------------------------------------
   const closedOpenObj = filterClosedOpenTrades(chartData)
-  const signalObj     = filterSignals(chartData)
-  const equityObj     = filterEquity(chartData)
+  const signalObj = filterSignals(chartData)
+  const equityObj = filterEquity(chartData)
 
   if (!closedOpenObj && !signalObj && !equityObj) {
     return (
@@ -79,9 +79,9 @@ export default function TradeCharts() {
   /* 3. trace を各 x/y 軸に割り当てる（順序: Equity → Signals → Closed/Open）*/
   /* --------------------------------------------------------------------- */
   const tracesEquity =
-    equityObj?.data.map    ((t) => ({ ...t, xaxis: 'x',  yaxis: 'y'  })) ?? []
+    equityObj?.data.map((t) => ({ ...t, xaxis: 'x', yaxis: 'y' })) ?? []
   const tracesSignals =
-    signalObj?.data.map    ((t) => ({ ...t, xaxis: 'x2', yaxis: 'y2' })) ?? []
+    signalObj?.data.map((t) => ({ ...t, xaxis: 'x2', yaxis: 'y2' })) ?? []
   const tracesClosedOpen =
     closedOpenObj?.data.map((t) => ({ ...t, xaxis: 'x3', yaxis: 'y3' })) ?? []
 
@@ -91,23 +91,23 @@ export default function TradeCharts() {
   /* 4. 共通レイアウト                                                     */
   /* --------------------------------------------------------------------- */
   const baseLayout = {
-    paper_bgcolor : 'rgba(24,24,27,0.7)',
-    plot_bgcolor  : 'rgba(24,24,27,0)',
-    font          : { family: 'Inter, sans-serif', color: '#d4d4d8' },
-    dragmode      : 'pan',
-    autosize      : true,
-    margin        : { t: 20, b: 20, l: 50, r: 30 },
-    hovermode     : 'x unified',
-    hoverdistance : -1,
-    spikedistance : -1,
+    paper_bgcolor: 'rgba(24,24,27,0.7)',
+    plot_bgcolor: 'rgba(24,24,27,0)',
+    font: { family: 'Inter, sans-serif', color: '#d4d4d8' },
+    dragmode: 'pan',
+    autosize: true,
+    margin: { t: 20, b: 20, l: 50, r: 30 },
+    hovermode: 'x unified',
+    hoverdistance: -1,
+    spikedistance: -1,
   }
 
   const spike = {
-    showspikes   : true,
-    spikemode    : 'across',
-    spikecolor   : '#888',
+    showspikes: true,
+    spikemode: 'across',
+    spikecolor: '#888',
     spikethickness: 1,
-    spikesnap    : 'cursor',
+    spikesnap: 'cursor',
   }
 
   /* --------------------------------------------------------------------- */
@@ -116,13 +116,18 @@ export default function TradeCharts() {
   const layout = {
     ...baseLayout,
     height: 700,
-    grid  : { rows: 3, columns: 1, pattern: 'independent', roworder: 'top to bottom' },
+    grid: {
+      rows: 3,
+      columns: 1,
+      pattern: 'independent',
+      roworder: 'top to bottom',
+    },
 
     // ─ 1段目：Equity ────────────────────────────────
-    xaxis : { domain: [0, 1], anchor: 'y', ...spike },
-    yaxis : {
-      domain: [0.70, 1],
-      title : 'Equity Curve',
+    xaxis: { domain: [0, 1], anchor: 'y', ...spike },
+    yaxis: {
+      domain: [0.7, 1],
+      title: 'Equity Curve',
       gridcolor: '#3f3f46',
       zerolinecolor: '#52525b',
       ...spike,
@@ -132,7 +137,7 @@ export default function TradeCharts() {
     xaxis2: { domain: [0, 1], anchor: 'y2', matches: 'x', ...spike },
     yaxis2: {
       domain: [0.35, 0.65],
-      title : 'Buy / Sell Signals',
+      title: 'Buy / Sell Signals',
       gridcolor: '#3f3f46',
       zerolinecolor: '#52525b',
       ...spike,
@@ -141,8 +146,8 @@ export default function TradeCharts() {
     // ─ 3段目：Closed & Open ────────────────────────
     xaxis3: { domain: [0, 1], anchor: 'y3', matches: 'x', ...spike },
     yaxis3: {
-      domain: [0, 0.30],
-      title : 'Closed & Open Trades',
+      domain: [0, 0.3],
+      title: 'Closed & Open Trades',
       gridcolor: '#3f3f46',
       zerolinecolor: '#52525b',
       ...spike,
@@ -176,6 +181,7 @@ export default function TradeCharts() {
             displayModeBar: true,
             displaylogo: false,
             scrollZoom: true,
+            doubleClick: 'reset',
             modeBarButtonsToRemove: [
               'lasso2d',
               'select2d',
