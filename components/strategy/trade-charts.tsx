@@ -45,7 +45,7 @@ const filterEquity = (data: PlotlyDataObject | null) => {
 /* =========================================================================
  *  2. メイン React コンポーネント
  * ========================================================================= */
-export default function TradeHistoryStacked() {
+export default function TradeCharts() {
   const chartData = useStrategyStore((s) => s.backtestResultsJson)
 
   // --- データがまだ無い場合のプレースホルダ -----------------------------

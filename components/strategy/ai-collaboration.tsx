@@ -196,7 +196,18 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
             >
               {message.agent !== 'user' && (
                 <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-blue-500 flex items-center justify-center flex-shrink-0">
-                  <Lightbulb className="w-4 h-4 text-white" />
+                  {message.agent === 'strategist' && (
+                    <Lightbulb className="w-4 h-4 text-white" />
+                  )}
+                  {message.agent === 'developer' && (
+                    <Code className="w-4 h-4 text-white" />
+                  )}
+                  {message.agent === 'analyst' && (
+                    <BarChart4 className="w-4 h-4 text-white" />
+                  )}
+                  {message.agent === 'optimizer' && (
+                    <RefreshCw className="w-4 h-4 text-white" />
+                  )}
                 </div>
               )}
               <div

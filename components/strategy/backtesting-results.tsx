@@ -12,10 +12,9 @@ import {
 } from '@/components/ui/card'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import StrategyCode from '@/components/strategy/strategy-code'
-import UnifiedChartView from '@/components/strategy/charts/unified-chart-view'
 import PerformanceMetrics from '@/components/strategy/performance-metrics'
-import TradeHistory from '@/components/strategy/trade-history'
-import ParameterOptimization from '@/components/strategy/parameter-optimization'
+import TradeCharts from '@/components/strategy/trade-charts'
+import TradeHistoryTable from '@/components/strategy/trade-history-table'
 
 export default function BacktestingResults() {
   const [isRunningBacktest, setIsRunningBacktest] = useState(false)
@@ -86,16 +85,14 @@ export default function BacktestingResults() {
           </div> */}
           {activeView === 'preview' ? (
             <>
-              {/* Unified Chart View - Shows price, trades, and equity on the same timeline */}
-              <TradeHistory />
+              {/* Chart View */}
+              <TradeCharts />
 
               {/* Performance Metrics */}
               <PerformanceMetrics />
 
               {/* Trade History */}
-
-              {/* Parameter Optimization */}
-              <ParameterOptimization />
+              <TradeHistoryTable />
             </>
           ) : (
             <div className="h-full">
