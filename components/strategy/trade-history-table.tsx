@@ -164,13 +164,26 @@ export default function TradeHistoryTable() {
   const chartJson = useStrategyStore((s) => s.backtestResultsJson)
   const [isLoading, setIsLoading] = useState(true)
   const [trades, setTrades] = useState<Trade[]>([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const [itemsPerPage, setItemsPerPage] = useState(10)
 
   useEffect(() => {
     if (!chartJson) return
     setIsLoading(true)
     setTrades(buildTradesFromSignals(chartJson))
+    setCurrentPage(1) // ページをリセット
     setIsLoading(false)
   }, [chartJson])
+
+  /* ------------ ページネーション用計算 ------------------------------- */
+  const totalPages = Math.ceil(trades.length / itemsPerPage)
+  const indexOfLastItem = currentPage * itemsPerPage
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage
+  const currentTrades = trades.slice(indexOfFirstItem, indexOfLastItem)
+
+  const paginate = (pageNumber: number) => {
+    setCurrentPage(pageNumber)
+  }
 
   /* ---------------- Skeleton / Empty ---------------------------------- */
   if (isLoading) {
@@ -195,9 +208,29 @@ export default function TradeHistoryTable() {
   /* ---------------- テーブル ------------------------------------------ */
   return (
     <div className="bg-zinc-900/70 rounded-lg p-6 overflow-x-auto">
-      <h3 className="text-lg font-medium text-white mb-6">Trade History</h3>
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="text-lg font-medium text-white">Trade History</h3>
+        
+        {trades.length > 0 && (
+          <div className="flex items-center space-x-2 text-xs text-zinc-400">
+            <span>Rows per page:</span>
+            <select
+              value={itemsPerPage}
+              onChange={(e) => {
+                setItemsPerPage(Number(e.target.value))
+                setCurrentPage(1) // ページ数変更時は最初のページに戻る
+              }}
+              className="bg-zinc-800 border border-zinc-700 rounded px-2 py-1"
+            >
+              {[10, 25, 50, 100].map(num => (
+                <option key={num} value={num}>{num}</option>
+              ))}
+            </select>
+          </div>
+        )}
+      </div>
 
-      <table className="w-full">
+      <table className="w-full mb-4">
         <thead>
           <tr className="border-b border-zinc-800 text-xs font-medium text-zinc-400">
             <th className="py-3 px-4 text-left">Side</th>
@@ -211,7 +244,7 @@ export default function TradeHistoryTable() {
           </tr>
         </thead>
         <tbody>
-          {trades.map((t) => {
+          {currentTrades.map((t) => {
             const isProfit = t.pnl >= 0
             const sideColor =
               t.side === 'LONG' ? 'text-green-400' : 'text-red-400'
@@ -247,6 +280,98 @@ export default function TradeHistoryTable() {
           })}
         </tbody>
       </table>
+
+      {/* ページネーションコントロール */}
+      {totalPages > 1 && (
+        <div className="flex flex-col items-center text-xs text-zinc-400 space-y-2">
+          <div className="flex space-x-1">
+            <button
+              onClick={() => paginate(1)}
+              disabled={currentPage === 1}
+              className={`px-3 py-1 rounded ${
+                currentPage === 1 
+                  ? 'bg-zinc-800/50 text-zinc-600 cursor-not-allowed' 
+                  : 'bg-zinc-800 hover:bg-zinc-700'
+              }`}
+            >
+              &laquo;
+            </button>
+            
+            <button
+              onClick={() => paginate(currentPage - 1)}
+              disabled={currentPage === 1}
+              className={`px-3 py-1 rounded ${
+                currentPage === 1 
+                  ? 'bg-zinc-800/50 text-zinc-600 cursor-not-allowed' 
+                  : 'bg-zinc-800 hover:bg-zinc-700'
+              }`}
+            >
+              &lsaquo;
+            </button>
+            
+            {/* 現在のページの周辺のページ番号を表示 */}
+            {Array.from({ length: Math.min(5, totalPages) }).map((_, idx) => {
+              // 表示するページ番号を決定（現在のページを中心に最大5ページ表示）
+              let pageNum: number;
+              if (totalPages <= 5) {
+                // 全部で5ページ以下なら全ページ表示
+                pageNum = idx + 1;
+              } else if (currentPage <= 3) {
+                // 現在のページが先頭付近なら1〜5を表示
+                pageNum = idx + 1;
+              } else if (currentPage >= totalPages - 2) {
+                // 現在のページが末尾付近ならtotalPages-4〜totalPagesを表示
+                pageNum = totalPages - 4 + idx;
+              } else {
+                // それ以外なら現在のページを中心に前後2ページずつ表示
+                pageNum = currentPage - 2 + idx;
+              }
+
+              return (
+                <button
+                  key={pageNum}
+                  onClick={() => paginate(pageNum)}
+                  className={`px-3 py-1 rounded ${
+                    currentPage === pageNum
+                      ? 'bg-zinc-700 text-white'
+                      : 'bg-zinc-800 hover:bg-zinc-700'
+                  }`}
+                >
+                  {pageNum}
+                </button>
+              );
+            })}
+            
+            <button
+              onClick={() => paginate(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className={`px-3 py-1 rounded ${
+                currentPage === totalPages 
+                  ? 'bg-zinc-800/50 text-zinc-600 cursor-not-allowed' 
+                  : 'bg-zinc-800 hover:bg-zinc-700'
+              }`}
+            >
+              &rsaquo;
+            </button>
+            
+            <button
+              onClick={() => paginate(totalPages)}
+              disabled={currentPage === totalPages}
+              className={`px-3 py-1 rounded ${
+                currentPage === totalPages 
+                  ? 'bg-zinc-800/50 text-zinc-600 cursor-not-allowed' 
+                  : 'bg-zinc-800 hover:bg-zinc-700'
+              }`}
+            >
+              &raquo;
+            </button>
+          </div>
+          
+          <div>
+            Showing {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, trades.length)} of {trades.length} trades
+          </div>
+        </div>
+      )}
     </div>
   )
 }
