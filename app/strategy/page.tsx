@@ -24,6 +24,8 @@ export default function StrategyPage() {
   const setBacktestResultsJson = useStrategyStore(
     (state) => state.setBacktestResultsJson,
   )
+  const conversations = useStrategyStore((state) => state.messages)
+  const hasConversations = conversations.length > 0
 
   const [splitRatio, setSplitRatio] = useState(50)
 
@@ -95,7 +97,6 @@ export default function StrategyPage() {
     }
   }, [backtestResults, backtestResultsJson])
 
-  console.log('backtestResults', backtestResults)
   return (
     <div className="min-h-screen bg-black text-white pt-20 pb-10">
       <div className="container mx-auto px-4 max-w-full">
@@ -108,6 +109,15 @@ export default function StrategyPage() {
             className={`overflow-hidden flex flex-col ${!showSplitLayout ? 'max-w-3xl self-center' : ''}`}
             style={{ width: showSplitLayout ? `${splitRatio}%` : '100%' }}
           >
+            {!hasConversations && (
+              <div className="text-center mb-6">
+                <h2 className="text-2xl font-bold mb-2">Let's begin.</h2>
+                <p className="text-zinc-400">
+                  Start a conversation with AI to create your trading strategy
+                </p>
+              </div>
+            )}
+            
             {sessionId ? (
               <AICollaboration sessionId={sessionId} />
             ) : (

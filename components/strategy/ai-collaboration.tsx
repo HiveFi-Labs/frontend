@@ -54,6 +54,8 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
   const messagesContainerRef = useRef<HTMLDivElement>(null)
 
   const conversations = useStrategyStore((state) => state.messages)
+  const hasConversations = conversations.length > 0
+
   const resetSessionState = useStrategyStore((state) => state.resetSessionState)
 
   const { postChat, isPending, error, cancelRequest } = useChat({ sessionId })
@@ -100,7 +102,7 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
   return (
     <Card className="glass-card overflow-hidden h-full flex flex-col mt-2">
       {/* Status Bar */}
-      <div className="bg-zinc-900/80 border-b border-zinc-800 py-2 px-4 flex items-center justify-between">
+      <div className={`bg-zinc-800/80 border-zinc-700 py-2 px-4 flex items-center justify-between ${hasConversations ? "border-b" : ""} `}>
         <div className="flex items-center text-xs">
           <div className="flex items-center">
             <Select value={tradingPair} onValueChange={setTradingPair}>
@@ -114,12 +116,12 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
                 <SelectItem value="bnbusdt">BNB/USDT</SelectItem>
               </SelectContent>
             </Select>
-            <span className="text-zinc-500 mx-2">|</span>
+            <span className="text-zinc-300 mx-2">|</span>
           </div>
 
           <div className="flex items-center">
             <Select value={timeframe} onValueChange={setTimeframe}>
-              <SelectTrigger className="bg-transparent border-0 text-zinc-300 h-6 p-0 min-w-8 w-auto text-xs font-medium hover:text-purple-400 transition-colors">
+              <SelectTrigger className="bg-transparent border-0 text-zinc-200 h-6 p-0 min-w-8 w-auto text-xs font-medium hover:text-purple-300 transition-colors">
                 <SelectValue>{timeframeDisplay[timeframe]}</SelectValue>
               </SelectTrigger>
               <SelectContent className="bg-zinc-900 border-zinc-800">
@@ -138,14 +140,14 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              className="bg-transparent text-zinc-300 border-0 p-0 w-auto text-xs font-medium hover:text-purple-400 transition-colors"
+              className="bg-transparent text-zinc-200 border-0 p-0 w-auto text-xs font-medium hover:text-purple-300 transition-colors"
             />
-            <span className="text-zinc-500 mx-2">→</span>
+            <span className="text-zinc-300 mx-2">→</span>
             <input
               type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
-              className="bg-transparent text-zinc-300 border-0 p-0 w-auto text-xs font-medium hover:text-purple-400 transition-colors"
+              className="bg-transparent text-zinc-200 border-0 p-0 w-auto text-xs font-medium hover:text-purple-300 transition-colors"
             />
           </div>
         </div>
@@ -157,25 +159,25 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-6 w-6 text-zinc-400 hover:text-purple-400 transition-colors"
+                className="h-6 w-6 text-zinc-300 hover:text-purple-300 transition-colors"
               >
                 <Settings className="h-3.5 w-3.5" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align="end"
-              className="bg-zinc-900 border-zinc-800"
+              className="bg-zinc-700 border-zinc-600"
             >
               <DropdownMenuLabel className="text-xs">
                 Chat Settings
               </DropdownMenuLabel>
-              <DropdownMenuSeparator className="bg-zinc-800" />
+              <DropdownMenuSeparator className="bg-zinc-600" />
               <DropdownMenuItem
-                className="text-xs text-zinc-300 focus:text-white focus:bg-zinc-800 cursor-pointer"
+                className="text-xs text-zinc-200 focus:text-white focus:bg-zinc-600 cursor-pointer"
                 onClick={handleResetConversation}
                 disabled={isPending}
               >
-                <Trash2 className="h-3.5 w-3.5 mr-2 text-zinc-400" />
+                <Trash2 className="h-3.5 w-3.5 mr-2 text-zinc-300" />
                 Clear Chat
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -183,16 +185,16 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
         </div>
       </div>
 
-      <CardContent className="flex-1 flex flex-col h-full overflow-hidden">
+      <CardContent className="p-0 bg-zinc-900 flex-1 flex flex-col h-full overflow-hidden">
         <div
           ref={messagesContainerRef}
-          className="flex-1 overflow-y-auto pr-2 space-y-4 mb-4"
+          className={`flex-1 overflow-y-auto pr-2 space-y-4 ${hasConversations ? "mb-4" : ""}`}
           style={{ maxHeight: 'calc(100vh - 350px)' }}
         >
           {conversations.map((message, index) => (
             <div
               key={`${message.agent}-${message.timestamp}-${index}`}
-              className={`flex gap-3 mt-3 ${message.agent === 'user' ? 'justify-end' : ''}`}
+              className={`flex m-3 gap-3  ${message.agent === 'user' ? 'justify-end' : ''}`}
             >
               {message.agent !== 'user' && (
                 <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-blue-500 flex items-center justify-center flex-shrink-0">
@@ -211,18 +213,18 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
                 </div>
               )}
               <div
-                className={`glass-card p-3 rounded-xl max-w-[85%] ${message.agent === 'user' ? 'bg-purple-900/30' : 'bg-zinc-900/30'}`}
+                className={`glass-card p-3 rounded-xl max-w-[85%] ${message.agent === 'user' ? 'bg-purple-800/30' : 'bg-zinc-700/30'}`}
               >
                 <div className="flex justify-between items-start mb-1">
                   <span className="text-sm font-semibold capitalize mr-2">
                     {message.agent === 'user' ? 'You' : message.agent}
                   </span>
-                  <span className="text-xs text-zinc-500">
+                  <span className="text-xs text-zinc-300">
                     {message.timestamp}
                   </span>
                 </div>
                 {message.agent === 'user' ? (
-                  <p className="text-sm text-zinc-300 whitespace-pre-wrap">
+                  <p className="text-sm text-zinc-200 whitespace-pre-wrap">
                     {message.message}
                   </p>
                 ) : (
@@ -232,7 +234,7 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
                 )}
 
                 {message.attachment && message.attachment.type === 'chart' && (
-                  <div className="mt-3 p-3 bg-zinc-800/50 rounded-lg">
+                  <div className="mt-3 p-3 bg-zinc-600/50 rounded-lg">
                     <div className="text-sm font-medium mb-2">
                       {message.attachment.data.title}
                     </div>
@@ -256,7 +258,7 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
                 )}
 
                 {message.attachment && message.attachment.type === 'code' && (
-                  <div className="mt-3 p-3 bg-zinc-800/50 rounded-lg overflow-x-auto">
+                  <div className="mt-3 p-3 bg-zinc-600/50 rounded-lg overflow-x-auto">
                     <pre className="text-xs text-zinc-300 font-mono">
                       <code>{message.attachment.data}</code>
                     </pre>
@@ -272,11 +274,11 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
           ))}
 
           {isPending && (
-            <div className="flex gap-3">
+            <div className="flex gap-3 m-3 ">
               <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-blue-500 flex items-center justify-center flex-shrink-0">
                 <Lightbulb className="w-4 h-4 text-white" />
               </div>
-              <div className="glass-card p-3 rounded-xl max-w-[85%] bg-zinc-900/30">
+              <div className="glass-card p-3 rounded-xl max-w-[85%] bg-zinc-700/30">
                 <div className="flex items-center space-x-2">
                   <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
                   <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse delay-150"></div>
@@ -287,16 +289,16 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
           )}
 
           {error && (
-            <div className="text-red-500 text-sm p-2 text-center">
+            <div className="text-red-500 text-sm p-2 text-center m-3 ">
               Failed to get response: {error.message}
             </div>
           )}
         </div>
 
-        <div className="mt-auto py-2">
-          <div className="relative rounded-lg border border-zinc-800 bg-zinc-900/50 overflow-hidden">
+        <div className="mt-auto">
+          <div className="relative rounded-b-lg border border-zinc-700 bg-zinc-800/50 overflow-hidden">
             <textarea
-              placeholder={`Message the ${activeAgent} agent...`}
+              placeholder="Ask AI to help you create a trading strategy..."
               className="w-full min-h-[60px] max-h-[120px] bg-transparent py-3 pl-4 pr-12 text-zinc-300 focus:outline-none resize-none block"
               rows={2}
               value={inputMessage}
