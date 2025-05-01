@@ -67,7 +67,7 @@ export default function Header() {
               href="/strategy"
               className="text-zinc-300 hover:text-white transition-colors relative group"
             >
-              <span>Strategy</span>
+              <span>Builder</span>
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-500 to-blue-500 transition-all duration-300 group-hover:w-full"></span>
             </Link>
             <button
@@ -149,7 +149,7 @@ export default function Header() {
                 onClick={() => setMobileMenuOpen(false)}
                 className="text-zinc-300 hover:text-white transition-colors py-2"
               >
-                Strategy
+                Builder
               </Link>
               <button
                 onClick={() => {
