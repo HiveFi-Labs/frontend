@@ -9,17 +9,10 @@ import {
   BarChart4,
   RefreshCw,
   ArrowRight,
-  Sliders,
   Trash2,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -58,7 +51,9 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
 
   const resetSessionState = useStrategyStore((state) => state.resetSessionState)
 
-  const { postChat, isPending, error, cancelRequest } = useChat({ sessionId: sessionId || "" })
+  const { postChat, isPending, error, cancelRequest } = useChat({
+    sessionId: sessionId || '',
+  })
 
   useEffect(() => {
     if (messagesContainerRef.current) {
@@ -100,9 +95,13 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
   }
 
   return (
-    <Card className={`glass-card overflow-hidden flex flex-col mt-2 flex-1 min-h-0 ${!hasConversations ? 'flex justify-center ' : ''}`}>
+    <Card
+      className={`glass-card overflow-hidden flex flex-col mt-2 flex-1 min-h-0 ${!hasConversations ? 'flex justify-center ' : ''}`}
+    >
       {/* Status Bar */}
-      <div className={`bg-zinc-800/80 border-zinc-700 py-2 px-4 flex items-center justify-between ${hasConversations ? "border-b" : ""}`}>
+      <div
+        className={`bg-zinc-800/80 border-zinc-700 py-2 px-4 flex items-center justify-between ${hasConversations ? 'border-b' : ''}`}
+      >
         <div className="flex items-center text-xs">
           <div className="flex items-center">
             <Select value={tradingPair} onValueChange={setTradingPair}>
@@ -185,7 +184,9 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
         </div>
       </div>
 
-      <CardContent className={`p-0 bg-zinc-900 flex flex-col min-h-0 overflow-hidden ${hasConversations ? 'flex-2 h-[calc(75vh)] min-h-[calc(420px)]' : ''}`}>
+      <CardContent
+        className={`p-0 bg-zinc-900 flex flex-col min-h-0 overflow-hidden ${hasConversations ? 'flex-2 h-[calc(75vh)] min-h-[calc(420px)]' : ''}`}
+      >
         <div
           ref={messagesContainerRef}
           className={`${hasConversations ? 'flex-1 min-h-0 overflow-y-auto pr-2 space-y-4' : 'h-0 overflow-hidden'}`}
@@ -294,11 +295,15 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
           )}
         </div>
 
-        <div className={hasConversations ? "mt-auto" : ""}>
+        <div className={hasConversations ? 'mt-auto' : ''}>
           <div className="relative rounded-b-lg border border-zinc-700 bg-zinc-800/50 overflow-hidden">
             <textarea
               disabled={!sessionId}
-              placeholder={sessionId ? "Ask AI to help you create a trading strategy..." : "Loading..."}
+              placeholder={
+                sessionId
+                  ? 'Ask AI to help you create a trading strategy...'
+                  : 'Loading...'
+              }
               className="w-full min-h-[60px] max-h-[120px] bg-transparent py-3 pl-4 pr-12 text-zinc-300 focus:outline-none resize-none block"
               rows={2}
               value={inputMessage}

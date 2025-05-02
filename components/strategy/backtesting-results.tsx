@@ -1,15 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { Play, Pause, Code, MonitorSmartphone, Save } from 'lucide-react'
+import { Code, MonitorSmartphone, Save } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import StrategyCode from '@/components/strategy/strategy-code'
 import PerformanceMetrics from '@/components/strategy/performance-metrics'

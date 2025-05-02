@@ -117,9 +117,8 @@ export default function StrategyPage() {
                 </p>
               </div>
             )}
-            
 
-              <AICollaboration sessionId={sessionId} />
+            <AICollaboration sessionId={sessionId} />
           </div>
 
           {/* リサイズハンドラー - showSplitLayoutがtrueの時のみ表示 */}
