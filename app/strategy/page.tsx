@@ -102,7 +102,7 @@ export default function StrategyPage() {
       <div className="container mx-auto px-4 max-w-full">
         {/* 条件付きレイアウト - showSplitLayoutがfalseの時は中央配置と最大幅制限 */}
         <div
-          className={`flex flex-row gap-0 h-[calc(85vh)] overflow-hidden relative split-container ${!showSplitLayout ? 'justify-center' : ''}`}
+          className={`flex flex-row gap-0 h-[calc(85vh)] min-h-[calc(500px)] overflow-hidden relative split-container ${!showSplitLayout ? 'justify-center' : ''}`}
         >
           {/* Left side - AI Collaboration */}
           <div

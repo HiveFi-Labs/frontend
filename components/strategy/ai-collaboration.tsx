@@ -185,7 +185,7 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
         </div>
       </div>
 
-      <CardContent className={`p-0 bg-zinc-900 flex flex-col min-h-0 overflow-hidden ${hasConversations ? 'flex-2 h-[calc(75vh)]' : ''}`}>
+      <CardContent className={`p-0 bg-zinc-900 flex flex-col min-h-0 overflow-hidden ${hasConversations ? 'flex-2 h-[calc(75vh)] min-h-[calc(420px)]' : ''}`}>
         <div
           ref={messagesContainerRef}
           className={`${hasConversations ? 'flex-1 min-h-0 overflow-y-auto pr-2 space-y-4' : 'h-0 overflow-hidden'}`}
