@@ -185,7 +185,7 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
       </div>
 
       <CardContent
-        className={`p-0 bg-zinc-900 flex flex-col min-h-0 overflow-hidden ${hasConversations ? 'flex-2 h-[calc(75vh)] min-h-[calc(420px)]' : ''}`}
+        className={`p-0 bg-zinc-900 flex flex-col min-h-0 overflow-hidden ${hasConversations ? 'flex-2 h-[calc(81vh)] min-h-[calc(480px)]' : ''}`}
       >
         <div
           ref={messagesContainerRef}
@@ -295,7 +295,7 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
           )}
         </div>
 
-        <div className={hasConversations ? 'mt-auto' : ''}>
+        <div className={hasConversations ? 'mt-4' : ''}>
           <div className="relative rounded-b-lg border border-zinc-700 bg-zinc-800/50 overflow-hidden">
             <textarea
               disabled={!sessionId}
