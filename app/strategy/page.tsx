@@ -102,11 +102,11 @@ export default function StrategyPage() {
       <div className="container mx-auto px-4 max-w-full">
         {/* 条件付きレイアウト - showSplitLayoutがfalseの時は中央配置と最大幅制限 */}
         <div
-          className={`flex flex-row gap-0 max-h-[calc(100vh-200px)] min-h-[calc(100px)] overflow-hidden relative split-container ${!showSplitLayout ? 'justify-center h-[calc(100vh-200px)]' : ''}`}
+          className={`flex flex-row gap-0 h-[calc(85vh)] overflow-hidden relative split-container ${!showSplitLayout ? 'justify-center' : ''}`}
         >
           {/* Left side - AI Collaboration */}
           <div
-            className={`overflow-hidden flex flex-col ${!showSplitLayout ? 'max-w-3xl self-center' : ''}`}
+            className={`overflow-hidden flex flex-col flex-1 min-h-0 ${!hasConversations ? 'pb-20' : ''} ${!showSplitLayout ? 'max-w-3xl self-center' : ''}`}
             style={{ width: showSplitLayout ? `${splitRatio}%` : '100%' }}
           >
             {!hasConversations && (
@@ -118,13 +118,8 @@ export default function StrategyPage() {
               </div>
             )}
             
-            {sessionId ? (
+
               <AICollaboration sessionId={sessionId} />
-            ) : (
-              <div className="flex justify-center items-center h-full">
-                Generating session...
-              </div>
-            )}
           </div>
 
           {/* リサイズハンドラー - showSplitLayoutがtrueの時のみ表示 */}
