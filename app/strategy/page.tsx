@@ -3,19 +3,16 @@
 import { useEffect, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { useQuery } from '@tanstack/react-query'
-import { Upload, Save } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 import AICollaboration from '@/components/strategy/ai-collaboration'
 import BacktestingResults from '@/components/strategy/backtesting-results'
 import { useStrategyStore } from '@/stores/strategyStore'
 import {
-  apiV0,
-  type BacktestResultsJsonResponse,
+  apiV0, // ← 成果の取得はまだ v0 のみ
   type PlotlyDataObject,
 } from '@/lib/backtest.api'
 
 export default function StrategyPage() {
-  /* -------- zustand から取得 -------- */
+  /* ---- zustand ---- */
   const sessionId = useStrategyStore((s) => s.sessionId)
   const setSessionId = useStrategyStore((s) => s.setSessionId)
   const backtestResults = useStrategyStore((s) => s.backtestResults)
@@ -26,69 +23,47 @@ export default function StrategyPage() {
   const conversations = useStrategyStore((s) => s.messages)
   const hasConversations = conversations.length > 0
 
-  /* -------- split レイアウト -------- */
+  /* ---- split ---- */
   const [splitRatio, setSplitRatio] = useState(50)
 
-  /* -------- sessionId 初期化 -------- */
+  /* ---- sessionId ---- */
   useEffect(() => {
     if (!sessionId) setSessionId(uuidv4())
   }, [sessionId, setSessionId])
 
-  /* -------- バックテスト結果取得 -------- */
-  const {
-    data: fetchedResultsJson,
-    isLoading: isLoadingResultsJson,
-    error: errorResultsJson,
-    isSuccess,
-  } = useQuery<PlotlyDataObject, Error>({
+  /* ---- back-test JSON (v0 only for now) ---- */
+  const { data: fetchedJson, isSuccess } = useQuery<PlotlyDataObject, Error>({
     queryKey: ['backtestResultsJson', sessionId],
     queryFn: () => {
-      if (!sessionId) return Promise.reject(new Error('Session ID is required'))
-      return apiV0.getBacktestResults(sessionId) // ★ 変更点
+      if (!sessionId) throw new Error('Session ID is required')
+      return apiV0.getBacktestResults(sessionId)
     },
     enabled: !!sessionId && !!backtestResults && !backtestResultsJson,
-    staleTime: Number.POSITIVE_INFINITY,
+    staleTime: Infinity,
     refetchOnWindowFocus: false,
   })
 
   useEffect(() => {
-    if (isSuccess && fetchedResultsJson && !backtestResultsJson) {
-      console.log(
-        'Fetched backtest results JSON (Saving full data):',
-        fetchedResultsJson,
-      )
-      setBacktestResultsJson(fetchedResultsJson)
+    if (isSuccess && fetchedJson && !backtestResultsJson) {
+      setBacktestResultsJson(fetchedJson)
     }
-  }, [
-    isSuccess,
-    fetchedResultsJson,
-    setBacktestResultsJson,
-    backtestResultsJson,
-  ])
+  }, [isSuccess, fetchedJson, backtestResultsJson, setBacktestResultsJson])
 
+  /* ---- split auto adjust ---- */
   useEffect(() => {
-    if (errorResultsJson)
-      console.error('Error fetching backtest results JSON:', errorResultsJson)
-  }, [errorResultsJson])
+    setSplitRatio(backtestResults || backtestResultsJson ? 50 : 100)
+  }, [backtestResults, backtestResultsJson])
 
-  /* -------- リサイズロジック -------- */
+  /* ---- resize handler ---- */
   const handleResize = (e: MouseEvent) => {
-    const splitContainer = document.querySelector('.split-container')
-    if (!splitContainer) return
-
-    const containerWidth = splitContainer.clientWidth
-    const mouseX = e.clientX - splitContainer.getBoundingClientRect().left
-    const newRatio = Math.min(Math.max((mouseX / containerWidth) * 100, 20), 80)
-    setSplitRatio(newRatio)
+    const container = document.querySelector('.split-container')
+    if (!container) return
+    const { left, width } = container.getBoundingClientRect()
+    const ratio = Math.min(Math.max(((e.clientX - left) / width) * 100, 20), 80)
+    setSplitRatio(ratio)
   }
 
-  const showSplitLayout = !!backtestResults || !!backtestResultsJson
-
-  /* バックテスト開始／終了で split を自動調整 */
-  useEffect(() => {
-    if (backtestResults || backtestResultsJson) setSplitRatio(50)
-    else setSplitRatio(100)
-  }, [backtestResults, backtestResultsJson])
+  const showSplit = !!backtestResults || !!backtestResultsJson
 
   /* =========================================================================
    *  JSX
@@ -97,12 +72,12 @@ export default function StrategyPage() {
     <div className="min-h-screen bg-black text-white pt-20 pb-10">
       <div className="container mx-auto px-4 max-w-full">
         <div
-          className={`flex flex-row gap-0 h-[calc(90vh)] min-h-[500px] overflow-hidden relative split-container ${!showSplitLayout ? 'justify-center' : ''}`}
+          className={`flex flex-row gap-0 h-[calc(90vh)] min-h-[500px] overflow-hidden relative split-container ${!showSplit ? 'justify-center' : ''}`}
         >
-          {/* ---------- Left : AI Collaboration ---------- */}
+          {/* -------- Left (chat) -------- */}
           <div
-            className={`overflow-hidden flex flex-col flex-1 min-h-0 ${!hasConversations ? 'pb-20' : ''} ${!showSplitLayout ? 'max-w-3xl self-center' : ''}`}
-            style={{ width: showSplitLayout ? `${splitRatio}%` : '100%' }}
+            className={`overflow-hidden flex flex-col flex-1 min-h-0 ${!hasConversations ? 'pb-20' : ''} ${!showSplit ? 'max-w-3xl self-center' : ''}`}
+            style={{ width: showSplit ? `${splitRatio}%` : '100%' }}
           >
             {!hasConversations && (
               <div className="text-center mb-6">
@@ -112,30 +87,28 @@ export default function StrategyPage() {
                 </p>
               </div>
             )}
-
             <AICollaboration sessionId={sessionId} />
           </div>
 
-          {/* ---------- Splitter Handle ---------- */}
-          {showSplitLayout && (
+          {/* -------- Splitter -------- */}
+          {showSplit && (
             <div
               className="w-1 cursor-col-resize"
               onMouseDown={(e) => {
                 e.preventDefault()
-                const handleMouseMove = (moveEvent: MouseEvent) =>
-                  handleResize(moveEvent)
-                const handleMouseUp = () => {
-                  document.removeEventListener('mousemove', handleMouseMove)
-                  document.removeEventListener('mouseup', handleMouseUp)
+                const move = (ev: MouseEvent) => handleResize(ev)
+                const up = () => {
+                  document.removeEventListener('mousemove', move)
+                  document.removeEventListener('mouseup', up)
                 }
-                document.addEventListener('mousemove', handleMouseMove)
-                document.addEventListener('mouseup', handleMouseUp)
+                document.addEventListener('mousemove', move)
+                document.addEventListener('mouseup', up)
               }}
             />
           )}
 
-          {/* ---------- Right : Backtesting Results ---------- */}
-          {showSplitLayout && (
+          {/* -------- Right (results) -------- */}
+          {showSplit && (
             <div
               className="overflow-hidden flex flex-col"
               style={{ width: `${100 - splitRatio}%` }}

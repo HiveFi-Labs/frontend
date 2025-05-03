@@ -11,8 +11,6 @@ import {
   ArrowRight,
   Trash2,
 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,33 +26,46 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
 import useChat from '@/hooks/useChat'
 import { useStrategyStore } from '@/stores/strategyStore'
 import ReactMarkdown from 'react-markdown'
 
+/* =========================================================================
+ *  Props
+ * ========================================================================= */
 interface AICollaborationProps {
   sessionId: string | null
 }
 
+/* =========================================================================
+ *  Component
+ * ========================================================================= */
 export default function AICollaboration({ sessionId }: AICollaborationProps) {
-  const [activeAgent] = useState('strategist')
+  /* ---- local states ---- */
+  const [apiVersion, setApiVersion] = useState<'v0' | 'v1'>('v0') // ★ 追加
   const [inputMessage, setInputMessage] = useState('')
   const [tradingPair, setTradingPair] = useState('solusdc')
   const [timeframe, setTimeframe] = useState('1h')
   const [startDate, setStartDate] = useState('2023-01-01')
   const [endDate, setEndDate] = useState('2023-12-31')
 
-  const messagesContainerRef = useRef<HTMLDivElement>(null)
-
-  const conversations = useStrategyStore((state) => state.messages)
+  /* ---- zustand store ---- */
+  const conversations = useStrategyStore((s) => s.messages)
+  const resetSessionState = useStrategyStore((s) => s.resetSessionState)
   const hasConversations = conversations.length > 0
 
-  const resetSessionState = useStrategyStore((state) => state.resetSessionState)
+  /* ---- refs ---- */
+  const messagesContainerRef = useRef<HTMLDivElement>(null)
 
+  /* ---- chat hook ---- */
   const { postChat, isPending, error, cancelRequest } = useChat({
     sessionId: sessionId || '',
+    apiVersion,
   })
 
+  /* ---- side-effects ---- */
   useEffect(() => {
     if (messagesContainerRef.current) {
       messagesContainerRef.current.scrollTop =
@@ -62,21 +73,11 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
     }
   }, [conversations])
 
-  const handleSendMessage = () => {
+  /* ---- handlers ---- */
+  const sendMessage = () => {
     if (!inputMessage.trim() || isPending) return
-
-    const messageToSend = inputMessage
-    postChat(messageToSend)
+    postChat(inputMessage)
     setInputMessage('')
-  }
-
-  const handleResetConversation = () => {
-    console.log('Resetting session:', sessionId)
-    resetSessionState()
-  }
-
-  const handleCancelRequest = () => {
-    cancelRequest()
   }
 
   const tradingPairDisplay: Record<string, string> = {
@@ -85,7 +86,6 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
     solusdc: 'SOL/USDC',
     bnbusdt: 'BNB/USDT',
   }
-
   const timeframeDisplay: Record<string, string> = {
     '5m': '5m',
     '15m': '15m',
@@ -94,179 +94,163 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
     '1d': '1d',
   }
 
+  /* =========================================================================
+   *  JSX
+   * ========================================================================= */
   return (
     <Card
-      className={`glass-card overflow-hidden flex flex-col mt-2 flex-1 min-h-0 ${!hasConversations ? 'flex justify-center ' : ''}`}
+      className={`glass-card overflow-hidden flex flex-col mt-2 flex-1 min-h-0 ${!hasConversations ? 'justify-center' : ''}`}
     >
-      {/* Status Bar */}
+      {/* ================= Status Bar ================= */}
       <div
         className={`bg-zinc-800/80 border-zinc-700 py-2 px-4 flex items-center justify-between ${hasConversations ? 'border-b' : ''}`}
       >
+        {/* ---- Market Config ---- */}
         <div className="flex items-center text-xs">
-          <div className="flex items-center">
-            <Select value={tradingPair} onValueChange={setTradingPair}>
-              <SelectTrigger className="bg-transparent border-0 text-zinc-300 h-6 p-0 min-w-20 w-auto text-xs font-medium hover:text-purple-400 transition-colors">
-                <SelectValue>{tradingPairDisplay[tradingPair]}</SelectValue>
-              </SelectTrigger>
-              <SelectContent className="bg-zinc-900 border-zinc-800">
-                <SelectItem value="btcusdt">BTC/USDT</SelectItem>
-                <SelectItem value="ethusdt">ETH/USDT</SelectItem>
-                <SelectItem value="solusdc">SOL/USDC</SelectItem>
-                <SelectItem value="bnbusdt">BNB/USDT</SelectItem>
-              </SelectContent>
-            </Select>
-            <span className="text-zinc-300 mx-2">|</span>
-          </div>
+          {/* pair */}
+          <Select value={tradingPair} onValueChange={setTradingPair}>
+            <SelectTrigger className="bg-transparent border-0 h-6 p-0 min-w-20 text-xs text-zinc-300 hover:text-purple-400">
+              <SelectValue>{tradingPairDisplay[tradingPair]}</SelectValue>
+            </SelectTrigger>
+            <SelectContent className="bg-zinc-900 border-zinc-800">
+              {Object.entries(tradingPairDisplay).map(([v, l]) => (
+                <SelectItem key={v} value={v}>
+                  {l}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <span className="mx-2 text-zinc-300">|</span>
 
-          <div className="flex items-center">
-            <Select value={timeframe} onValueChange={setTimeframe}>
-              <SelectTrigger className="bg-transparent border-0 text-zinc-200 h-6 p-0 min-w-8 w-auto text-xs font-medium hover:text-purple-300 transition-colors">
-                <SelectValue>{timeframeDisplay[timeframe]}</SelectValue>
-              </SelectTrigger>
-              <SelectContent className="bg-zinc-900 border-zinc-800">
-                <SelectItem value="5m">5m</SelectItem>
-                <SelectItem value="15m">15m</SelectItem>
-                <SelectItem value="1h">1h</SelectItem>
-                <SelectItem value="4h">4h</SelectItem>
-                <SelectItem value="1d">1d</SelectItem>
-              </SelectContent>
-            </Select>
-            <span className="text-zinc-500 mx-2">|</span>
-          </div>
+          {/* timeframe */}
+          <Select value={timeframe} onValueChange={setTimeframe}>
+            <SelectTrigger className="bg-transparent border-0 h-6 p-0 min-w-8 text-xs text-zinc-200 hover:text-purple-300">
+              <SelectValue>{timeframeDisplay[timeframe]}</SelectValue>
+            </SelectTrigger>
+            <SelectContent className="bg-zinc-900 border-zinc-800">
+              {Object.entries(timeframeDisplay).map(([v, l]) => (
+                <SelectItem key={v} value={v}>
+                  {l}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <span className="mx-2 text-zinc-500">|</span>
 
-          <div className="flex items-center">
-            <input
-              type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              className="bg-transparent text-zinc-200 border-0 p-0 w-auto text-xs font-medium hover:text-purple-300 transition-colors"
-            />
-            <span className="text-zinc-300 mx-2">→</span>
-            <input
-              type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              className="bg-transparent text-zinc-200 border-0 p-0 w-auto text-xs font-medium hover:text-purple-300 transition-colors"
-            />
-          </div>
+          {/* date range */}
+          <input
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            className="bg-transparent text-xs w-auto text-zinc-200"
+          />
+          <span className="mx-2 text-zinc-300">→</span>
+          <input
+            type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+            className="bg-transparent text-xs w-auto text-zinc-200"
+          />
         </div>
 
-        {/* 設定ボタン */}
-        <div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-6 w-6 text-zinc-300 hover:text-purple-300 transition-colors"
-              >
-                <Settings className="h-3.5 w-3.5" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="end"
-              className="bg-zinc-700 border-zinc-600"
+        {/* ---- Settings ---- */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-6 w-6 text-zinc-300 hover:text-purple-300"
             >
-              <DropdownMenuLabel className="text-xs">
-                Chat Settings
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator className="bg-zinc-600" />
-              <DropdownMenuItem
-                className="text-xs text-zinc-200 focus:text-white focus:bg-zinc-600 cursor-pointer"
-                onClick={handleResetConversation}
-                disabled={isPending}
-              >
-                <Trash2 className="h-3.5 w-3.5 mr-2 text-zinc-300" />
-                Clear Chat
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+              <Settings className="h-3.5 w-3.5" />
+            </Button>
+          </DropdownMenuTrigger>
+
+          <DropdownMenuContent
+            align="end"
+            className="bg-zinc-700 border-zinc-600"
+          >
+            <DropdownMenuLabel className="text-xs">
+              Chat Settings
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator className="bg-zinc-600" />
+
+            {/* ---- API Version Toggle ---- */}
+            <DropdownMenuItem
+              className="text-xs text-zinc-200 focus:text-white focus:bg-zinc-600 cursor-pointer"
+              onClick={() => setApiVersion(apiVersion === 'v0' ? 'v1' : 'v0')}
+            >
+              🔀 Use API&nbsp;{apiVersion === 'v0' ? 'v1' : 'v0'}
+            </DropdownMenuItem>
+
+            {/* ---- Clear Chat ---- */}
+            <DropdownMenuItem
+              className="text-xs text-zinc-200 focus:text-white focus:bg-zinc-600 cursor-pointer"
+              onClick={() => resetSessionState()}
+              disabled={isPending}
+            >
+              <Trash2 className="h-3.5 w-3.5 mr-2 text-zinc-300" />
+              Clear Chat
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
+      {/* ================= Conversation Area ================= */}
       <CardContent
-        className={`p-0 bg-zinc-900 flex flex-col min-h-0 overflow-hidden ${hasConversations ? 'flex-2 h-[calc(81vh)] min-h-[calc(480px)]' : ''}`}
+        className={`p-0 bg-zinc-900 flex flex-col min-h-0 overflow-hidden ${hasConversations ? 'flex-2 h-[calc(81vh)]' : ''}`}
       >
+        {/* ---- Messages ---- */}
         <div
           ref={messagesContainerRef}
-          className={`${hasConversations ? 'flex-1 min-h-0 overflow-y-auto pr-2 space-y-4' : 'h-0 overflow-hidden'}`}
+          className={`${hasConversations ? 'flex-1 overflow-y-auto pr-2 space-y-4' : 'h-0'}`}
         >
-          {conversations.map((message, index) => (
+          {conversations.map((m, i) => (
             <div
-              key={`${message.agent}-${message.timestamp}-${index}`}
-              className={`flex m-3 gap-3  ${message.agent === 'user' ? 'justify-end' : ''}`}
+              key={`${m.agent}-${m.timestamp}-${i}`}
+              className={`flex m-3 gap-3 ${m.agent === 'user' ? 'justify-end' : ''}`}
             >
-              {message.agent !== 'user' && (
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-blue-500 flex items-center justify-center flex-shrink-0">
-                  {message.agent === 'strategist' && (
+              {/* avatar */}
+              {m.agent !== 'user' && (
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-blue-500 flex items-center justify-center">
+                  {m.agent === 'strategist' && (
                     <Lightbulb className="w-4 h-4 text-white" />
                   )}
-                  {message.agent === 'developer' && (
+                  {m.agent === 'developer' && (
                     <Code className="w-4 h-4 text-white" />
                   )}
-                  {message.agent === 'analyst' && (
+                  {m.agent === 'analyst' && (
                     <BarChart4 className="w-4 h-4 text-white" />
                   )}
-                  {message.agent === 'optimizer' && (
+                  {m.agent === 'optimizer' && (
                     <RefreshCw className="w-4 h-4 text-white" />
                   )}
                 </div>
               )}
+
+              {/* bubble */}
               <div
-                className={`glass-card p-3 rounded-xl max-w-[85%] ${message.agent === 'user' ? 'bg-purple-800/30' : 'bg-zinc-700/30'}`}
+                className={`glass-card p-3 rounded-xl max-w-[85%] ${m.agent === 'user' ? 'bg-purple-800/30' : 'bg-zinc-700/30'}`}
               >
-                <div className="flex justify-between items-start mb-1">
-                  <span className="text-sm font-semibold capitalize mr-2">
-                    {message.agent === 'user' ? 'You' : message.agent}
+                <div className="flex justify-between mb-1">
+                  <span className="text-sm font-semibold capitalize">
+                    {m.agent === 'user' ? 'You' : m.agent}
                   </span>
-                  <span className="text-xs text-zinc-300">
-                    {message.timestamp}
-                  </span>
+                  <span className="text-xs text-zinc-300">{m.timestamp}</span>
                 </div>
-                {message.agent === 'user' ? (
+                {m.agent === 'user' ? (
                   <p className="text-sm text-zinc-200 whitespace-pre-wrap">
-                    {message.message}
+                    {m.message}
                   </p>
                 ) : (
                   <div className="prose prose-sm prose-invert max-w-none">
-                    <ReactMarkdown>{message.message}</ReactMarkdown>
-                  </div>
-                )}
-
-                {message.attachment && message.attachment.type === 'chart' && (
-                  <div className="mt-3 p-3 bg-zinc-600/50 rounded-lg">
-                    <div className="text-sm font-medium mb-2">
-                      {message.attachment.data.title}
-                    </div>
-                    <div className="grid grid-cols-3 gap-2">
-                      {Object.entries(message.attachment.data.metrics).map(
-                        ([key, value], i) => (
-                          <div key={key} className="text-center">
-                            <div className="text-xs text-zinc-400 capitalize">
-                              {key.replace(/([A-Z])/g, ' $1').trim()}
-                            </div>
-                            <div
-                              className={`text-sm font-medium ${(value as string).startsWith('+') ? 'text-green-400' : (value as string).startsWith('-') ? 'text-red-400' : 'text-zinc-300'}`}
-                            >
-                              {value as React.ReactNode}
-                            </div>
-                          </div>
-                        ),
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {message.attachment && message.attachment.type === 'code' && (
-                  <div className="mt-3 p-3 bg-zinc-600/50 rounded-lg overflow-x-auto">
-                    <pre className="text-xs text-zinc-300 font-mono">
-                      <code>{message.attachment.data}</code>
-                    </pre>
+                    <ReactMarkdown>{m.message}</ReactMarkdown>
                   </div>
                 )}
               </div>
-              {message.agent === 'user' && (
-                <div className="w-8 h-8 rounded-full bg-purple-600/80 flex items-center justify-center flex-shrink-0">
+
+              {/* user avatar */}
+              {m.agent === 'user' && (
+                <div className="w-8 h-8 rounded-full bg-purple-600/80 flex items-center justify-center">
                   <MessageSquare className="w-4 h-4 text-white" />
                 </div>
               )}
@@ -274,12 +258,12 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
           ))}
 
           {isPending && (
-            <div className="flex gap-3 m-3 ">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-blue-500 flex items-center justify-center flex-shrink-0">
+            <div className="flex gap-3 m-3">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-blue-500 flex items-center justify-center">
                 <Lightbulb className="w-4 h-4 text-white" />
               </div>
-              <div className="glass-card p-3 rounded-xl max-w-[85%] bg-zinc-700/30">
-                <div className="flex items-center space-x-2">
+              <div className="glass-card p-3 rounded-xl bg-zinc-700/30">
+                <div className="flex space-x-2">
                   <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
                   <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse delay-150"></div>
                   <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse delay-300"></div>
@@ -289,14 +273,15 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
           )}
 
           {error && (
-            <div className="text-red-500 text-sm p-2 text-center m-3 ">
+            <div className="text-red-500 text-sm text-center m-3">
               Failed to get response: {error.message}
             </div>
           )}
         </div>
 
+        {/* ---- Input Area ---- */}
         <div className={hasConversations ? 'mt-4' : ''}>
-          <div className="relative rounded-b-lg border border-zinc-700 bg-zinc-800/50 overflow-hidden">
+          <div className="relative rounded-b-lg border border-zinc-700 bg-zinc-800/50">
             <textarea
               disabled={!sessionId}
               placeholder={
@@ -304,38 +289,29 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
                   ? 'Ask AI to help you create a trading strategy...'
                   : 'Loading...'
               }
-              className="w-full min-h-[60px] max-h-[120px] bg-transparent py-3 pl-4 pr-12 text-zinc-300 focus:outline-none resize-none block"
-              rows={2}
+              className="w-full min-h-[60px] max-h-[120px] bg-transparent py-3 pl-4 pr-12 text-zinc-300 resize-none focus:outline-none"
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault()
-                  handleSendMessage()
-                  setTimeout(() => setInputMessage(''), 0)
+                  sendMessage()
                 }
               }}
             />
             <div className="absolute bottom-2 right-2">
               {isPending ? (
                 <Button
-                  className="h-8 w-8 rounded-full bg-red-400 hover:bg-red-500 p-0 flex items-center justify-center"
-                  onClick={handleCancelRequest}
-                  aria-label="Cancel request"
+                  onClick={cancelRequest}
+                  className="h-8 w-8 rounded-full bg-red-400 hover:bg-red-500 p-0"
                 >
-                  <div className="w-4 h-4 flex items-center justify-center">
-                    <span className="text-white text-xs font-bold">✕</span>
-                  </div>
+                  <span className="text-white text-xs font-bold">✕</span>
                 </Button>
               ) : (
                 <Button
-                  className="h-8 w-8 rounded-full gradient-button p-0 flex items-center justify-center"
-                  onClick={(e) => {
-                    e.preventDefault()
-                    handleSendMessage()
-                  }}
                   disabled={!inputMessage.trim()}
-                  aria-label="Send message"
+                  onClick={sendMessage}
+                  className="h-8 w-8 rounded-full gradient-button p-0"
                 >
                   <ArrowRight className="w-4 h-4" />
                 </Button>

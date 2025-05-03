@@ -1,7 +1,7 @@
 import { useCallback, useRef } from 'react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
 import type { ChatMessage } from '@/types/strategy-development'
-import { apiV0 } from '@/lib/backtest.api'
+import { apiV0, apiV1 } from '@/lib/backtest.api'
 import { useStrategyStore } from '@/stores/strategyStore'
 
 /* =========================================================================
@@ -16,36 +16,60 @@ type UseChatResponse = {
 
 type UseChatProps = {
   sessionId: string
+  apiVersion: 'v0' | 'v1'
 }
 
 /* =========================================================================
- *  Hook 本体
+ *  Hook
  * ========================================================================= */
-export default function useChat({ sessionId }: UseChatProps): UseChatResponse {
-  const queryClient = useQueryClient()
+export default function useChat({
+  sessionId,
+  apiVersion,
+}: UseChatProps): UseChatResponse {
   const abortControllerRef = useRef<AbortController | null>(null)
 
-  /* -------- zustand store アクセス -------- */
-  const addMessage = useStrategyStore((state) => state.addMessage)
-  const setParams = useStrategyStore((state) => state.setParams)
-  const setResults = useStrategyStore((state) => state.setResults)
+  const addMessage = useStrategyStore((s) => s.addMessage)
+  const setParams = useStrategyStore((s) => s.setParams)
+  const setResults = useStrategyStore((s) => s.setResults)
 
-  /* -------- React-Query Mutation 定義 -------- */
+  /* --------- v1 セッション初期化フラグ --------- */
+  const v1SessionReadyRef = useRef(false)
+
+  /* --------- Mutation --------- */
   const chatMutation = useMutation({
     mutationFn: async (input: string) => {
-      if (!sessionId)
-        throw new Error('Session ID is required for chat mutation.')
+      if (!sessionId) throw new Error('Session ID is required.')
 
-      /* -- AbortController を毎回作り直す -- */
       abortControllerRef.current = new AbortController()
       const signal = abortControllerRef.current.signal
 
-      /* -- v0 API 呼び出し -- */
-      return apiV0.postChatMessage(sessionId, input, signal)
+      /* ==== v0 ==== */
+      if (apiVersion === 'v0') {
+        return apiV0.postChatMessage(sessionId, input, signal)
+      }
+
+      /* ==== v1 ==== */
+      // 1. セッションをまだ作っていなければ作成
+      if (!v1SessionReadyRef.current) {
+        await apiV1.createSession(sessionId) // user_id に sessionId を使うだけ
+        v1SessionReadyRef.current = true
+      }
+
+      // 2. メッセージ送信
+      const res = await apiV1.sendMessage(sessionId, input)
+
+      // v0 互換の形に整形して返す
+      return {
+        status: 'success',
+        response: res.assistant_message.content,
+        current_params: null,
+        result_metrics: null,
+      } as const
     },
 
     onMutate: async (input: string) => {
-      const userMessage: ChatMessage = {
+      /* ローカルにユーザーメッセージを即座に追加 */
+      const userMsg: ChatMessage = {
         agent: 'user',
         message: input,
         timestamp: new Date().toLocaleTimeString([], {
@@ -53,42 +77,36 @@ export default function useChat({ sessionId }: UseChatProps): UseChatResponse {
           minute: '2-digit',
         }),
       }
-      addMessage(userMessage)
+      addMessage(userMsg)
     },
 
     onSuccess: (data) => {
-      if (data.status === 'success' && data.response) {
-        const aiMessage: ChatMessage = {
-          agent: 'strategist',
-          message: data.response,
-          timestamp: new Date().toLocaleTimeString([], {
-            hour: '2-digit',
-            minute: '2-digit',
-          }),
-        }
-        addMessage(aiMessage)
-
-        if (data.current_params !== undefined) setParams(data.current_params)
-        if (data.result_metrics !== undefined) setResults(data.result_metrics)
-      } else if (data.status === 'error') {
-        console.error(
-          'API Error reported:',
-          data.message || 'Unknown API error',
-        )
+      /* アシスタント応答をローカルに追加 */
+      const aiMsg: ChatMessage = {
+        agent: 'strategist',
+        message: data.response ?? '',
+        timestamp: new Date().toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+        }),
       }
+      addMessage(aiMsg)
+
+      /* v0 固有パラメータはそのまま反映（v1 は今のところ null） */
+      if (data.current_params !== undefined) setParams(data.current_params)
+      if (data.result_metrics !== undefined) setResults(data.result_metrics)
     },
 
-    onError: (error: Error) => {
-      /* AbortError はユーザー操作なので無視 */
+    onError: (error) => {
       if (error.name === 'AbortError') {
-        console.log('Request was cancelled')
+        console.log('Request cancelled by user.')
         return
       }
-      console.error('Chat Mutation Network/Fetch Error:', error.message)
+      console.error('Chat error:', error)
     },
   })
 
-  /* -------- 公開関数 -------- */
+  /* --------- 公開メソッド --------- */
   const postChat = useCallback(
     (input: string) => {
       chatMutation.mutate(input)
@@ -98,24 +116,21 @@ export default function useChat({ sessionId }: UseChatProps): UseChatResponse {
 
   const cancelRequest = useCallback(() => {
     if (abortControllerRef.current) {
-      abortControllerRef.current.abort('User cancelled request')
+      abortControllerRef.current.abort()
       abortControllerRef.current = null
-
       chatMutation.reset()
 
-      const cancelMessage: ChatMessage = {
+      addMessage({
         agent: 'strategist',
         message: '_Request cancelled by user_',
         timestamp: new Date().toLocaleTimeString([], {
           hour: '2-digit',
           minute: '2-digit',
         }),
-      }
-      addMessage(cancelMessage)
+      })
     }
   }, [addMessage, chatMutation])
 
-  /* -------- 戻り値 -------- */
   return {
     postChat,
     isPending: chatMutation.isPending,
