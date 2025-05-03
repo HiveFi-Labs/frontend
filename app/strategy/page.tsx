@@ -9,32 +9,32 @@ import AICollaboration from '@/components/strategy/ai-collaboration'
 import BacktestingResults from '@/components/strategy/backtesting-results'
 import { useStrategyStore } from '@/stores/strategyStore'
 import {
-  getBacktestResults,
+  apiV0,
   type BacktestResultsJsonResponse,
   type PlotlyDataObject,
 } from '@/lib/backtest.api'
 
 export default function StrategyPage() {
-  const sessionId = useStrategyStore((state) => state.sessionId)
-  const setSessionId = useStrategyStore((state) => state.setSessionId)
-  const backtestResults = useStrategyStore((state) => state.backtestResults)
-  const backtestResultsJson = useStrategyStore(
-    (state) => state.backtestResultsJson,
-  )
+  /* -------- zustand から取得 -------- */
+  const sessionId = useStrategyStore((s) => s.sessionId)
+  const setSessionId = useStrategyStore((s) => s.setSessionId)
+  const backtestResults = useStrategyStore((s) => s.backtestResults)
+  const backtestResultsJson = useStrategyStore((s) => s.backtestResultsJson)
   const setBacktestResultsJson = useStrategyStore(
-    (state) => state.setBacktestResultsJson,
+    (s) => s.setBacktestResultsJson,
   )
-  const conversations = useStrategyStore((state) => state.messages)
+  const conversations = useStrategyStore((s) => s.messages)
   const hasConversations = conversations.length > 0
 
+  /* -------- split レイアウト -------- */
   const [splitRatio, setSplitRatio] = useState(50)
 
+  /* -------- sessionId 初期化 -------- */
   useEffect(() => {
-    if (!sessionId) {
-      setSessionId(uuidv4())
-    }
+    if (!sessionId) setSessionId(uuidv4())
   }, [sessionId, setSessionId])
 
+  /* -------- バックテスト結果取得 -------- */
   const {
     data: fetchedResultsJson,
     isLoading: isLoadingResultsJson,
@@ -43,10 +43,8 @@ export default function StrategyPage() {
   } = useQuery<PlotlyDataObject, Error>({
     queryKey: ['backtestResultsJson', sessionId],
     queryFn: () => {
-      if (!sessionId) {
-        return Promise.reject(new Error('Session ID is required'))
-      }
-      return getBacktestResults(sessionId)
+      if (!sessionId) return Promise.reject(new Error('Session ID is required'))
+      return apiV0.getBacktestResults(sessionId) // ★ 変更点
     },
     enabled: !!sessionId && !!backtestResults && !backtestResultsJson,
     staleTime: Number.POSITIVE_INFINITY,
@@ -54,14 +52,12 @@ export default function StrategyPage() {
   })
 
   useEffect(() => {
-    if (isSuccess && fetchedResultsJson) {
-      if (!backtestResultsJson) {
-        console.log(
-          'Fetched backtest results JSON (Saving full data):',
-          fetchedResultsJson,
-        )
-        setBacktestResultsJson(fetchedResultsJson)
-      }
+    if (isSuccess && fetchedResultsJson && !backtestResultsJson) {
+      console.log(
+        'Fetched backtest results JSON (Saving full data):',
+        fetchedResultsJson,
+      )
+      setBacktestResultsJson(fetchedResultsJson)
     }
   }, [
     isSuccess,
@@ -71,11 +67,11 @@ export default function StrategyPage() {
   ])
 
   useEffect(() => {
-    if (errorResultsJson) {
+    if (errorResultsJson)
       console.error('Error fetching backtest results JSON:', errorResultsJson)
-    }
   }, [errorResultsJson])
 
+  /* -------- リサイズロジック -------- */
   const handleResize = (e: MouseEvent) => {
     const splitContainer = document.querySelector('.split-container')
     if (!splitContainer) return
@@ -88,23 +84,22 @@ export default function StrategyPage() {
 
   const showSplitLayout = !!backtestResults || !!backtestResultsJson
 
-  // バックテスト開始時にsplitRatioを調整
+  /* バックテスト開始／終了で split を自動調整 */
   useEffect(() => {
-    if (backtestResults || backtestResultsJson) {
-      setSplitRatio(50) // バックテスト結果が揃った時に50%に設定
-    } else {
-      setSplitRatio(100) // バックテスト未開始時はチャットUIを100%に
-    }
+    if (backtestResults || backtestResultsJson) setSplitRatio(50)
+    else setSplitRatio(100)
   }, [backtestResults, backtestResultsJson])
 
+  /* =========================================================================
+   *  JSX
+   * ========================================================================= */
   return (
     <div className="min-h-screen bg-black text-white pt-20 pb-10">
       <div className="container mx-auto px-4 max-w-full">
-        {/* 条件付きレイアウト - showSplitLayoutがfalseの時は中央配置と最大幅制限 */}
         <div
-          className={`flex flex-row gap-0 h-[calc(90vh)] min-h-[calc(500px)] overflow-hidden relative split-container ${!showSplitLayout ? 'justify-center' : ''}`}
+          className={`flex flex-row gap-0 h-[calc(90vh)] min-h-[500px] overflow-hidden relative split-container ${!showSplitLayout ? 'justify-center' : ''}`}
         >
-          {/* Left side - AI Collaboration */}
+          {/* ---------- Left : AI Collaboration ---------- */}
           <div
             className={`overflow-hidden flex flex-col flex-1 min-h-0 ${!hasConversations ? 'pb-20' : ''} ${!showSplitLayout ? 'max-w-3xl self-center' : ''}`}
             style={{ width: showSplitLayout ? `${splitRatio}%` : '100%' }}
@@ -121,29 +116,25 @@ export default function StrategyPage() {
             <AICollaboration sessionId={sessionId} />
           </div>
 
-          {/* リサイズハンドラー - showSplitLayoutがtrueの時のみ表示 */}
+          {/* ---------- Splitter Handle ---------- */}
           {showSplitLayout && (
             <div
               className="w-1 cursor-col-resize"
-              onMouseDown={(e: React.MouseEvent) => {
+              onMouseDown={(e) => {
                 e.preventDefault()
-
-                const handleMouseMove = (moveEvent: MouseEvent) => {
+                const handleMouseMove = (moveEvent: MouseEvent) =>
                   handleResize(moveEvent)
-                }
-
                 const handleMouseUp = () => {
                   document.removeEventListener('mousemove', handleMouseMove)
                   document.removeEventListener('mouseup', handleMouseUp)
                 }
-
                 document.addEventListener('mousemove', handleMouseMove)
                 document.addEventListener('mouseup', handleMouseUp)
               }}
             />
           )}
 
-          {/* Right side - Backtesting Results - showSplitLayoutがtrueの時のみ表示 */}
+          {/* ---------- Right : Backtesting Results ---------- */}
           {showSplitLayout && (
             <div
               className="overflow-hidden flex flex-col"
