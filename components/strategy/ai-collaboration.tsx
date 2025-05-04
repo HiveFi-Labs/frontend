@@ -11,6 +11,8 @@ import {
   ArrowRight,
   Trash2,
   Play,
+  Zap,
+  Hammer,
 } from 'lucide-react'
 import {
   DropdownMenu,
@@ -189,11 +191,22 @@ export default function AICollaboration({ sessionId }: Props) {
             </DropdownMenuLabel>
             <DropdownMenuSeparator className="bg-zinc-600" />
             <DropdownMenuItem
-              className="text-xs text-zinc-200 focus:text-white focus:bg-zinc-600 cursor-pointer"
-              onClick={() => setApiVersion(apiVersion === 'v0' ? 'v1' : 'v0')}
+              className={`text-xs focus:bg-zinc-600 cursor-pointer ${apiVersion === 'v0' ? 'text-purple-300 font-semibold' : 'text-zinc-200'}`}
+              onClick={() => setApiVersion('v0')}
+              disabled={apiVersion === 'v0'}
             >
-              🔀 Switch to API {apiVersion === 'v0' ? 'v1' : 'v0'}
+              <Zap className="h-3.5 w-3.5 mr-2 text-zinc-300" />
+              Easy Mode (v0)
             </DropdownMenuItem>
+            <DropdownMenuItem
+              className={`text-xs focus:bg-zinc-600 cursor-pointer ${apiVersion === 'v1' ? 'text-purple-300 font-semibold' : 'text-zinc-200'}`}
+              onClick={() => setApiVersion('v1')}
+              disabled={apiVersion === 'v1'}
+            >
+              <Hammer className="h-3.5 w-3.5 mr-2 text-zinc-300" />
+              Build Mode (v1)
+            </DropdownMenuItem>
+            <DropdownMenuSeparator className="bg-zinc-600" />
             <DropdownMenuItem
               className="text-xs text-zinc-200 focus:text-white focus:bg-zinc-600 cursor-pointer"
               onClick={resetSessionState}
