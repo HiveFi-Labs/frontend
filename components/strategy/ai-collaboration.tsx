@@ -50,6 +50,7 @@ export default function AICollaboration({ sessionId }: Props) {
   /* ---------------- store ---------------- */
   const conversations = useStrategyStore((s) => s.messages)
   const resetSessionState = useStrategyStore((s) => s.resetSessionState)
+  const backtestStatus = useStrategyStore((s) => s.backtestStatus)
   const hasConversations = conversations.length > 0
 
   /* ---------------- refs ---------------- */
@@ -65,7 +66,6 @@ export default function AICollaboration({ sessionId }: Props) {
 
   const {
     run: runBacktest,
-    status: btStatus,
     error: btError,
   } = useV1Backtest(apiVersion === 'v1' ? sessionId : null)
 
@@ -85,9 +85,9 @@ export default function AICollaboration({ sessionId }: Props) {
 
   const sending =
     chatPending ||
-    btStatus === 'prompt' ||
-    btStatus === 'code' ||
-    btStatus === 'backtest'
+    backtestStatus === 'prompt' ||
+    backtestStatus === 'code' ||
+    backtestStatus === 'backtest'
   const statusLabel: Record<string, string> = {
     idle: '',
     prompt: 'Generating prompt…',

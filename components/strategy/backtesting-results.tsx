@@ -9,10 +9,27 @@ import StrategyCode from '@/components/strategy/strategy-code'
 import PerformanceMetrics from '@/components/strategy/performance-metrics'
 import TradeCharts from '@/components/strategy/trade-charts'
 import TradeHistoryTable from '@/components/strategy/trade-history-table'
+import { useStrategyStore } from '@/stores/strategyStore'
 
 export default function BacktestingResults() {
-  const [isRunningBacktest, setIsRunningBacktest] = useState(false)
   const [activeView, setActiveView] = useState('preview')
+  const backtestStatus = useStrategyStore((s) => s.backtestStatus)
+  
+  // backtestStatusに基づいて表示を変更できます
+  const isRunning = backtestStatus === 'prompt' || 
+                   backtestStatus === 'code' || 
+                   backtestStatus === 'backtest';
+                   
+  const statusDisplay = {
+    idle: '',
+    prompt: 'Generating...',
+    code: 'Generating code...',
+    backtest: 'Running backtest...',
+    completed: 'Completed!',
+    error: 'Error occurred',
+  };
+
+  const statusMessage = statusDisplay[backtestStatus] || ''
 
   // activeViewの変更を検知して親コンポーネントのshowCodeを更新
   const handleViewChange = (value: string) => {
