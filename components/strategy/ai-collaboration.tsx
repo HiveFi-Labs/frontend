@@ -80,23 +80,6 @@ export default function AICollaboration({ sessionId }: Props) {
     }
   }, [conversations])
 
-  useEffect(() => {
-    const initializeSession = async () => {
-      if (apiVersion === 'v1' && sessionId) {
-        try {
-          const randomUserId = `user_${Math.random().toString(36).substring(2, 9)}`;
-          const response = await apiV1.createSession(randomUserId);
-          if (response && response.session_id) {
-            useStrategyStore.getState().setSessionId(response.session_id);
-          }
-        } catch (error) {
-          console.error('Failed to create v1 session:', error);
-        }
-      }
-    }
-    // if(sessionId) initializeSession();
-  }, [apiVersion, sessionId]);
-
   /* ---------------- helpers ---------------- */
   const sendMessage = () => {
     if (!inputMessage.trim() || chatPending) return
