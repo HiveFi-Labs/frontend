@@ -42,7 +42,9 @@ export default function useV1Backtest(sessionId: string | null) {
       /* 4. 結果をストアに格納 */
       setBacktestResults(btRes.backtest_results)
       if (btRes.backtest_results.plot_json)
-        setBacktestResultsJson(btRes.backtest_results.plot_json as PlotlyDataObject)
+        setBacktestResultsJson(
+          btRes.backtest_results.plot_json as PlotlyDataObject,
+        )
 
       setBacktestStatus('completed')
     } catch (err: any) {
@@ -50,7 +52,13 @@ export default function useV1Backtest(sessionId: string | null) {
       setError(err)
       setBacktestStatus('error')
     }
-  }, [sessionId, messages, setBacktestStatus, setBacktestResults, setBacktestResultsJson])
+  }, [
+    sessionId,
+    messages,
+    setBacktestStatus,
+    setBacktestResults,
+    setBacktestResultsJson,
+  ])
 
   const reset = () => {
     setBacktestStatus('idle')

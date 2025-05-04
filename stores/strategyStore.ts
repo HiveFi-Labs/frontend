@@ -11,7 +11,13 @@ interface PlotlyDataObject {
 // APIレスポンスの型に合わせて Params と Results の型を定義 (必要に応じて調整)
 type BacktestParams = Record<string, unknown> | null
 type BacktestResults = Record<string, unknown> | null // APIレスポンスの result_metrics に対応
-type BacktestStatus = 'idle' | 'prompt' | 'code' | 'backtest' | 'completed' | 'error'
+type BacktestStatus =
+  | 'idle'
+  | 'prompt'
+  | 'code'
+  | 'backtest'
+  | 'completed'
+  | 'error'
 
 interface StrategyState {
   sessionId: string | null

@@ -14,12 +14,13 @@ import { useStrategyStore } from '@/stores/strategyStore'
 export default function BacktestingResults() {
   const [activeView, setActiveView] = useState('preview')
   const backtestStatus = useStrategyStore((s) => s.backtestStatus)
-  
+
   // backtestStatusに基づいて表示を変更できます
-  const isRunning = backtestStatus === 'prompt' || 
-                   backtestStatus === 'code' || 
-                   backtestStatus === 'backtest';
-                   
+  const isRunning =
+    backtestStatus === 'prompt' ||
+    backtestStatus === 'code' ||
+    backtestStatus === 'backtest'
+
   const statusDisplay = {
     idle: '',
     prompt: 'Generating...',
@@ -27,7 +28,7 @@ export default function BacktestingResults() {
     backtest: 'Running backtest...',
     completed: 'Completed!',
     error: 'Error occurred',
-  };
+  }
 
   const statusMessage = statusDisplay[backtestStatus] || ''
 

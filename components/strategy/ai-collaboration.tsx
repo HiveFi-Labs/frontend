@@ -66,10 +66,9 @@ export default function AICollaboration({ sessionId }: Props) {
     cancelRequest,
   } = useChat({ sessionId: sessionId || '', apiVersion })
 
-  const {
-    run: runBacktest,
-    error: btError,
-  } = useV1Backtest(apiVersion === 'v1' ? sessionId : null)
+  const { run: runBacktest, error: btError } = useV1Backtest(
+    apiVersion === 'v1' ? sessionId : null,
+  )
 
   /* ---------------- effects ---------------- */
   useEffect(() => {
