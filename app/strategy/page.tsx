@@ -32,13 +32,15 @@ export default function StrategyPage() {
   }, [sessionId, setSessionId])
 
   /* ---- back-test JSON (v0 only for now) ---- */
+  const shouldFetchV0 = useStrategyStore.getState().messages.length > 0 // 簡易判定
   const { data: fetchedJson, isSuccess } = useQuery<PlotlyDataObject, Error>({
     queryKey: ['backtestResultsJson', sessionId],
     queryFn: () => {
       if (!sessionId) throw new Error('Session ID is required')
       return apiV0.getBacktestResults(sessionId)
     },
-    enabled: !!sessionId && !!backtestResults && !backtestResultsJson,
+    enabled:
+      shouldFetchV0 && !!sessionId && !!backtestResults && !backtestResultsJson,
     staleTime: Infinity,
     refetchOnWindowFocus: false,
   })
