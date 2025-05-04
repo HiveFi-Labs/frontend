@@ -10,11 +10,13 @@ import {
   apiV0, // ← 成果の取得はまだ v0 のみ
   type PlotlyDataObject,
 } from '@/lib/backtest.api'
+import { apiV1 } from '@/lib/backtest.api'
 
 export default function StrategyPage() {
   /* ---- zustand ---- */
   const sessionId = useStrategyStore((s) => s.sessionId)
   const setSessionId = useStrategyStore((s) => s.setSessionId)
+  const apiVersion = useStrategyStore((s) => s.apiVersion)
   const backtestResults = useStrategyStore((s) => s.backtestResults)
   const backtestResultsJson = useStrategyStore((s) => s.backtestResultsJson)
   const setBacktestResultsJson = useStrategyStore(
@@ -28,11 +30,29 @@ export default function StrategyPage() {
 
   /* ---- sessionId ---- */
   useEffect(() => {
-    if (!sessionId) setSessionId(uuidv4())
-  }, [sessionId, setSessionId])
+    const initializeSession = async () => {
+      console.log('initializeSession', apiVersion, sessionId)
+      if (apiVersion === 'v1') {
+        try {
+          const randomUserId = `user_${Math.random().toString(36).substring(2, 9)}`
+          const response = await apiV1.createSession(randomUserId)
+          if (response && response.session_id) {
+            setSessionId(response.session_id)
+          }
+        } catch (error) {
+          console.error('Failed to create v1 session:', error)
+        }
+      } else {
+        // v0の場合はUUIDを使用
+        setSessionId(uuidv4())
+      }
+    }
+
+    if (!sessionId) initializeSession()
+  }, [apiVersion, sessionId, setSessionId])
 
   /* ---- back-test JSON (v0 only for now) ---- */
-  const shouldFetchV0 = useStrategyStore.getState().messages.length > 0 // 簡易判定
+  const shouldFetchV0 = apiVersion === 'v0' && conversations.length > 0
   const { data: fetchedJson, isSuccess } = useQuery<PlotlyDataObject, Error>({
     queryKey: ['backtestResultsJson', sessionId],
     queryFn: () => {

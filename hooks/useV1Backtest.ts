@@ -5,6 +5,7 @@ import type { PlotlyDataObject } from '@/lib/backtest.api'
 
 export default function useV1Backtest(sessionId: string | null) {
   const [error, setError] = useState<Error | null>(null)
+  const apiVersion = useStrategyStore((s) => s.apiVersion)
 
   const messages = useStrategyStore((s) => s.messages)
   const backtestStatus = useStrategyStore((s) => s.backtestStatus)
@@ -18,7 +19,7 @@ export default function useV1Backtest(sessionId: string | null) {
    *  実行関数
    * ------------------------------------------------------------ */
   const run = useCallback(async () => {
-    if (!sessionId) return
+    if (!sessionId || apiVersion !== 'v1') return
     setError(null)
 
     try {
@@ -54,6 +55,7 @@ export default function useV1Backtest(sessionId: string | null) {
     }
   }, [
     sessionId,
+    apiVersion,
     messages,
     setBacktestStatus,
     setBacktestResults,
@@ -64,6 +66,6 @@ export default function useV1Backtest(sessionId: string | null) {
     setBacktestStatus('idle')
     setError(null)
   }
-
+  
   return { run, status: backtestStatus, error, reset }
 }

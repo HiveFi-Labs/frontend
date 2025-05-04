@@ -35,6 +35,7 @@ import useChat from '@/hooks/useChat'
 import useV1Backtest from '@/hooks/useV1Backtest'
 import { useStrategyStore } from '@/stores/strategyStore'
 import ReactMarkdown from 'react-markdown'
+import { apiV1 } from '@/lib/backtest.api'
 
 interface Props {
   sessionId: string | null
@@ -42,7 +43,9 @@ interface Props {
 
 export default function AICollaboration({ sessionId }: Props) {
   /* ---------------- state ---------------- */
-  const [apiVersion, setApiVersion] = useState<'v0' | 'v1'>('v0')
+  const apiVersion = useStrategyStore((s) => s.apiVersion)
+  const setApiVersion = useStrategyStore((s) => s.setApiVersion)
+  
   const [inputMessage, setInputMessage] = useState('')
   const [tradingPair, setTradingPair] = useState('solusdc')
   const [timeframe, setTimeframe] = useState('1h')
@@ -76,6 +79,23 @@ export default function AICollaboration({ sessionId }: Props) {
       containerRef.current.scrollTop = containerRef.current.scrollHeight
     }
   }, [conversations])
+
+  useEffect(() => {
+    const initializeSession = async () => {
+      if (apiVersion === 'v1' && sessionId) {
+        try {
+          const randomUserId = `user_${Math.random().toString(36).substring(2, 9)}`;
+          const response = await apiV1.createSession(randomUserId);
+          if (response && response.session_id) {
+            useStrategyStore.getState().setSessionId(response.session_id);
+          }
+        } catch (error) {
+          console.error('Failed to create v1 session:', error);
+        }
+      }
+    }
+    // if(sessionId) initializeSession();
+  }, [apiVersion, sessionId]);
 
   /* ---------------- helpers ---------------- */
   const sendMessage = () => {

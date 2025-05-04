@@ -23,6 +23,10 @@ interface StrategyState {
   sessionId: string | null
   setSessionId: (id: string | null) => void
 
+  // APIバージョン設定を追加
+  apiVersion: 'v0' | 'v1'
+  setApiVersion: (version: 'v0' | 'v1') => void
+
   messages: ChatMessage[] // チャットメッセージをストアで管理
   addMessage: (message: ChatMessage) => void
   resetMessages: () => void
@@ -48,6 +52,10 @@ interface StrategyState {
 export const useStrategyStore = create<StrategyState>((set) => ({
   sessionId: null,
   setSessionId: (id) => set({ sessionId: id }),
+
+  // APIバージョンのデフォルト値と更新関数
+  apiVersion: 'v1',
+  setApiVersion: (version) => set({ apiVersion: version }),
 
   messages: [], // 初期メッセージは空配列
   addMessage: (message) =>
@@ -75,6 +83,6 @@ export const useStrategyStore = create<StrategyState>((set) => ({
       backtestResults: null,
       backtestResultsJson: null, // 結果 JSON もリセット
       backtestStatus: 'idle', // ステータスもリセット
-      // sessionId はリセットしない（新しいセッションが開始される想定）
+      // apiVersionはリセットしない
     }),
 }))

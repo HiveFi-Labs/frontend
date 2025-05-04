@@ -144,7 +144,7 @@ namespace V1 {
   /* --- セッション --- */
   /** 新規セッション作成 */
   export const createSession = (userId: string) =>
-    fetchJson<SessionCreated>(`${API}/v1/sessions`, {
+    fetchJson<SessionCreated>(`${API}/sessions`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ user_id: userId }),
@@ -152,23 +152,23 @@ namespace V1 {
 
   /** セッション状態取得 */
   export const getSession = (sessionId: string) =>
-    fetchJson<SessionState>(`${API}/v1/sessions/${sessionId}`)
+    fetchJson<SessionState>(`${API}/sessions/${sessionId}`)
 
   /* --- メッセージ --- */
   export const sendMessage = (sessionId: string, message: string) =>
-    fetchJson<AssistantResponse>(`${API}/v1/sessions/${sessionId}/messages`, {
+    fetchJson<AssistantResponse>(`${API}/sessions/${sessionId}/messages`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ message }),
     })
 
   export const getMessages = (sessionId: string) =>
-    fetchJson<ChatMessage[]>(`${API}/v1/sessions/${sessionId}/messages`)
+    fetchJson<ChatMessage[]>(`${API}/sessions/${sessionId}/messages`)
 
   /* --- プロンプト --- */
   export const setStrategyPrompt = (sessionId: string, prompt: string) =>
     fetchJson<PromptResponse>(
-      `${API}/v1/sessions/${sessionId}/strategy/prompt`,
+      `${API}/sessions/${sessionId}/strategy/prompt`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -177,30 +177,30 @@ namespace V1 {
     )
 
   export const getStrategyPrompt = (sessionId: string) =>
-    fetchJson<PromptResponse>(`${API}/v1/sessions/${sessionId}/strategy/prompt`)
+    fetchJson<PromptResponse>(`${API}/sessions/${sessionId}/strategy/prompt`)
 
   /* --- コード生成（現行は同期 200） --- */
   export const generateCode = (sessionId: string) =>
     fetchJson<CodeGenerationResponse>(
-      `${API}/v1/sessions/${sessionId}/strategy/code`,
+      `${API}/sessions/${sessionId}/strategy/code`,
       { method: 'POST' },
     )
 
   export const getLatestGeneratedCode = (sessionId: string) =>
     fetchJson<CodeGenerationResponse>(
-      `${API}/v1/sessions/${sessionId}/strategy/code`,
+      `${API}/sessions/${sessionId}/strategy/code`,
     )
 
   /* --- バックテスト（現行は同期 200） --- */
   export const runBacktest = (sessionId: string, code_reference: string) =>
-    fetchJson<BacktestResponse>(`${API}/v1/sessions/${sessionId}/backtests`, {
+    fetchJson<BacktestResponse>(`${API}/sessions/${sessionId}/backtests`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ code_reference }),
     })
 
   export const getLatestBacktest = (sessionId: string) =>
-    fetchJson<BacktestResponse>(`${API}/v1/sessions/${sessionId}/backtests`)
+    fetchJson<BacktestResponse>(`${API}/sessions/${sessionId}/backtests`)
 }
 
 /* =========================================================================
