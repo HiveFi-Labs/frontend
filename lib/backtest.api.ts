@@ -125,8 +125,11 @@ namespace V1 {
   }
   // --- Backtest ---
   export interface BacktestResponse {
-    session_id: string
-    backtest_results: Record<string, unknown>
+    backtest_results: {
+      script_path: string
+      plot_json: PlotlyDataObject
+      stats: Record<string, unknown> | null
+    }
   }
 
   /* ========== fetch ラッパ ========== */
