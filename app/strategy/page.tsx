@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { useQuery } from '@tanstack/react-query'
-import { Upload, Save } from 'lucide-react'
+import { Upload, Save, Loader2, LockIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import AICollaboration from '@/components/strategy/ai-collaboration'
 import BacktestingResults from '@/components/strategy/backtesting-results'
@@ -13,8 +13,10 @@ import {
   type BacktestResultsJsonResponse,
   type PlotlyDataObject,
 } from '@/lib/backtest.api'
+import { usePrivy } from '@privy-io/react-auth'
 
 export default function StrategyPage() {
+  const { authenticated, login } = usePrivy()
   const sessionId = useStrategyStore((state) => state.sessionId)
   const setSessionId = useStrategyStore((state) => state.setSessionId)
   const backtestResults = useStrategyStore((state) => state.backtestResults)
@@ -28,12 +30,25 @@ export default function StrategyPage() {
   const hasConversations = conversations.length > 0
 
   const [splitRatio, setSplitRatio] = useState(50)
+  const [loginAttempted, setLoginAttempted] = useState(false)
 
   useEffect(() => {
-    if (!sessionId) {
+    if (authenticated && !sessionId) {
       setSessionId(uuidv4())
     }
-  }, [sessionId, setSessionId])
+  }, [authenticated, sessionId, setSessionId])
+
+  useEffect(() => {
+    if (!authenticated && !loginAttempted) {
+      setLoginAttempted(true)
+    }
+  }, [authenticated, loginAttempted])
+
+  useEffect(() => {
+    if (loginAttempted && !authenticated) {
+      login()
+    }
+  }, [loginAttempted, authenticated])
 
   const {
     data: fetchedResultsJson,
@@ -48,7 +63,8 @@ export default function StrategyPage() {
       }
       return getBacktestResults(sessionId)
     },
-    enabled: !!sessionId && !!backtestResults && !backtestResultsJson,
+    enabled:
+      !!sessionId && !!backtestResults && !backtestResultsJson && authenticated,
     staleTime: Number.POSITIVE_INFINITY,
     refetchOnWindowFocus: false,
   })
@@ -100,7 +116,6 @@ export default function StrategyPage() {
   return (
     <div className="min-h-screen bg-black text-white pt-20 pb-10">
       <div className="container mx-auto px-4 max-w-full">
-        {/* 条件付きレイアウト - showSplitLayoutがfalseの時は中央配置と最大幅制限 */}
         <div
           className={`flex flex-row gap-0 h-[calc(90vh)] min-h-[calc(500px)] overflow-hidden relative split-container ${!showSplitLayout ? 'justify-center' : ''}`}
         >
