@@ -41,8 +41,8 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
   const [inputMessage, setInputMessage] = useState('')
   const [tradingPair, setTradingPair] = useState('solusdc')
   const [timeframe, setTimeframe] = useState('1h')
-  const [startDate, setStartDate] = useState('2023-01-01')
-  const [endDate, setEndDate] = useState('2023-12-31')
+  const [startDate, setStartDate] = useState('2024-01-01')
+  const [endDate, setEndDate] = useState('2025-01-01')
 
   const messagesContainerRef = useRef<HTMLDivElement>(null)
 
@@ -103,9 +103,9 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
         className={`bg-zinc-800/80 border-zinc-700 py-2 px-4 flex items-center justify-between ${hasConversations ? 'border-b' : ''}`}
       >
         <div className="flex items-center text-xs">
-          <div className="flex items-center">
-            <Select value={tradingPair} onValueChange={setTradingPair}>
-              <SelectTrigger className="bg-transparent border-0 text-zinc-300 h-6 p-0 min-w-20 w-auto text-xs font-medium hover:text-purple-400 transition-colors">
+          <div className="flex items-center relative group">
+            <Select value={tradingPair} onValueChange={setTradingPair} disabled={true}>
+              <SelectTrigger className="bg-transparent border-0 text-zinc-500 h-6 p-0 min-w-20 w-auto text-xs font-medium cursor-not-allowed opacity-50">
                 <SelectValue>{tradingPairDisplay[tradingPair]}</SelectValue>
               </SelectTrigger>
               <SelectContent className="bg-zinc-900 border-zinc-800">
@@ -115,12 +115,15 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
                 <SelectItem value="bnbusdt">BNB/USDT</SelectItem>
               </SelectContent>
             </Select>
-            <span className="text-zinc-300 mx-2">|</span>
+            <div className="absolute opacity-0 group-hover:opacity-100 bg-zinc-800 text-zinc-200 text-xs px-2 py-1 rounded pointer-events-none whitespace-nowrap transition-opacity duration-200 top-8 left-0 shadow-lg z-10">
+              Coming soon
+            </div>
+            <span className="text-zinc-500 mx-2">|</span>
           </div>
 
-          <div className="flex items-center">
-            <Select value={timeframe} onValueChange={setTimeframe}>
-              <SelectTrigger className="bg-transparent border-0 text-zinc-200 h-6 p-0 min-w-8 w-auto text-xs font-medium hover:text-purple-300 transition-colors">
+          <div className="flex items-center relative group">
+            <Select value={timeframe} onValueChange={setTimeframe} disabled={true}>
+              <SelectTrigger className="bg-transparent border-0 text-zinc-500 h-6 p-0 min-w-8 w-auto text-xs font-medium cursor-not-allowed opacity-50">
                 <SelectValue>{timeframeDisplay[timeframe]}</SelectValue>
               </SelectTrigger>
               <SelectContent className="bg-zinc-900 border-zinc-800">
@@ -131,23 +134,31 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
                 <SelectItem value="1d">1d</SelectItem>
               </SelectContent>
             </Select>
+            <div className="absolute opacity-0 group-hover:opacity-100 bg-zinc-800 text-zinc-200 text-xs px-2 py-1 rounded pointer-events-none whitespace-nowrap transition-opacity duration-200 top-8 left-0 shadow-lg z-10">
+              Coming soon
+            </div>
             <span className="text-zinc-500 mx-2">|</span>
           </div>
 
-          <div className="flex items-center">
+          <div className="flex items-center relative group">
             <input
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              className="bg-transparent text-zinc-200 border-0 p-0 w-auto text-xs font-medium hover:text-purple-300 transition-colors"
+              className="bg-transparent text-zinc-500 border-0 p-0 w-auto text-xs font-medium cursor-not-allowed opacity-50"
+              disabled={true}
             />
-            <span className="text-zinc-300 mx-2">→</span>
+            <span className="text-zinc-500 mx-2">→</span>
             <input
               type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
-              className="bg-transparent text-zinc-200 border-0 p-0 w-auto text-xs font-medium hover:text-purple-300 transition-colors"
+              className="bg-transparent text-zinc-500 border-0 p-0 w-auto text-xs font-medium cursor-not-allowed opacity-50"
+              disabled={true}
             />
+            <div className="absolute opacity-0 group-hover:opacity-100 bg-zinc-800 text-zinc-200 text-xs px-2 py-1 rounded pointer-events-none whitespace-nowrap transition-opacity duration-200 top-8 left-0 shadow-lg z-10">
+              Coming soon
+            </div>
           </div>
         </div>
 
