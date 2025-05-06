@@ -12,7 +12,7 @@ import TradeHistoryTable from '@/components/strategy/trade-history-table'
 import { useStrategyStore } from '@/stores/strategyStore'
 
 export default function BacktestingResults() {
-  const [activeView, setActiveView] = useState('preview')
+  const [activeView, setActiveView] = useState('backtest')
   const backtestStatus = useStrategyStore((s) => s.backtestStatus)
 
   // backtestStatusに基づいて表示を変更できます
@@ -80,7 +80,7 @@ export default function BacktestingResults() {
         </div>
 
         <CardContent className="space-y-6 overflow-auto flex-1 pb-6 pt-4">
-          {activeView === 'preview' ? (
+          {activeView === 'backtest' ? (
             <>
               {/* Chart View */}
               <TradeCharts />
