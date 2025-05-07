@@ -14,9 +14,12 @@ import {
   type PlotlyDataObject,
 } from '@/lib/backtest.api'
 import { usePrivy } from '@privy-io/react-auth'
+import { user_whitelist } from '@/data/user_whitelist'
+
+const whitelistPosition = parseInt(process.env.NEXT_PUBLIC_WHITELIST_POSITION || '0', 10);
 
 export default function StrategyPage() {
-  const { authenticated, login } = usePrivy()
+  const { authenticated, login, user } = usePrivy()
   const sessionId = useStrategyStore((state) => state.sessionId)
   const setSessionId = useStrategyStore((state) => state.setSessionId)
   const backtestResults = useStrategyStore((state) => state.backtestResults)
@@ -31,6 +34,8 @@ export default function StrategyPage() {
 
   const [splitRatio, setSplitRatio] = useState(50)
   const [loginAttempted, setLoginAttempted] = useState(false)
+  const [showComingSoon, setShowComingSoon] = useState(false)
+  const [position, setPosition] = useState<number>(user_whitelist.length + 1);
 
   useEffect(() => {
     if (authenticated && !sessionId) {
@@ -112,6 +117,42 @@ export default function StrategyPage() {
       setSplitRatio(100) // バックテスト未開始時はチャットUIを100%に
     }
   }, [backtestResults, backtestResultsJson])
+
+  const checkUserId = (userId: string) => {
+    const user = user_whitelist.find(user => user.id === userId);
+    return user ? user.index : user_whitelist.length + 1;
+  }
+
+  useEffect(() => {
+    if (user?.id) {
+      const userPosition = checkUserId(user.id);
+      setPosition(userPosition);
+      const currentUser = user_whitelist.find(u => u.id === user.id);
+      const isWhitelisted = currentUser && currentUser.index !== undefined && currentUser.index <= whitelistPosition;
+      setShowComingSoon(!isWhitelisted);
+    }
+  }, [user]);
+
+  if (showComingSoon) {
+    return (
+      <div className="min-h-screen bg-black text-white pt-20 pb-10 flex items-center justify-center">
+        <div className="glass-card p-8 md:p-12 rounded-2xl border border-zinc-800/50 backdrop-blur-md max-w-lg mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold gradient-text mb-4">Coming Soon</h2>
+          <p className="text-zinc-300 mb-6">Features will be gradually unlocked for whitelisted users. Please wait patiently as we work to provide access.</p>
+          <p className="text-zinc-300 ">
+            {position > user_whitelist.length ? 
+              `You are beyond position ${position} in the whitelist.` : 
+              `You are number ${position} in the whitelist.`
+            }
+          </p>
+          <p className="text-zinc-300 mb-6">
+            Currently, up to position {whitelistPosition} is open.
+          </p>
+          <button onClick={() => window.location.href = '/'} className="gradient-button text-white border-0 px-4 py-2 rounded-full">Return to Homepage</button>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-black text-white pt-20 pb-10">
