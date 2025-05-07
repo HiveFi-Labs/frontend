@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Menu, X, Loader2 } from 'lucide-react'
+import { Menu, X, Loader2, Clipboard, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import ComingSoonModal from '@/components/coming-soon-modal'
 import WaitlistModal from '@/components/waitlist/waitlist-modal'
@@ -26,6 +26,7 @@ export default function Header() {
   const { wallets, ready: walletReady } = useSolanaWallets()
   const { authenticated, ready, logout, login } = usePrivy()
   const desiredWallet = wallets[0]?.address
+  const [copySuccess, setCopySuccess] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -40,6 +41,12 @@ export default function Header() {
       isOpen: true,
       feature,
     })
+  }
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(desiredWallet)
+    setCopySuccess(true)
+    setTimeout(() => setCopySuccess(false), 2000)
   }
 
   return (
@@ -86,7 +93,10 @@ export default function Header() {
             </button>
             {desiredWallet ? (
               <div className="flex items-center gap-2">
-                <div className="text-zinc-300 px-3 py-2 bg-zinc-800/50 rounded-md flex items-center">
+                <div
+                  className="text-zinc-300 px-3 py-2 bg-zinc-800/50 rounded-md flex items-center cursor-pointer"
+                  onClick={handleCopy}
+                >
                   <Image
                     src="/solana.webp"
                     alt="Solana"
@@ -95,6 +105,8 @@ export default function Header() {
                     className="mr-2"
                   />
                   {shortenAddress(desiredWallet)}
+                  <Clipboard className={`ml-2 w-4 h-4 ${copySuccess ? 'hidden' : 'block'}`} />
+                  <Check className={`ml-2 w-4 h-4 text-green-500 ${copySuccess ? 'block' : 'hidden'}`} />
                 </div>
                 <Button
                   variant="outline"
@@ -171,7 +183,10 @@ export default function Header() {
               </button>
               {walletReady && desiredWallet ? (
                 <div className="flex flex-col space-y-2">
-                  <div className="text-zinc-300 px-3 py-2 bg-zinc-800/50 rounded-md flex items-center justify-center">
+                  <div
+                    className="text-zinc-300 px-3 py-2 bg-zinc-800/50 rounded-md flex items-center cursor-pointer"
+                    onClick={handleCopy}
+                  >
                     <Image
                       src="/solana.webp"
                       alt="Solana"
@@ -180,6 +195,8 @@ export default function Header() {
                       className="mr-2"
                     />
                     {shortenAddress(desiredWallet)}
+                    <Clipboard className={`ml-2 w-4 h-4 ${copySuccess ? 'hidden' : 'block'}`} />
+                    <Check className={`ml-2 w-4 h-4 text-green-500 ${copySuccess ? 'block' : 'hidden'}`} />
                   </div>
                   <Button
                     variant="outline"
