@@ -4,9 +4,7 @@ import { useState } from "react"
 import { Play } from "lucide-react"
 
 export default function VideoUpdateSection() {
-  const [isPlaying, setIsPlaying] = useState(false)
-  const videoId = "jcPxFGm0tl4"
-  const thumbnailUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`
+  const [videoIds, setVideoIds] = useState(["qcwOXQzlzD0", "jcPxFGm0tl4"]);
 
   return (
     <section className="py-20 relative overflow-hidden">
@@ -20,30 +18,19 @@ export default function VideoUpdateSection() {
         </div>
 
         <div className="max-w-4xl mx-auto">
-          <div className="relative rounded-xl overflow-hidden shadow-2xl border border-zinc-800 aspect-video">
-            {!isPlaying ? (
-              <div className="relative cursor-pointer group" onClick={() => setIsPlaying(true)}>
-                <img
-                  src={thumbnailUrl || "/placeholder.svg"}
-                  alt="HiveFi Weekly Update"
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/60 transition-all">
-                  <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-purple-600 flex items-center justify-center group-hover:bg-purple-500 transition-all">
-                    <Play className="h-8 w-8 md:h-10 md:w-10 text-white" fill="white" />
-                  </div>
-                </div>
+          <div className="flex flex-col justify-center space-y-4 mb-4">
+            {videoIds.map((id, index) => (
+              <div key={id} className="relative rounded-xl overflow-hidden shadow-2xl border border-zinc-800 aspect-video mb-4">
+                <iframe
+                  className="w-full h-full"
+                  src={`https://www.youtube.com/embed/${id}`}
+                  title={`HiveFi Weekly Update Week ${index + 2}`}
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                ></iframe>
               </div>
-            ) : (
-              <iframe
-                className="absolute top-0 left-0 w-full h-full"
-                src={`https://www.youtube.com/embed/${videoId}?autoplay=1`}
-                title="HiveFi Weekly Update"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              ></iframe>
-            )}
+            ))}
           </div>
         </div>
       </div>
