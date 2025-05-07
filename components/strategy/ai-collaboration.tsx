@@ -80,10 +80,10 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
   }
 
   const tradingPairDisplay: Record<string, string> = {
-    btcusdt: 'BTC/USDT',
-    ethusdt: 'ETH/USDT',
-    solusdc: 'SOL/USDC',
-    bnbusdt: 'BNB/USDT',
+    btcusdt: 'BTC-PERP',
+    ethusdt: 'ETH-PERP',
+    solusdc: 'SOL-PERP',
+    bnbusdt: 'BNB-PERP',
   }
 
   const timeframeDisplay: Record<string, string> = {
@@ -320,7 +320,7 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
+                if (e.key === 'Enter' && !e.nativeEvent.isComposing && !e.shiftKey) {
                   e.preventDefault()
                   handleSendMessage()
                   setTimeout(() => setInputMessage(''), 0)
