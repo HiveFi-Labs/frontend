@@ -33,10 +33,14 @@ import { useStrategyStore } from '@/stores/strategyStore'
 import ReactMarkdown from 'react-markdown'
 
 interface AICollaborationProps {
-  sessionId: string | null
+  sessionId: string | null,
+  postChat: (message: string) => void,
+  isPending: boolean,
+  error: Error | null,
+  cancelRequest: () => void,
 }
 
-export default function AICollaboration({ sessionId }: AICollaborationProps) {
+export default function AICollaboration({ sessionId, postChat, isPending, error, cancelRequest }: AICollaborationProps) {
   const [activeAgent] = useState('strategist')
   const [inputMessage, setInputMessage] = useState('')
   const [tradingPair, setTradingPair] = useState('solusdc')
@@ -51,9 +55,9 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
 
   const resetSessionState = useStrategyStore((state) => state.resetSessionState)
 
-  const { postChat, isPending, error, cancelRequest } = useChat({
-    sessionId: sessionId || '',
-  })
+  // const { postChat, isPending, error, cancelRequest } = useChat({
+  //   sessionId: sessionId || '',
+  // })
 
   useEffect(() => {
     if (messagesContainerRef.current) {
