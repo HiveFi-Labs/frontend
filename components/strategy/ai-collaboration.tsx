@@ -45,12 +45,12 @@ export default function AICollaboration({ sessionId }: Props) {
   /* ---------------- state ---------------- */
   const apiVersion = useStrategyStore((s) => s.apiVersion)
   const setApiVersion = useStrategyStore((s) => s.setApiVersion)
-  
+
   const [inputMessage, setInputMessage] = useState('')
   const [tradingPair, setTradingPair] = useState('solusdc')
   const [timeframe, setTimeframe] = useState('1h')
-  const [startDate, setStartDate] = useState('2023-01-01')
-  const [endDate, setEndDate] = useState('2023-12-31')
+  const [startDate, setStartDate] = useState('2024-01-01')
+  const [endDate, setEndDate] = useState('2025-01-01')
 
   /* ---------------- store ---------------- */
   const conversations = useStrategyStore((s) => s.messages)
@@ -101,10 +101,10 @@ export default function AICollaboration({ sessionId }: Props) {
   }
 
   const tradingPairDisplay: Record<string, string> = {
-    btcusdt: 'BTC/USDT',
-    ethusdt: 'ETH/USDT',
-    solusdc: 'SOL/USDC',
-    bnbusdt: 'BNB/USDT',
+    btcusdt: 'BTC-PERP',
+    ethusdt: 'ETH-PERP',
+    solusdc: 'SOL-PERP',
+    bnbusdt: 'BNB-PERP',
   }
   const timeframeDisplay: Record<string, string> = {
     '5m': '5m',
@@ -331,8 +331,11 @@ export default function AICollaboration({ sessionId }: Props) {
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  sendMessage()
+                if (
+                  e.key === 'Enter' &&
+                  !e.nativeEvent.isComposing &&
+                  !e.shiftKey
+                ) {
                   e.preventDefault()
                 }
               }}
