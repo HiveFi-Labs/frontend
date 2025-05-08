@@ -194,6 +194,7 @@ export default function StrategyPage() {
                   className="px-4 py-0 h-8 rounded-full bg-black border border-zinc-800 hover:border-zinc-700 hover:bg-zinc-900 text-zinc-200 button-sm"
                   onClick={handleSamplePrompt}
                   aria-label="Use Sample Prompt"
+                  disabled={!sessionId}
                 >
                   Create an ATR breakout strategy for moderately volatile markets. <ArrowUpIcon className="inline-block ml-0 text-xs" />
                 </Button>
