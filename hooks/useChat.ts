@@ -28,12 +28,12 @@ export default function useChat({ sessionId }: UseChatProps): UseChatResponse {
       if (!sessionId) {
         throw new Error('Session ID is required for chat mutation.')
       }
-      
+
       // Create a new AbortController for this request
-      abortControllerRef.current = new AbortController();
-      const signal = abortControllerRef.current.signal;
-      
-      return postChatMessage(sessionId, input, signal);
+      abortControllerRef.current = new AbortController()
+      const signal = abortControllerRef.current.signal
+
+      return postChatMessage(sessionId, input, signal)
     },
     onMutate: async (input: string) => {
       const userMessage: ChatMessage = {
@@ -74,10 +74,10 @@ export default function useChat({ sessionId }: UseChatProps): UseChatResponse {
     onError: (error: Error, variables, context) => {
       // Skip adding error message if it was cancelled intentionally
       if (error.name === 'AbortError') {
-        console.log('Request was cancelled');
-        return;
+        console.log('Request was cancelled')
+        return
       }
-      
+
       console.error('Chat Mutation Network/Fetch Error:', error.message)
     },
   })
@@ -88,27 +88,27 @@ export default function useChat({ sessionId }: UseChatProps): UseChatResponse {
     },
     [chatMutation],
   )
-  
+
   const cancelRequest = useCallback(() => {
     if (abortControllerRef.current) {
-      abortControllerRef.current.abort('User cancelled request');
-      abortControllerRef.current = null;
-      
+      abortControllerRef.current.abort('User cancelled request')
+      abortControllerRef.current = null
+
       // Reset the mutation state
-      chatMutation.reset();
-      
+      chatMutation.reset()
+
       // Optionally add a system message indicating cancellation
       const cancelMessage: ChatMessage = {
         agent: 'strategist',
-        message: "_Request cancelled by user_",
+        message: '_Request cancelled by user_',
         timestamp: new Date().toLocaleTimeString([], {
           hour: '2-digit',
           minute: '2-digit',
         }),
       }
-      addMessage(cancelMessage);
+      addMessage(cancelMessage)
     }
-  }, [addMessage, chatMutation]);
+  }, [addMessage, chatMutation])
 
   return {
     postChat,

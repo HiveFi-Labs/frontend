@@ -1,8 +1,8 @@
 // 各サービスをまとめてエクスポート
-import portfolioService from "./portfolio-service"
-import strategyService from "./strategy-service"
-import homeService from "./home-service"
-import apiClient from "./api-client"
+import portfolioService from './portfolio-service'
+import strategyService from './strategy-service'
+import homeService from './home-service'
+import apiClient from './api-client'
 
 /**
  * サービスのエクスポート
@@ -22,7 +22,8 @@ class PortfolioDataService {
   getFundSummary = () => portfolioService.getFundSummary()
   getProfitHandlingSettings = () => portfolioService.getProfitHandlingSettings()
   getAlerts = () => portfolioService.getAlerts()
-  getNotificationPreferences = () => portfolioService.getNotificationPreferences()
+  getNotificationPreferences = () =>
+    portfolioService.getNotificationPreferences()
 
   // 戦略開発関連
   getChatConversations = () => strategyService.getChatConversations()

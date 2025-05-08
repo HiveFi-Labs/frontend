@@ -101,9 +101,6 @@ importers:
       '@tanstack/react-query':
         specifier: ^5.74.4
         version: 5.74.4(react@19.1.0)
-      '@types/plotly.js':
-        specifier: ^2.35.5
-        version: 2.35.5
       autoprefixer:
         specifier: ^10.4.20
         version: 10.4.21(postcss@8.5.3)
@@ -137,6 +134,9 @@ importers:
       plotly.js:
         specifier: ^3.0.1
         version: 3.0.1(mapbox-gl@1.13.3)(webpack@5.99.6)
+      plotly.js-dist-min:
+        specifier: ^3.0.1
+        version: 3.0.1
       react:
         specifier: ^19
         version: 19.1.0
@@ -189,6 +189,9 @@ importers:
       '@types/node':
         specifier: ^22
         version: 22.14.0
+      '@types/plotly.js':
+        specifier: ^2.35.5
+        version: 2.35.5
       '@types/react':
         specifier: ^19
         version: 19.1.0
@@ -4350,6 +4353,9 @@ packages:
   pirates@4.0.7:
     resolution: {integrity: sha512-TfySrs/5nm8fQJDcBDuUng3VOUKsd7S+zqvbOTiGXHfxX4wK31ard+hoNuvkicM/2YFzlpDgABOevKSsB4G/FA==}
     engines: {node: '>= 6'}
+
+  plotly.js-dist-min@3.0.1:
+    resolution: {integrity: sha512-RReOqr6TfoHaTbVAoHR1UbTCOSRDsQ7Hbthd+3XAxOwaKmxCE3oejMhLG7urQSqWC65DAcSKV23kZd8e+7mG7w==}
 
   plotly.js@3.0.1:
     resolution: {integrity: sha512-eWEUkqdv4sblmUQJ7xGlEA+LghzEVPJOlPBZMJuagG0CsQxlmBb+7rd0UFVig5jhRnN8PQqRQaLv6qXIjnvzgg==}
@@ -10800,6 +10806,8 @@ snapshots:
       thread-stream: 0.15.2
 
   pirates@4.0.7: {}
+
+  plotly.js-dist-min@3.0.1: {}
 
   plotly.js@3.0.1(mapbox-gl@1.13.3)(webpack@5.99.6):
     dependencies:
