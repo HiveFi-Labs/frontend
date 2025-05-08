@@ -169,7 +169,7 @@ export default function StrategyPage() {
               <div className="text-center mb-6">
                 <h2 className="text-2xl font-bold mb-2">Let's begin.</h2>
                 <p className="text-zinc-400">
-                  Start a conversation with AI to create your trading strategy
+                  Currently, as this is an alpha version, only a limited set of strategies can be executed.
                 </p>
               </div>
             )}
