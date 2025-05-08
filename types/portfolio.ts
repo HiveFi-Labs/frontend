@@ -1,19 +1,8 @@
-// 基本的な型定義
+import type { TimeSeriesData } from './common'
 
-// パフォーマンス指標
-export interface PerformanceMetric {
-  value: string | number
-  trend?: 'up' | 'down' | 'neutral'
-  changePercent?: number
-}
-
-// 時系列データ
-export interface TimeSeriesData {
-  date: string
-  value: number
-}
-
-// ポートフォリオ関連の型定義
+/**
+ * ポートフォリオ関連の型定義
+ */
 
 // ポートフォリオ配分
 export interface PortfolioAllocation {
@@ -34,8 +23,6 @@ export interface PortfolioSummary {
   allocation: PortfolioAllocation[]
   historicalPerformance: TimeSeriesData[]
 }
-
-// 戦略関連の型定義
 
 // 戦略パフォーマンス
 export interface StrategyPerformance {
@@ -77,8 +64,6 @@ export interface Strategy {
   popularity?: StrategyPopularity
 }
 
-// リスク管理関連の型定義
-
 // 戦略リスク指標
 export interface RiskStrategyMetrics {
   name: string
@@ -111,8 +96,6 @@ export interface RiskMetrics {
   riskContribution: RiskContribution[]
   riskFactors: RiskFactor[]
 }
-
-// ファンド管理関連の型定義
 
 // 取引
 export interface Transaction {
@@ -175,8 +158,6 @@ export interface FundSummary {
   profitHandlingSettings?: ProfitHandlingSettings
 }
 
-// アラート関連の型定義
-
 // 通知設定
 export interface NotificationSettings {
   email: boolean
@@ -221,9 +202,4 @@ export interface NotificationPreferences {
   email: EmailNotificationSettings
   push: PushNotificationSettings
   sms: SmsNotificationSettings
-}
-
-// モーダル関連の型定義
-export interface ModalProps {
-  onClose: () => void
 }

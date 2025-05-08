@@ -1,93 +1,83 @@
 'use client'
 
 import { useState } from 'react'
-import { Play, Pause, Code } from 'lucide-react'
+import { Code, MonitorSmartphone, Save } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
-import StrategyCode from '@/components/strategy/strategy-code-modal'
-import EquityCurveChart from '@/components/strategy/charts/equity-curve-chart'
-import MonthlyReturnsChart from '@/components/strategy/charts/monthly-returns-chart'
+import { Card, CardContent } from '@/components/ui/card'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import StrategyCode from '@/components/strategy/strategy-code'
 import PerformanceMetrics from '@/components/strategy/performance-metrics'
-import PriceChart from '@/components/strategy/charts/price-chart'
-import TradeHistory from '@/components/strategy/trade-history'
-import ParameterOptimization from '@/components/strategy/parameter-optimization'
+import TradeCharts from '@/components/strategy/trade-charts'
+import TradeHistoryTable from '@/components/strategy/trade-history-table'
 
-export default function BacktestingResults({ showCode, setShowCode }) {
+export default function BacktestingResults() {
   const [isRunningBacktest, setIsRunningBacktest] = useState(false)
+  const [activeView, setActiveView] = useState('preview')
+
+  // activeViewの変更を検知して親コンポーネントのshowCodeを更新
+  const handleViewChange = (value: string) => {
+    setActiveView(value)
+  }
 
   return (
     <>
-      <Card className="glass-card overflow-hidden">
-        <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-xl">Backtesting Results</CardTitle>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className="border-zinc-700 text-zinc-300 hover:bg-zinc-800/50 flex items-center gap-2"
-                onClick={() => setShowCode(true)}
-              >
-                <Code className="w-4 h-4 mr-1" />
-                Edit Code
-              </Button>
-              <Button
-                variant={isRunningBacktest ? 'destructive' : 'default'}
-                size="sm"
-                className={
-                  isRunningBacktest
-                    ? 'bg-red-600 hover:bg-red-700'
-                    : 'gradient-button'
-                }
-                onClick={() => setIsRunningBacktest(!isRunningBacktest)}
-              >
-                {isRunningBacktest ? (
-                  <>
-                    <Pause className="w-4 h-4 mr-1" />
-                    Stop
-                  </>
-                ) : (
-                  <>
-                    <Play className="w-4 h-4 mr-1" />
-                    Run Backtest
-                  </>
-                )}
-              </Button>
+      <Card className="glass-card overflow-hidden h-full flex flex-col mt-2">
+        {/* コンパクトなステータスバー */}
+        <div className="bg-zinc-900/80 border-b border-zinc-800 py-2 px-4 flex items-center justify-between">
+          <div className="flex items-center">
+            <Tabs
+              value={activeView}
+              onValueChange={handleViewChange}
+              className="w-full"
+            >
+              <TabsList className="bg-zinc-800/50 backdrop-blur-sm h-6 p-0">
+                <TabsTrigger
+                  value="preview"
+                  className="flex items-center gap-1 h-6 py-0 px-2 text-xs data-[state=active]:bg-zinc-700"
+                >
+                  <MonitorSmartphone className="w-3.5 h-3.5" />
+                  Backtest
+                </TabsTrigger>
+                <TabsTrigger
+                  value="code"
+                  className="flex items-center gap-1 h-6 py-0 px-2 text-xs data-[state=active]:bg-zinc-700"
+                >
+                  <Code className="w-3.5 h-3.5" />
+                  Code
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
+
+          {/* Save Strategy Button */}
+          <Button
+            className="gradient-button text-white border-0 h-8 py-3 px-3 text-xs flex items-center gap-1"
+            size="sm"
+          >
+            <Save className="w-3.5 h-3.5" />
+            Save Strategy
+          </Button>
+        </div>
+
+        <CardContent className="space-y-6 overflow-auto flex-1 pb-6 pt-4">
+          {activeView === 'preview' ? (
+            <>
+              {/* Chart View */}
+              <TradeCharts />
+
+              {/* Performance Metrics */}
+              <PerformanceMetrics />
+
+              {/* Trade History */}
+              <TradeHistoryTable />
+            </>
+          ) : (
+            <div className="h-full">
+              <StrategyCode />
             </div>
-          </div>
-          <CardDescription className="text-zinc-400">
-            Analyze the performance of your trading strategy
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Equity Curve and Monthly Returns at the top */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <EquityCurveChart />
-            <MonthlyReturnsChart />
-          </div>
-
-          {/* Performance Metrics */}
-          <PerformanceMetrics />
-
-          {/* Price Chart with Signals */}
-          <PriceChart />
-
-          {/* Trade History */}
-          <TradeHistory />
-
-          {/* Parameter Optimization */}
-          <ParameterOptimization />
+          )}
         </CardContent>
       </Card>
-
-      {/* Strategy Code Modal */}
-      {showCode && <StrategyCode onClose={() => setShowCode(false)} />}
     </>
   )
 }

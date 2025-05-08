@@ -1,4 +1,6 @@
-// 戦略開発ページの型定義
+/**
+ * 戦略開発ページの型定義
+ */
 
 // AIチャットメッセージ
 export interface ChatMessage {
@@ -9,13 +11,6 @@ export interface ChatMessage {
     type: 'chart' | 'code'
     data: any
   }
-}
-
-// パフォーマンス指標
-export interface PerformanceMetric {
-  name: string
-  value: string
-  status: 'positive' | 'negative' | 'neutral'
 }
 
 // 取引履歴

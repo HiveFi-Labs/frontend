@@ -84,18 +84,18 @@ export default function AlertSettings() {
     return (
       <div className="space-y-6">
         <div className="flex justify-between items-center mb-6">
-          <div className="h-8 bg-zinc-800 rounded w-48 animate-pulse" />
-          <div className="h-10 w-40 bg-zinc-800 rounded-md animate-pulse" />
+          <div className="h-8 bg-zinc-800 rounded w-48 animate-pulse"></div>
+          <div className="h-10 w-40 bg-zinc-800 rounded-md animate-pulse"></div>
         </div>
 
-        <div className="h-64 bg-zinc-800/50 rounded-xl animate-pulse mb-6" />
+        <div className="h-64 bg-zinc-800/50 rounded-xl animate-pulse mb-6"></div>
 
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
             <div
               key={i}
               className="h-24 bg-zinc-800/50 rounded-xl animate-pulse"
-            />
+            ></div>
           ))}
         </div>
       </div>
@@ -418,8 +418,8 @@ export default function AlertSettings() {
                     No {category} alerts
                   </h3>
                   <p className="text-sm text-zinc-500 mb-4 text-center max-w-md">
-                    You haven&apos;t created any {category} alerts yet. Create
-                    one to get notified about important events.
+                    You haven't created any {category} alerts yet. Create one to
+                    get notified about important events.
                   </p>
                   <Button
                     className="gradient-button"

@@ -81,8 +81,8 @@ export default function FundManagement() {
     return (
       <div className="space-y-6">
         <div className="flex justify-between items-center mb-6">
-          <div className="h-8 bg-zinc-800 rounded w-48 animate-pulse" />
-          <div className="h-10 w-32 bg-zinc-800 rounded-md animate-pulse" />
+          <div className="h-8 bg-zinc-800 rounded w-48 animate-pulse"></div>
+          <div className="h-10 w-32 bg-zinc-800 rounded-md animate-pulse"></div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -90,11 +90,11 @@ export default function FundManagement() {
             <div
               key={i}
               className="h-40 bg-zinc-800/50 rounded-xl animate-pulse"
-            />
+            ></div>
           ))}
         </div>
 
-        <div className="h-64 bg-zinc-800/50 rounded-xl animate-pulse" />
+        <div className="h-64 bg-zinc-800/50 rounded-xl animate-pulse"></div>
       </div>
     )
   }
@@ -177,7 +177,7 @@ export default function FundManagement() {
           </CardHeader>
           <CardContent>
             {fundSummary.recentActivity.map((activity, index) => (
-              <div key={activity.date}>
+              <div key={index}>
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-2">
@@ -203,7 +203,7 @@ export default function FundManagement() {
                   </div>
                 </div>
                 {index < fundSummary.recentActivity.length - 1 && (
-                  <div className="my-2 border-t border-zinc-800/50" />
+                  <div className="my-2 border-t border-zinc-800/50"></div>
                 )}
               </div>
             ))}
@@ -459,11 +459,8 @@ export default function FundManagement() {
                       </Badge>
                     </div>
                     <div className="space-y-3">
-                      {rebalance.changes.map((change) => (
-                        <div
-                          key={change.strategy}
-                          className="flex items-center"
-                        >
+                      {rebalance.changes.map((change, index) => (
+                        <div key={index} className="flex items-center">
                           <div className="w-1/3 text-sm text-zinc-300">
                             {change.strategy}
                           </div>
@@ -481,11 +478,11 @@ export default function FundManagement() {
                               <div
                                 className="absolute top-0 left-0 h-full rounded-full bg-zinc-600"
                                 style={{ width: `${change.before}%` }}
-                              />
+                              ></div>
                               <div
                                 className="absolute top-0 left-0 h-full rounded-full bg-purple-500"
                                 style={{ width: `${change.after}%` }}
-                              />
+                              ></div>
                             </div>
                           </div>
                         </div>

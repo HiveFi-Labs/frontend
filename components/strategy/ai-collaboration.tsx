@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import {
   Settings,
   MessageSquare,
@@ -9,23 +9,10 @@ import {
   BarChart4,
   RefreshCw,
   ArrowRight,
-  Sliders,
+  Trash2,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { Card, CardContent } from '@/components/ui/card'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -34,303 +21,340 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import StrategySettingsModal from '@/components/strategy/strategy-settings-modal'
-import portfolioData from '@/services/index'
-import type { ChatMessage } from '@/types/strategy-development'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import useChat from '@/hooks/useChat'
+import { useStrategyStore } from '@/stores/strategyStore'
+import ReactMarkdown from 'react-markdown'
 
-export default function AICollaboration() {
-  const [activeAgent, setActiveAgent] = useState('strategist')
-  const [showSettingsModal, setShowSettingsModal] = useState(false)
-  const [conversations, setConversations] = useState<ChatMessage[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+interface AICollaborationProps {
+  sessionId: string | null
+}
+
+export default function AICollaboration({ sessionId }: AICollaborationProps) {
+  const [activeAgent] = useState('strategist')
+  const [inputMessage, setInputMessage] = useState('')
+  const [tradingPair, setTradingPair] = useState('solusdc')
+  const [timeframe, setTimeframe] = useState('1h')
+  const [startDate, setStartDate] = useState('2024-01-01')
+  const [endDate, setEndDate] = useState('2025-01-01')
+
+  const messagesContainerRef = useRef<HTMLDivElement>(null)
+
+  const conversations = useStrategyStore((state) => state.messages)
+  const hasConversations = conversations.length > 0
+
+  const resetSessionState = useStrategyStore((state) => state.resetSessionState)
+
+  const { postChat, isPending, error, cancelRequest } = useChat({
+    sessionId: sessionId || '',
+  })
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await portfolioData.getChatConversations()
-        setConversations(data)
-      } catch (err) {
-        console.error('Failed to fetch chat conversations', err)
-      } finally {
-        setIsLoading(false)
-      }
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop =
+        messagesContainerRef.current.scrollHeight
     }
+  }, [conversations])
 
-    fetchData()
-  }, [])
+  const handleSendMessage = () => {
+    if (!inputMessage.trim() || isPending) return
 
-  if (isLoading) {
-    return (
-      <Card className="glass-card overflow-hidden animate-pulse">
-        <CardHeader className="pb-3">
-          <div className="h-6 bg-zinc-800 rounded w-1/4 mb-2"></div>
-          <div className="h-4 bg-zinc-800 rounded w-1/2"></div>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="h-10 bg-zinc-800 rounded w-full"></div>
-            <div className="h-[400px] bg-zinc-800/50 rounded"></div>
-            <div className="h-20 bg-zinc-800/50 rounded"></div>
-          </div>
-        </CardContent>
-      </Card>
-    )
+    const messageToSend = inputMessage
+    postChat(messageToSend)
+    setInputMessage('')
+  }
+
+  const handleResetConversation = () => {
+    console.log('Resetting session:', sessionId)
+    resetSessionState()
+  }
+
+  const handleCancelRequest = () => {
+    cancelRequest()
+  }
+
+  const tradingPairDisplay: Record<string, string> = {
+    btcusdt: 'BTC-PERP',
+    ethusdt: 'ETH-PERP',
+    solusdc: 'SOL-PERP',
+    bnbusdt: 'BNB-PERP',
+  }
+
+  const timeframeDisplay: Record<string, string> = {
+    '5m': '5m',
+    '15m': '15m',
+    '1h': '1h',
+    '4h': '4h',
+    '1d': '1d',
   }
 
   return (
-    <>
-      <Card className="glass-card overflow-hidden">
-        <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-xl">Strategy Development</CardTitle>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
-                  <Settings className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="end"
-                className="bg-zinc-900 border-zinc-800"
-              >
-                <DropdownMenuLabel>Settings</DropdownMenuLabel>
-                <DropdownMenuSeparator className="bg-zinc-800" />
-                <DropdownMenuItem className="text-zinc-300 focus:text-white focus:bg-zinc-800">
-                  Reset Conversation
-                </DropdownMenuItem>
-                <DropdownMenuItem className="text-zinc-300 focus:text-white focus:bg-zinc-800">
-                  Change Agent Behavior
-                </DropdownMenuItem>
-                <DropdownMenuItem className="text-zinc-300 focus:text-white focus:bg-zinc-800">
-                  Export Conversation
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-          <CardDescription className="text-zinc-400">
-            Configure and develop your trading strategy with AI assistance
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {/* Key Strategy Settings */}
-          <div className="bg-zinc-900/30 rounded-lg p-4 mb-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <label className="text-sm text-zinc-400">Trading Pair</label>
-                <Select defaultValue="btcusdt">
-                  <SelectTrigger className="bg-zinc-900/50 border-zinc-800 text-zinc-300">
-                    <SelectValue placeholder="Select trading pair" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-zinc-900 border-zinc-800">
-                    <SelectItem value="btcusdt">BTC/USDT</SelectItem>
-                    <SelectItem value="ethusdt">ETH/USDT</SelectItem>
-                    <SelectItem value="solusdt">SOL/USDT</SelectItem>
-                    <SelectItem value="bnbusdt">BNB/USDT</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm text-zinc-400">Timeframe</label>
-                <Select defaultValue="1h">
-                  <SelectTrigger className="bg-zinc-900/50 border-zinc-800 text-zinc-300">
-                    <SelectValue placeholder="Select timeframe" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-zinc-900 border-zinc-800">
-                    <SelectItem value="5m">5 minutes</SelectItem>
-                    <SelectItem value="15m">15 minutes</SelectItem>
-                    <SelectItem value="1h">1 hour</SelectItem>
-                    <SelectItem value="4h">4 hours</SelectItem>
-                    <SelectItem value="1d">1 day</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm text-zinc-400">
-                  Strategy Template
-                </label>
-                <Select defaultValue="trend">
-                  <SelectTrigger className="bg-zinc-900/50 border-zinc-800 text-zinc-300">
-                    <SelectValue placeholder="Select strategy template" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-zinc-900 border-zinc-800">
-                    <SelectItem value="trend">Trend Following</SelectItem>
-                    <SelectItem value="mean">Mean Reversion</SelectItem>
-                    <SelectItem value="breakout">Breakout</SelectItem>
-                    <SelectItem value="custom">Custom Strategy</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+    <Card
+      className={`glass-card overflow-hidden flex flex-col mt-2 flex-1 min-h-0 ${!hasConversations ? 'flex justify-center ' : ''}`}
+    >
+      {/* Status Bar */}
+      <div
+        className={`bg-zinc-800/80 border-zinc-700 py-2 px-4 flex items-center justify-between ${hasConversations ? 'border-b' : ''}`}
+      >
+        <div className="flex items-center text-xs">
+          <div className="flex items-center relative group">
+            <Select value={tradingPair} onValueChange={setTradingPair} disabled={true}>
+              <SelectTrigger className="bg-transparent border-0 text-zinc-500 h-6 p-0 min-w-20 w-auto text-xs font-medium cursor-not-allowed opacity-50">
+                <SelectValue>{tradingPairDisplay[tradingPair]}</SelectValue>
+              </SelectTrigger>
+              <SelectContent className="bg-zinc-900 border-zinc-800">
+                <SelectItem value="btcusdt">BTC/USDT</SelectItem>
+                <SelectItem value="ethusdt">ETH/USDT</SelectItem>
+                <SelectItem value="solusdc">SOL/USDC</SelectItem>
+                <SelectItem value="bnbusdt">BNB/USDT</SelectItem>
+              </SelectContent>
+            </Select>
+            <div className="absolute opacity-0 group-hover:opacity-100 bg-zinc-800 text-zinc-200 text-xs px-2 py-1 rounded pointer-events-none whitespace-nowrap transition-opacity duration-200 top-8 left-0 shadow-lg z-10">
+              Coming soon
             </div>
+            <span className="text-zinc-500 mx-2">|</span>
+          </div>
 
-            <div className="mt-4 flex justify-end">
+          <div className="flex items-center relative group">
+            <Select value={timeframe} onValueChange={setTimeframe} disabled={true}>
+              <SelectTrigger className="bg-transparent border-0 text-zinc-500 h-6 p-0 min-w-8 w-auto text-xs font-medium cursor-not-allowed opacity-50">
+                <SelectValue>{timeframeDisplay[timeframe]}</SelectValue>
+              </SelectTrigger>
+              <SelectContent className="bg-zinc-900 border-zinc-800">
+                <SelectItem value="5m">5m</SelectItem>
+                <SelectItem value="15m">15m</SelectItem>
+                <SelectItem value="1h">1h</SelectItem>
+                <SelectItem value="4h">4h</SelectItem>
+                <SelectItem value="1d">1d</SelectItem>
+              </SelectContent>
+            </Select>
+            <div className="absolute opacity-0 group-hover:opacity-100 bg-zinc-800 text-zinc-200 text-xs px-2 py-1 rounded pointer-events-none whitespace-nowrap transition-opacity duration-200 top-8 left-0 shadow-lg z-10">
+              Coming soon
+            </div>
+            <span className="text-zinc-500 mx-2">|</span>
+          </div>
+
+          <div className="flex items-center relative group">
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="bg-transparent text-zinc-500 border-0 p-0 w-auto text-xs font-medium cursor-not-allowed opacity-50"
+              disabled={true}
+            />
+            <span className="text-zinc-500 mx-2">→</span>
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              className="bg-transparent text-zinc-500 border-0 p-0 w-auto text-xs font-medium cursor-not-allowed opacity-50"
+              disabled={true}
+            />
+            <div className="absolute opacity-0 group-hover:opacity-100 bg-zinc-800 text-zinc-200 text-xs px-2 py-1 rounded pointer-events-none whitespace-nowrap transition-opacity duration-200 top-8 left-0 shadow-lg z-10">
+              Coming soon
+            </div>
+          </div>
+        </div>
+
+        {/* 設定ボタン */}
+        <div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
               <Button
-                variant="outline"
-                size="sm"
-                className="border-zinc-700 text-zinc-300 hover:bg-zinc-800/50"
-                onClick={() => setShowSettingsModal(true)}
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6 text-zinc-300 hover:text-purple-300 transition-colors"
               >
-                <Sliders className="w-4 h-4 mr-2" />
-                Advanced Settings
+                <Settings className="h-3.5 w-3.5" />
               </Button>
-            </div>
-          </div>
-
-          {/* AI Collaboration */}
-          <div className="flex gap-2 mb-4">
-            <Button
-              variant={activeAgent === 'strategist' ? 'default' : 'outline'}
-              size="sm"
-              className={
-                activeAgent === 'strategist'
-                  ? 'gradient-button'
-                  : 'border-zinc-700 text-zinc-300 hover:bg-zinc-800/50'
-              }
-              onClick={() => setActiveAgent('strategist')}
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="end"
+              className="bg-zinc-700 border-zinc-600"
             >
-              <Lightbulb className="w-4 h-4 mr-1" />
-              Strategist
-            </Button>
-            <Button
-              variant={activeAgent === 'developer' ? 'default' : 'outline'}
-              size="sm"
-              className={
-                activeAgent === 'developer'
-                  ? 'gradient-button'
-                  : 'border-zinc-700 text-zinc-300 hover:bg-zinc-800/50'
-              }
-              onClick={() => setActiveAgent('developer')}
-            >
-              <Code className="w-4 h-4 mr-1" />
-              Developer
-            </Button>
-            <Button
-              variant={activeAgent === 'analyst' ? 'default' : 'outline'}
-              size="sm"
-              className={
-                activeAgent === 'analyst'
-                  ? 'gradient-button'
-                  : 'border-zinc-700 text-zinc-300 hover:bg-zinc-800/50'
-              }
-              onClick={() => setActiveAgent('analyst')}
-            >
-              <BarChart4 className="w-4 h-4 mr-1" />
-              Analyst
-            </Button>
-            <Button
-              variant={activeAgent === 'optimizer' ? 'default' : 'outline'}
-              size="sm"
-              className={
-                activeAgent === 'optimizer'
-                  ? 'gradient-button'
-                  : 'border-zinc-700 text-zinc-300 hover:bg-zinc-800/50'
-              }
-              onClick={() => setActiveAgent('optimizer')}
-            >
-              <RefreshCw className="w-4 h-4 mr-1" />
-              Optimizer
-            </Button>
-          </div>
-
-          <div className="h-[400px] overflow-y-auto pr-2 space-y-4 mb-4">
-            {conversations.map((message, index) => (
-              <div
-                key={index}
-                className={`flex gap-3 ${message.agent === 'user' ? 'justify-end' : ''}`}
+              <DropdownMenuLabel className="text-xs">
+                Chat Settings
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator className="bg-zinc-600" />
+              <DropdownMenuItem
+                className="text-xs text-zinc-200 focus:text-white focus:bg-zinc-600 cursor-pointer"
+                onClick={handleResetConversation}
+                disabled={isPending}
               >
-                {message.agent !== 'user' && (
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-blue-500 flex items-center justify-center flex-shrink-0">
-                    {message.agent === 'strategist' && (
-                      <Lightbulb className="w-4 h-4 text-white" />
-                    )}
-                    {message.agent === 'developer' && (
-                      <Code className="w-4 h-4 text-white" />
-                    )}
-                    {message.agent === 'analyst' && (
-                      <BarChart4 className="w-4 h-4 text-white" />
-                    )}
-                    {message.agent === 'optimizer' && (
-                      <RefreshCw className="w-4 h-4 text-white" />
-                    )}
-                  </div>
-                )}
-                <div
-                  className={`glass-card p-3 rounded-xl max-w-[85%] ${message.agent === 'user' ? 'bg-purple-900/30' : 'bg-zinc-900/30'}`}
-                >
-                  <div className="flex justify-between items-start mb-1">
-                    <span className="text-sm font-semibold capitalize">
-                      {message.agent === 'user' ? 'You' : message.agent}
-                    </span>
-                    <span className="text-xs text-zinc-500">
-                      {message.timestamp}
-                    </span>
-                  </div>
-                  <p className="text-sm text-zinc-300">{message.message}</p>
+                <Trash2 className="h-3.5 w-3.5 mr-2 text-zinc-300" />
+                Clear Chat
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
 
-                  {message.attachment &&
-                    message.attachment.type === 'chart' && (
-                      <div className="mt-3 p-3 bg-zinc-800/50 rounded-lg">
-                        <div className="text-sm font-medium mb-2">
-                          {message.attachment.data.title}
-                        </div>
-                        <div className="grid grid-cols-3 gap-2">
-                          {Object.entries(message.attachment.data.metrics).map(
-                            ([key, value], i) => (
-                              <div key={i} className="text-center">
-                                <div className="text-xs text-zinc-400 capitalize">
-                                  {key.replace(/([A-Z])/g, ' $1').trim()}
-                                </div>
-                                <div
-                                  className={`text-sm font-medium ${value.startsWith('+') ? 'text-green-400' : value.startsWith('-') ? 'text-red-400' : 'text-zinc-300'}`}
-                                >
-                                  {value}
-                                </div>
-                              </div>
-                            ),
-                          )}
-                        </div>
-                      </div>
-                    )}
-
-                  {message.attachment && message.attachment.type === 'code' && (
-                    <div className="mt-3 p-3 bg-zinc-800/50 rounded-lg overflow-x-auto">
-                      <pre className="text-xs text-zinc-300 font-mono">
-                        <code>{message.attachment.data}</code>
-                      </pre>
-                    </div>
+      <CardContent
+        className={`p-0 bg-zinc-900 flex flex-col min-h-0 overflow-hidden ${hasConversations ? 'flex-2 h-[calc(81vh)] min-h-[calc(480px)]' : ''}`}
+      >
+        <div
+          ref={messagesContainerRef}
+          className={`${hasConversations ? 'flex-1 min-h-0 overflow-y-auto pr-2 space-y-4' : 'h-0 overflow-hidden'}`}
+        >
+          {conversations.map((message, index) => (
+            <div
+              key={`${message.agent}-${message.timestamp}-${index}`}
+              className={`flex m-3 gap-3  ${message.agent === 'user' ? 'justify-end' : ''}`}
+            >
+              {message.agent !== 'user' && (
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-blue-500 flex items-center justify-center flex-shrink-0">
+                  {message.agent === 'strategist' && (
+                    <Lightbulb className="w-4 h-4 text-white" />
+                  )}
+                  {message.agent === 'developer' && (
+                    <Code className="w-4 h-4 text-white" />
+                  )}
+                  {message.agent === 'analyst' && (
+                    <BarChart4 className="w-4 h-4 text-white" />
+                  )}
+                  {message.agent === 'optimizer' && (
+                    <RefreshCw className="w-4 h-4 text-white" />
                   )}
                 </div>
-                {message.agent === 'user' && (
-                  <div className="w-8 h-8 rounded-full bg-purple-600/80 flex items-center justify-center flex-shrink-0">
-                    <MessageSquare className="w-4 h-4 text-white" />
+              )}
+              <div
+                className={`glass-card p-3 rounded-xl max-w-[85%] ${message.agent === 'user' ? 'bg-purple-800/30' : 'bg-zinc-700/30'}`}
+              >
+                <div className="flex justify-between items-start mb-1">
+                  <span className="text-sm font-semibold capitalize mr-2">
+                    {message.agent === 'user' ? 'You' : message.agent}
+                  </span>
+                  <span className="text-xs text-zinc-300">
+                    {message.timestamp}
+                  </span>
+                </div>
+                {message.agent === 'user' ? (
+                  <p className="text-sm text-zinc-200 whitespace-pre-wrap">
+                    {message.message}
+                  </p>
+                ) : (
+                  <div className="prose prose-sm prose-invert max-w-none">
+                    <ReactMarkdown>{message.message}</ReactMarkdown>
+                  </div>
+                )}
+
+                {message.attachment && message.attachment.type === 'chart' && (
+                  <div className="mt-3 p-3 bg-zinc-600/50 rounded-lg">
+                    <div className="text-sm font-medium mb-2">
+                      {message.attachment.data.title}
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                      {Object.entries(message.attachment.data.metrics).map(
+                        ([key, value], i) => (
+                          <div key={key} className="text-center">
+                            <div className="text-xs text-zinc-400 capitalize">
+                              {key.replace(/([A-Z])/g, ' $1').trim()}
+                            </div>
+                            <div
+                              className={`text-sm font-medium ${(value as string).startsWith('+') ? 'text-green-400' : (value as string).startsWith('-') ? 'text-red-400' : 'text-zinc-300'}`}
+                            >
+                              {value as React.ReactNode}
+                            </div>
+                          </div>
+                        ),
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {message.attachment && message.attachment.type === 'code' && (
+                  <div className="mt-3 p-3 bg-zinc-600/50 rounded-lg overflow-x-auto">
+                    <pre className="text-xs text-zinc-300 font-mono">
+                      <code>{message.attachment.data}</code>
+                    </pre>
                   </div>
                 )}
               </div>
-            ))}
-          </div>
+              {message.agent === 'user' && (
+                <div className="w-8 h-8 rounded-full bg-purple-600/80 flex items-center justify-center flex-shrink-0">
+                  <MessageSquare className="w-4 h-4 text-white" />
+                </div>
+              )}
+            </div>
+          ))}
 
-          <div className="relative">
-            <div className="relative rounded-lg border border-zinc-800 bg-zinc-900/50 overflow-hidden">
-              <textarea
-                placeholder={`Message the ${activeAgent} agent...`}
-                className="w-full min-h-[80px] max-h-[200px] bg-transparent py-3 px-4 text-zinc-300 focus:outline-none resize-none"
-                rows={3}
-              />
-              <div className="absolute bottom-2 right-2">
-                <Button className="h-8 w-8 rounded-full gradient-button p-0 flex items-center justify-center">
-                  <ArrowRight className="w-4 h-4" />
-                </Button>
+          {isPending && (
+            <div className="flex gap-3 m-3 ">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-blue-500 flex items-center justify-center flex-shrink-0">
+                <Lightbulb className="w-4 h-4 text-white" />
+              </div>
+              <div className="glass-card p-3 rounded-xl max-w-[85%] bg-zinc-700/30">
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+                  <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse delay-150"></div>
+                  <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse delay-300"></div>
+                </div>
               </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          )}
 
-      {/* Strategy Settings Modal */}
-      {showSettingsModal && (
-        <StrategySettingsModal onClose={() => setShowSettingsModal(false)} />
-      )}
-    </>
+          {error && (
+            <div className="text-red-500 text-sm p-2 text-center m-3 ">
+              Failed to get response: {error.message}
+            </div>
+          )}
+        </div>
+
+        <div className={hasConversations ? 'mt-4' : ''}>
+          <div className="relative rounded-b-lg border border-zinc-700 bg-zinc-800/50 overflow-hidden">
+            <textarea
+              disabled={!sessionId}
+              placeholder={
+                sessionId
+                  ? 'Ask AI to help you create a trading strategy...'
+                  : 'Loading...'
+              }
+              className="w-full min-h-[60px] max-h-[120px] bg-transparent py-3 pl-4 pr-12 text-zinc-300 focus:outline-none resize-none block"
+              rows={2}
+              value={inputMessage}
+              onChange={(e) => setInputMessage(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.nativeEvent.isComposing && !e.shiftKey) {
+                  e.preventDefault()
+                  handleSendMessage()
+                  setTimeout(() => setInputMessage(''), 0)
+                }
+              }}
+            />
+            <div className="absolute bottom-2 right-2">
+              {isPending ? (
+                <Button
+                  className="h-8 w-8 rounded-full bg-red-400 hover:bg-red-500 p-0 flex items-center justify-center"
+                  onClick={handleCancelRequest}
+                  aria-label="Cancel request"
+                >
+                  <div className="w-4 h-4 flex items-center justify-center">
+                    <span className="text-white text-xs font-bold">✕</span>
+                  </div>
+                </Button>
+              ) : (
+                <Button
+                  className="h-8 w-8 rounded-full gradient-button p-0 flex items-center justify-center"
+                  onClick={(e) => {
+                    e.preventDefault()
+                    handleSendMessage()
+                  }}
+                  disabled={!inputMessage.trim()}
+                  aria-label="Send message"
+                >
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   )
 }

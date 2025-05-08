@@ -4,15 +4,16 @@ import { useState, useEffect } from 'react'
 import { PlusCircle, AlertTriangle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Slider } from '@/components/ui/slider'
+import { LoadingState } from '@/components/ui/loading-state'
+import { ErrorDisplay } from '@/components/ui/error-display'
+import { useDataFetch } from '@/hooks/use-data-fetch'
+import { portfolioService } from '@/services'
 import StrategyCard from '@/components/strategies/strategy-card'
 import StrategyPreview from '@/components/strategies/strategy-preview'
-import portfolioData from '@/services/portfolio-data'
 import type { Strategy } from '@/types/portfolio'
 
 export default function ActiveStrategies() {
   const [strategies, setStrategies] = useState<Strategy[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
   const [portfolioTotal, setPortfolioTotal] = useState<number>(0)
 
   const [showAllocationModal, setShowAllocationModal] = useState(false)
@@ -22,27 +23,24 @@ export default function ActiveStrategies() {
   const [showPreview, setShowPreview] = useState(false)
   const [newAllocation, setNewAllocation] = useState<number>(0)
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true)
-        const [strategiesData, portfolioSummary] = await Promise.all([
-          portfolioData.getUserStrategies(),
-          portfolioData.getPortfolioSummary(),
-        ])
-        setStrategies(strategiesData)
-        setPortfolioTotal(portfolioSummary.totalValue)
-        setError(null)
-      } catch (err) {
-        console.error('Failed to fetch user strategies', err)
-        setError('Failed to load strategy data. Please try again later.')
-      } finally {
-        setIsLoading(false)
-      }
-    }
+  // データフェッチングを改善
+  const { data, isLoading, error, refetch } = useDataFetch(
+    async () => {
+      const [strategies, portfolio] = await Promise.all([
+        portfolioService.getUserStrategies(),
+        portfolioService.getPortfolioSummary(),
+      ])
+      return { strategies, portfolio }
+    },
+    { cacheTime: 5 * 60 * 1000 }, // 5分間キャッシュ
+  )
 
-    fetchData()
-  }, [])
+  useEffect(() => {
+    if (data) {
+      setStrategies(data.strategies)
+      setPortfolioTotal(data.portfolio.totalValue)
+    }
+  }, [data])
 
   const handleAllocationChange = (strategy: Strategy) => {
     setSelectedStrategy(strategy)
@@ -63,39 +61,37 @@ export default function ActiveStrategies() {
     setNewAllocation(values[0])
   }
 
+  const handleSaveAllocation = () => {
+    if (!selectedStrategy) return
+
+    // 実際のアプリケーションでは、ここでAPIを呼び出して変更を保存します
+    setStrategies((prevStrategies) =>
+      prevStrategies.map((s) =>
+        s.id === selectedStrategy.id
+          ? {
+              ...s,
+              allocationPercent: newAllocation,
+              allocation: Math.round((newAllocation / 100) * portfolioTotal),
+            }
+          : s,
+      ),
+    )
+    setShowAllocationModal(false)
+  }
+
   if (isLoading) {
     return (
-      <div className="space-y-6">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-semibold text-white">My Strategies</h2>
-          <div className="h-10 w-40 bg-zinc-800 rounded-md animate-pulse" />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[1, 2, 3, 4].map((i) => (
-            <div
-              key={i}
-              className="h-64 bg-zinc-800/50 rounded-xl animate-pulse"
-            />
-          ))}
-        </div>
-      </div>
+      <LoadingState text="Loading your active strategies..." height={400} />
     )
   }
 
   if (error) {
     return (
-      <div className="p-6 bg-red-900/20 border border-red-800 rounded-lg text-red-400">
-        <h3 className="text-lg font-semibold mb-2">Error</h3>
-        <p>{error}</p>
-        <Button
-          variant="outline"
-          className="mt-4 border-red-800 text-red-400 hover:bg-red-900/20"
-          onClick={() => window.location.reload()}
-        >
-          Try Again
-        </Button>
-      </div>
+      <ErrorDisplay
+        message={error.message || 'Failed to load strategies'}
+        onRetry={refetch}
+        title="Strategy Loading Error"
+      />
     )
   }
 
@@ -109,15 +105,27 @@ export default function ActiveStrategies() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {strategies.map((strategy) => (
-          <StrategyCard
-            key={strategy.id}
-            strategy={strategy}
-            onSelect={handleStrategySelect}
-          />
-        ))}
-      </div>
+      {strategies.length === 0 ? (
+        <div className="p-8 text-center bg-zinc-900/30 rounded-lg border border-zinc-800/50">
+          <p className="text-zinc-400 mb-4">
+            You don't have any active strategies yet.
+          </p>
+          <Button className="gradient-button">
+            <PlusCircle className="w-4 h-4 mr-2" />
+            Create Your First Strategy
+          </Button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {strategies.map((strategy) => (
+            <StrategyCard
+              key={strategy.id}
+              strategy={strategy}
+              onSelect={handleStrategySelect}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Strategy Preview Modal */}
       {showPreview && selectedStrategy && (
@@ -129,10 +137,18 @@ export default function ActiveStrategies() {
 
       {/* Allocation Change Modal */}
       {showAllocationModal && selectedStrategy && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div
+          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="allocation-modal-title"
+        >
           <div className="bg-zinc-900 rounded-xl w-full max-w-md">
             <div className="p-4 border-b border-zinc-800">
-              <h3 className="text-lg font-semibold text-white">
+              <h3
+                id="allocation-modal-title"
+                className="text-lg font-semibold text-white"
+              >
                 Adjust Allocation
               </h3>
               <p className="text-sm text-zinc-400">
@@ -176,6 +192,7 @@ export default function ActiveStrategies() {
                     max={100}
                     step={0.1}
                     className="py-1"
+                    aria-label="Allocation percentage"
                   />
                 </div>
               </div>
@@ -183,7 +200,7 @@ export default function ActiveStrategies() {
                 <div className="flex items-start gap-2">
                   <AlertTriangle className="w-4 h-4 text-yellow-400 mt-0.5" />
                   <p className="text-xs text-zinc-400">
-                    Changing allocation may affect your portfolio&apos;s risk
+                    Changing allocation may affect your portfolio's risk
                     profile. Make sure the new allocation aligns with your risk
                     tolerance.
                   </p>
@@ -200,7 +217,7 @@ export default function ActiveStrategies() {
               </Button>
               <Button
                 className="gradient-button"
-                onClick={() => setShowAllocationModal(false)}
+                onClick={handleSaveAllocation}
               >
                 Save Changes
               </Button>

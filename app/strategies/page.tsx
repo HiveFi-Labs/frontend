@@ -29,7 +29,7 @@ export default function StrategiesPage() {
     null,
   )
   const [showPreview, setShowPreview] = useState(false)
-  const [showAdvancedFilters] = useState(false)
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false)
   const [returnRange, setReturnRange] = useState([0, 100])
   const [sharpRange, setSharpRange] = useState([0, 5])
   const [isLoading, setIsLoading] = useState(true)
@@ -71,31 +71,31 @@ export default function StrategiesPage() {
       <div className="min-h-screen bg-black text-white pt-20 pb-10">
         <div className="container mx-auto px-4 max-w-7xl">
           <div className="flex items-center justify-between mb-8">
-            <div className="h-10 bg-zinc-800 rounded w-64 animate-pulse" />
+            <div className="h-10 bg-zinc-800 rounded w-64 animate-pulse"></div>
           </div>
 
           <div className="space-y-4">
             <div className="flex flex-col md:flex-row gap-4">
-              <div className="relative flex-1 h-10 bg-zinc-800 rounded animate-pulse" />
+              <div className="relative flex-1 h-10 bg-zinc-800 rounded animate-pulse"></div>
               <div className="flex gap-2">
                 {[1, 2, 3, 4].map((i) => (
                   <div
                     key={i}
                     className="h-10 w-32 bg-zinc-800 rounded animate-pulse"
-                  />
+                  ></div>
                 ))}
               </div>
             </div>
           </div>
 
           <div className="mt-6">
-            <div className="h-8 bg-zinc-800 rounded w-48 mb-6 animate-pulse" />
+            <div className="h-8 bg-zinc-800 rounded w-48 mb-6 animate-pulse"></div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[1, 2, 3, 4, 5, 6].map((i) => (
                 <div
                   key={i}
                   className="h-64 bg-zinc-800/50 rounded-xl animate-pulse"
-                />
+                ></div>
               ))}
             </div>
           </div>
