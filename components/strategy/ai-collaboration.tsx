@@ -10,6 +10,7 @@ import {
   RefreshCw,
   ArrowRight,
   Trash2,
+  Play,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -54,6 +55,9 @@ export default function AICollaboration({ sessionId, postChat, isPending, error,
   const hasConversations = conversations.length > 0
 
   const resetSessionState = useStrategyStore((state) => state.resetSessionState)
+  const currentParams = useStrategyStore((state) => state.currentParams)
+
+  const [isBacktestButtonDisabled, setIsBacktestButtonDisabled] = useState(false)
 
   // const { postChat, isPending, error, cancelRequest } = useChat({
   //   sessionId: sessionId || '',
@@ -81,6 +85,11 @@ export default function AICollaboration({ sessionId, postChat, isPending, error,
 
   const handleCancelRequest = () => {
     cancelRequest()
+  }
+
+  const handleRunBacktest = () => {
+    postChat("Run backtest")
+    setIsBacktestButtonDisabled(true)
   }
 
   const tradingPairDisplay: Record<string, string> = {
@@ -269,6 +278,19 @@ export default function AICollaboration({ sessionId, postChat, isPending, error,
                         ),
                       )}
                     </div>
+                  </div>
+                )}
+
+                {index === conversations.length - 1 && message.agent !== 'user' && currentParams && (
+                  <div className="border-t border-zinc-700 p-2 flex justify-end">
+                    <Button
+                      disabled={conversations.length === 0 || isBacktestButtonDisabled}
+                      onClick={handleRunBacktest}
+                      className="gradient-button flex items-center gap-2"
+                    >
+                      <Play className="h-4 w-4" />
+                      Run Backtest
+                    </Button>
                   </div>
                 )}
 
