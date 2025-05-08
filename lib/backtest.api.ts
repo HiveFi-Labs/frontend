@@ -170,14 +170,11 @@ namespace V1 {
 
   /* --- プロンプト --- */
   export const setStrategyPrompt = (sessionId: string, prompt: string) =>
-    fetchJson<PromptResponse>(
-      `${API}/sessions/${sessionId}/strategy/prompt`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt }),
-      },
-    )
+    fetchJson<PromptResponse>(`${API}/sessions/${sessionId}/strategy/prompt`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt }),
+    })
 
   export const getStrategyPrompt = (sessionId: string) =>
     fetchJson<PromptResponse>(`${API}/sessions/${sessionId}/strategy/prompt`)

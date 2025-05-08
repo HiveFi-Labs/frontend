@@ -37,8 +37,6 @@ export default function BacktestingResults() {
     setActiveView(value)
   }
 
-  
-
   return (
     <>
       <Card className="glass-card overflow-hidden h-full flex flex-col mt-2">

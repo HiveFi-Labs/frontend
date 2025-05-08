@@ -46,12 +46,12 @@ export default function useV1Backtest(sessionId: string | null) {
       /* 2. コード生成 */
       setBacktestStatus('code')
       const codeRes = await apiV1.generateCode(sessionId)
-      
+
       /* コード生成のステータスチェック */
       if (codeRes.status !== 'success') {
-        throw new Error(`コード生成が失敗しました: ${codeRes.status}`);
+        throw new Error(`コード生成が失敗しました: ${codeRes.status}`)
       }
-      
+
       const codeRef = codeRes.script_path ?? '' // sync 実装なら script_path が返る
 
       /* 3. バックテスト実行 */
@@ -84,7 +84,6 @@ export default function useV1Backtest(sessionId: string | null) {
     setBacktestStatus('idle')
     setError(null)
   }
-  
+
   return { run, status: backtestStatus, error, reset }
 }
-
