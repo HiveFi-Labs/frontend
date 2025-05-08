@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { useQuery } from '@tanstack/react-query'
-import { Upload, Save, Loader2, LockIcon } from 'lucide-react'
+import { Upload, Save, Loader2, LockIcon, ArrowUpIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import AICollaboration from '@/components/strategy/ai-collaboration'
 import BacktestingResults from '@/components/strategy/backtesting-results'
@@ -15,6 +15,7 @@ import {
 } from '@/lib/backtest.api'
 import { usePrivy } from '@privy-io/react-auth'
 import { user_whitelist } from '@/data/user_whitelist'
+import useChat from '@/hooks/useChat'
 
 const whitelistPosition = parseInt(process.env.NEXT_PUBLIC_WHITELIST_POSITION || '0', 10);
 
@@ -36,6 +37,10 @@ export default function StrategyPage() {
   const [loginAttempted, setLoginAttempted] = useState(false)
   const [showComingSoon, setShowComingSoon] = useState(false)
   const [position, setPosition] = useState<number>(user_whitelist.length + 1);
+
+  const { postChat, isPending, error, cancelRequest } = useChat({
+    sessionId: sessionId || '',
+  })
 
   useEffect(() => {
     if (authenticated && !sessionId) {
@@ -125,13 +130,20 @@ export default function StrategyPage() {
 
   useEffect(() => {
     if (user?.id) {
-      const userPosition = checkUserId(user.id);
-      setPosition(userPosition);
-      const currentUser = user_whitelist.find(u => u.id === user.id);
-      const isWhitelisted = currentUser && currentUser.index !== undefined && currentUser.index <= whitelistPosition;
-      setShowComingSoon(!isWhitelisted);
+      const userPosition = checkUserId(user.id)
+      setPosition(userPosition)
+      const currentUser = user_whitelist.find((u) => u.id === user.id)
+      const isWhitelisted =
+        currentUser &&
+        currentUser.index !== undefined &&
+        currentUser.index <= whitelistPosition
+      setShowComingSoon(!isWhitelisted)
     }
-  }, [user]);
+  }, [user])
+
+  const handleSamplePrompt = () => {
+    postChat('Create an ATR breakout strategy for moderately volatile markets.')
+  }
 
   if (showComingSoon) {
     return (
@@ -174,9 +186,21 @@ export default function StrategyPage() {
               </div>
             )}
 
-            <AICollaboration sessionId={sessionId} />
-          </div>
+            <AICollaboration sessionId={sessionId} postChat={postChat} isPending={isPending} error={error} cancelRequest={cancelRequest} />
 
+            {!hasConversations && (
+              <div className="mt-2 ml-1">
+                <Button
+                  className="px-4 py-0 h-8 rounded-full bg-black border border-zinc-800 hover:border-zinc-700 hover:bg-zinc-900 text-zinc-200 button-sm"
+                  onClick={handleSamplePrompt}
+                  aria-label="Use Sample Prompt"
+                  disabled={!sessionId}
+                >
+                  Create an ATR breakout strategy for moderately volatile markets. <ArrowUpIcon className="inline-block ml-0 text-xs" />
+                </Button>
+              </div>
+            )}
+          </div>
           {/* リサイズハンドラー - showSplitLayoutがtrueの時のみ表示 */}
           {showSplitLayout && (
             <div

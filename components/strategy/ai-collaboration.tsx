@@ -10,6 +10,7 @@ import {
   RefreshCw,
   ArrowRight,
   Trash2,
+  Play,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -33,10 +34,14 @@ import { useStrategyStore } from '@/stores/strategyStore'
 import ReactMarkdown from 'react-markdown'
 
 interface AICollaborationProps {
-  sessionId: string | null
+  sessionId: string | null,
+  postChat: (message: string) => void,
+  isPending: boolean,
+  error: Error | null,
+  cancelRequest: () => void,
 }
 
-export default function AICollaboration({ sessionId }: AICollaborationProps) {
+export default function AICollaboration({ sessionId, postChat, isPending, error, cancelRequest }: AICollaborationProps) {
   const [activeAgent] = useState('strategist')
   const [inputMessage, setInputMessage] = useState('')
   const [tradingPair, setTradingPair] = useState('solusdc')
@@ -50,10 +55,13 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
   const hasConversations = conversations.length > 0
 
   const resetSessionState = useStrategyStore((state) => state.resetSessionState)
+  const currentParams = useStrategyStore((state) => state.currentParams)
 
-  const { postChat, isPending, error, cancelRequest } = useChat({
-    sessionId: sessionId || '',
-  })
+  const [isBacktestButtonDisabled, setIsBacktestButtonDisabled] = useState(false)
+
+  // const { postChat, isPending, error, cancelRequest } = useChat({
+  //   sessionId: sessionId || '',
+  // })
 
   useEffect(() => {
     if (messagesContainerRef.current) {
@@ -68,6 +76,7 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
     const messageToSend = inputMessage
     postChat(messageToSend)
     setInputMessage('')
+    setIsBacktestButtonDisabled(false)
   }
 
   const handleResetConversation = () => {
@@ -77,6 +86,11 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
 
   const handleCancelRequest = () => {
     cancelRequest()
+  }
+
+  const handleRunBacktest = () => {
+    postChat("Run backtest")
+    setIsBacktestButtonDisabled(true)
   }
 
   const tradingPairDisplay: Record<string, string> = {
@@ -265,6 +279,19 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
                         ),
                       )}
                     </div>
+                  </div>
+                )}
+
+                {index === conversations.length - 1 && message.agent !== 'user' && currentParams && (
+                  <div className="border-t border-zinc-700 p-2 flex justify-end">
+                    <Button
+                      disabled={conversations.length === 0 || isBacktestButtonDisabled}
+                      onClick={handleRunBacktest}
+                      className="gradient-button flex items-center gap-2"
+                    >
+                      <Play className="h-4 w-4" />
+                      Run Backtest
+                    </Button>
                   </div>
                 )}
 
