@@ -76,6 +76,7 @@ export default function AICollaboration({ sessionId, postChat, isPending, error,
     const messageToSend = inputMessage
     postChat(messageToSend)
     setInputMessage('')
+    setIsBacktestButtonDisabled(false)
   }
 
   const handleResetConversation = () => {
