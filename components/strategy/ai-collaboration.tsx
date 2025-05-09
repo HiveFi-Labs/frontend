@@ -242,7 +242,7 @@ export default function AICollaboration({
 
       {/* === Body === */}
       <CardContent
-        className={`p-0 bg-zinc-900 flex flex-col min-h-0 overflow-hidden ${hasConversations ? 'flex-2 h-[calc(81vh)]' : ''}`}
+        className={`p-0 bg-zinc-900 flex flex-col min-h-0 overflow-hidden ${hasConversations ? 'flex-2 h-[calc(82vh)]' : ''}`}
       >
         {/* messages */}
         <div

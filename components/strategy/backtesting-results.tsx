@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import StrategyCode from '@/components/strategy/strategy-code'
 import PerformanceMetrics from '@/components/strategy/performance-metrics'
+import PerformanceMetricsV0 from '@/components/strategy/performance-metrics-v0'
 import TradeCharts from '@/components/strategy/trade-charts'
 import TradeHistoryTable from '@/components/strategy/trade-history-table'
 import { useStrategyStore } from '@/stores/strategyStore'
@@ -14,6 +15,8 @@ import { useStrategyStore } from '@/stores/strategyStore'
 export default function BacktestingResults() {
   const [activeView, setActiveView] = useState('backtest')
   const backtestStatus = useStrategyStore((s) => s.backtestStatus)
+
+  const apiVersion = useStrategyStore((s) => s.apiVersion)
 
   // backtestStatusに基づいて表示を変更できます
   const isRunning =
@@ -84,9 +87,11 @@ export default function BacktestingResults() {
             <>
               {/* Chart View */}
               <TradeCharts />
-
-              {/* Performance Metrics */}
-              <PerformanceMetrics />
+              {apiVersion === 'v0' ? (
+                <PerformanceMetricsV0 />
+              ) : (
+                <PerformanceMetrics />
+              )}
 
               {/* Trade History */}
               <TradeHistoryTable />
