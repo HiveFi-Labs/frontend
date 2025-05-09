@@ -312,29 +312,29 @@ export default function AICollaboration({
                     )}
                   </>
                 )}
+
+                {i === conversations.length - 1 &&
+                  m.agent !== 'user' &&
+                  currentParams && (
+                    <div className="border-t border-zinc-700 p-2 flex justify-end">
+                      <Button
+                        disabled={
+                          conversations.length === 0 || isBacktestButtonDisabled
+                        }
+                        onClick={handleRunBacktest}
+                        className="gradient-button flex items-center gap-2"
+                      >
+                        <Play className="h-4 w-4" />
+                        Run Backtest
+                      </Button>
+                    </div>
+                  )}
               </div>
               {m.agent === 'user' && (
                 <div className="w-8 h-8 rounded-full bg-purple-600/80 flex items-center justify-center">
                   <MessageSquare className="w-4 h-4 text-white" />
                 </div>
               )}
-
-              {i === conversations.length - 1 &&
-                m.agent !== 'user' &&
-                currentParams && (
-                  <div className="border-t border-zinc-700 p-2 flex justify-end">
-                    <Button
-                      disabled={
-                        conversations.length === 0 || isBacktestButtonDisabled
-                      }
-                      onClick={handleRunBacktest}
-                      className="gradient-button flex items-center gap-2"
-                    >
-                      <Play className="h-4 w-4" />
-                      Run Backtest
-                    </Button>
-                  </div>
-                )}
             </div>
           ))}
 

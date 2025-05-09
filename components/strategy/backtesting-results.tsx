@@ -50,7 +50,7 @@ export default function BacktestingResults() {
             >
               <TabsList className="bg-zinc-800/50 backdrop-blur-sm h-6 p-0">
                 <TabsTrigger
-                  value="preview"
+                  value="backtest"
                   className="flex items-center gap-1 h-6 py-0 px-2 text-xs data-[state=active]:bg-zinc-700"
                 >
                   <MonitorSmartphone className="w-3.5 h-3.5" />
@@ -59,6 +59,7 @@ export default function BacktestingResults() {
                 <TabsTrigger
                   value="code"
                   className="flex items-center gap-1 h-6 py-0 px-2 text-xs data-[state=active]:bg-zinc-700"
+                  disabled={true}
                 >
                   <Code className="w-3.5 h-3.5" />
                   Code

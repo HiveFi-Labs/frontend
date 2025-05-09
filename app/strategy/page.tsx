@@ -27,7 +27,7 @@ export default function StrategyPage() {
   const sessionId = useStrategyStore((state) => state.sessionId)
   const setSessionId = useStrategyStore((state) => state.setSessionId)
   const apiVersion = useStrategyStore((s) => s.apiVersion)
-
+  const setApiVersion = useStrategyStore((s) => s.setApiVersion)
   const backtestResults = useStrategyStore((state) => state.backtestResults)
   const backtestResultsJson = useStrategyStore(
     (state) => state.backtestResultsJson,
@@ -136,8 +136,14 @@ export default function StrategyPage() {
     }
   }, [user])
 
-  const handleSamplePrompt = () => {
-    postChat('Create an ATR breakout strategy for moderately volatile markets.')
+  const handleSamplePrompt = (version: string) => {
+    if (version === 'v0') {
+      setApiVersion('v0')
+      postChat('Create an ATR breakout strategy for moderately volatile markets.')
+    } else {
+      setApiVersion('v1')
+      postChat('Create an ATR breakout strategy for moderately volatile markets.')
+    }
   }
 
   if (showComingSoon) {
@@ -198,7 +204,7 @@ export default function StrategyPage() {
               <div className="mt-2 ml-1">
                 <Button
                   className="px-4 py-0 h-8 rounded-full bg-black border border-zinc-800 hover:border-zinc-700 hover:bg-zinc-900 text-zinc-200 button-sm"
-                  onClick={handleSamplePrompt}
+                  onClick={() => handleSamplePrompt('v0')}
                   aria-label="Use Sample Prompt"
                   disabled={!sessionId}
                 >
