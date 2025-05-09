@@ -290,7 +290,7 @@ export default function AICollaboration({
                     </div>
 
                     {/* ===== Run Back-test (v1 only) ===== */}
-                    {apiVersion === 'v1' && (
+                    {i === conversations.length - 1 && apiVersion === 'v1' && (
                       <div className="border-t border-zinc-700 p-2 flex justify-end">
                         <Button
                           disabled={sending || conversations.length === 0}
