@@ -37,15 +37,24 @@ import { useStrategyStore } from '@/stores/strategyStore'
 import ReactMarkdown from 'react-markdown'
 import { apiV1 } from '@/lib/backtest.api'
 
-interface Props {
+interface AICollaborationProps {
   sessionId: string | null
+  postChat: (message: string) => void
+  isPending: boolean
+  error: Error | null
+  cancelRequest: () => void
 }
 
-export default function AICollaboration({ sessionId }: Props) {
-  /* ---------------- state ---------------- */
+export default function AICollaboration({
+  sessionId,
+  postChat,
+  isPending,
+  error,
+  cancelRequest,
+}: AICollaborationProps) {
+  const [activeAgent] = useState('strategist')
   const apiVersion = useStrategyStore((s) => s.apiVersion)
   const setApiVersion = useStrategyStore((s) => s.setApiVersion)
-
   const [inputMessage, setInputMessage] = useState('')
   const [tradingPair, setTradingPair] = useState('solusdc')
   const [timeframe, setTimeframe] = useState('1h')
@@ -62,16 +71,20 @@ export default function AICollaboration({ sessionId }: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
 
   /* ---------------- hooks ---------------- */
-  const {
-    postChat,
-    isPending: chatPending,
-    error: chatErr,
-    cancelRequest,
-  } = useChat({ sessionId: sessionId || '', apiVersion })
+  // const {
+  //   postChat,
+  //   isPending: isPending,
+  //   error: chatErr,
+  //   cancelRequest,
+  // } = useChat({ sessionId: sessionId || '', apiVersion })
 
   const { run: runBacktest, error: btError } = useV1Backtest(
     apiVersion === 'v1' ? sessionId : null,
   )
+  const currentParams = useStrategyStore((state) => state.currentParams)
+
+  const [isBacktestButtonDisabled, setIsBacktestButtonDisabled] =
+    useState(false)
 
   /* ---------------- effects ---------------- */
   useEffect(() => {
@@ -82,13 +95,14 @@ export default function AICollaboration({ sessionId }: Props) {
 
   /* ---------------- helpers ---------------- */
   const sendMessage = () => {
-    if (!inputMessage.trim() || chatPending) return
+    if (!inputMessage.trim() || isPending) return
     postChat(inputMessage)
     setInputMessage('')
+    setIsBacktestButtonDisabled(false)
   }
 
   const sending =
-    chatPending ||
+    isPending ||
     backtestStatus === 'prompt' ||
     backtestStatus === 'code' ||
     backtestStatus === 'backtest'
@@ -98,6 +112,11 @@ export default function AICollaboration({ sessionId }: Props) {
     code: 'Generating code…',
     backtest: 'Running back-test…',
     completed: 'Done!',
+  }
+
+  const handleRunBacktest = () => {
+    postChat('Run backtest')
+    setIsBacktestButtonDisabled(true)
   }
 
   const tradingPairDisplay: Record<string, string> = {
@@ -212,7 +231,7 @@ export default function AICollaboration({ sessionId }: Props) {
             <DropdownMenuItem
               className="text-xs text-zinc-200 focus:text-white focus:bg-zinc-600 cursor-pointer"
               onClick={resetSessionState}
-              disabled={chatPending}
+              disabled={isPending}
             >
               <Trash2 className="h-3.5 w-3.5 mr-2 text-zinc-300" />
               Clear Chat
@@ -283,6 +302,14 @@ export default function AICollaboration({ sessionId }: Props) {
                         </Button>
                       </div>
                     )}
+
+                    {m.attachment && m.attachment.type === 'code' && (
+                      <div className="mt-3 p-3 bg-zinc-600/50 rounded-lg overflow-x-auto">
+                        <pre className="text-xs text-zinc-300 font-mono">
+                          <code>{m.attachment.data}</code>
+                        </pre>
+                      </div>
+                    )}
                   </>
                 )}
               </div>
@@ -291,6 +318,23 @@ export default function AICollaboration({ sessionId }: Props) {
                   <MessageSquare className="w-4 h-4 text-white" />
                 </div>
               )}
+
+              {i === conversations.length - 1 &&
+                m.agent !== 'user' &&
+                currentParams && (
+                  <div className="border-t border-zinc-700 p-2 flex justify-end">
+                    <Button
+                      disabled={
+                        conversations.length === 0 || isBacktestButtonDisabled
+                      }
+                      onClick={handleRunBacktest}
+                      className="gradient-button flex items-center gap-2"
+                    >
+                      <Play className="h-4 w-4" />
+                      Run Backtest
+                    </Button>
+                  </div>
+                )}
             </div>
           ))}
 
@@ -310,9 +354,9 @@ export default function AICollaboration({ sessionId }: Props) {
             </div>
           )}
 
-          {(chatErr || btError) && (
+          {(error || btError) && (
             <div className="text-red-500 text-sm text-center m-3">
-              Failed to get response: {(chatErr || btError)?.message}
+              Failed to get response: {(error || btError)?.message}
             </div>
           )}
         </div>
@@ -341,7 +385,7 @@ export default function AICollaboration({ sessionId }: Props) {
               }}
             />
             <div className="absolute bottom-2 right-2">
-              {chatPending ? (
+              {isPending ? (
                 <Button
                   onClick={cancelRequest}
                   className="h-8 w-8 rounded-full bg-red-400 hover:bg-red-500 p-0"
@@ -358,6 +402,12 @@ export default function AICollaboration({ sessionId }: Props) {
                 </Button>
               )}
             </div>
+            {hasConversations && (
+              <p className="text-xs text-zinc-500 mt-1 text-center">
+                Currently, as this is an alpha version, only a limited set of
+                strategies can be executed.
+              </p>
+            )}
           </div>
         </div>
       </CardContent>

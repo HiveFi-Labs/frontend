@@ -71,6 +71,7 @@ export default function BacktestingResults() {
           <Button
             className="gradient-button text-white border-0 h-8 py-3 px-3 text-xs flex items-center gap-1"
             size="sm"
+            disabled={true}
           >
             <Save className="w-3.5 h-3.5" />
             Save Strategy

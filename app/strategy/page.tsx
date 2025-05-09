@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { useQuery } from '@tanstack/react-query'
-import { Upload, Save, Loader2, LockIcon } from 'lucide-react'
+import { Upload, Save, Loader2, LockIcon, ArrowUpIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import AICollaboration from '@/components/strategy/ai-collaboration'
 import BacktestingResults from '@/components/strategy/backtesting-results'
@@ -15,6 +15,7 @@ import {
 import { apiV1 } from '@/lib/backtest.api'
 import { user_whitelist } from '@/data/user_whitelist'
 import { usePrivy } from '@privy-io/react-auth'
+import useChat from '@/hooks/useChat'
 
 const whitelistPosition = parseInt(
   process.env.NEXT_PUBLIC_WHITELIST_POSITION || '0',
@@ -43,7 +44,10 @@ export default function StrategyPage() {
   const [showComingSoon, setShowComingSoon] = useState(false)
   const [position, setPosition] = useState<number>(user_whitelist.length + 1)
 
-  /* ---- sessionId ---- */
+  const { postChat, isPending, error, cancelRequest } = useChat({
+    sessionId: sessionId || '',
+  })
+
   useEffect(() => {
     const initializeSession = async () => {
       console.log('initializeSession', apiVersion, sessionId)
@@ -131,6 +135,10 @@ export default function StrategyPage() {
     }
   }, [user])
 
+  const handleSamplePrompt = () => {
+    postChat('Create an ATR breakout strategy for moderately volatile markets.')
+  }
+
   if (showComingSoon) {
     return (
       <div className="min-h-screen bg-black text-white pt-20 pb-10 flex items-center justify-center">
@@ -176,14 +184,29 @@ export default function StrategyPage() {
               <div className="text-center mb-6">
                 <h2 className="text-2xl font-bold mb-2">Let's begin.</h2>
                 <p className="text-zinc-400">
-                  Start a conversation with AI to create your trading strategy
+                  Currently, as this is an alpha version, only a limited set of strategies can be executed.
                 </p>
               </div>
             )}
-            <AICollaboration sessionId={sessionId} />
-          </div>
 
           {/* -------- Splitter -------- */}
+
+            <AICollaboration sessionId={sessionId} postChat={postChat} isPending={isPending} error={error} cancelRequest={cancelRequest} />
+
+            {!hasConversations && (
+              <div className="mt-2 ml-1">
+                <Button
+                  className="px-4 py-0 h-8 rounded-full bg-black border border-zinc-800 hover:border-zinc-700 hover:bg-zinc-900 text-zinc-200 button-sm"
+                  onClick={handleSamplePrompt}
+                  aria-label="Use Sample Prompt"
+                  disabled={!sessionId}
+                >
+                  Create an ATR breakout strategy for moderately volatile markets. <ArrowUpIcon className="inline-block ml-0 text-xs" />
+                </Button>
+              </div>
+            )}
+          </div>
+          {/* リサイズハンドラー - showSplitLayoutがtrueの時のみ表示 */}
           {showSplit && (
             <div
               className="w-1 cursor-col-resize"
