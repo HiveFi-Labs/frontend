@@ -315,7 +315,8 @@ export default function AICollaboration({
 
                 {i === conversations.length - 1 &&
                   m.agent !== 'user' &&
-                  currentParams && (
+                  currentParams &&
+                  apiVersion === 'v0' && (
                     <div className="border-t border-zinc-700 p-2 flex justify-end">
                       <Button
                         disabled={
