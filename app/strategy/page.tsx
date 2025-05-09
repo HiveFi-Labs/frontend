@@ -21,6 +21,7 @@ const whitelistPosition = parseInt(
   process.env.NEXT_PUBLIC_WHITELIST_POSITION || '0',
   10,
 )
+const disableComingSoon = process.env.NEXT_PUBLIC_DISABLE_COMING_SOON === 'true'
 
 export default function StrategyPage() {
   const { authenticated, login, user } = usePrivy()
@@ -127,12 +128,16 @@ export default function StrategyPage() {
     if (user?.id) {
       const userPosition = checkUserId(user.id)
       setPosition(userPosition)
-      const currentUser = user_whitelist.find((u) => u.id === user.id)
-      const isWhitelisted =
-        currentUser &&
-        currentUser.index !== undefined &&
-        currentUser.index <= whitelistPosition
-      setShowComingSoon(!isWhitelisted)
+      if (disableComingSoon) {
+        setShowComingSoon(false)
+      } else {
+        const currentUser = user_whitelist.find((u) => u.id === user.id)
+        const isWhitelisted =
+          currentUser &&
+          currentUser.index !== undefined &&
+          currentUser.index <= whitelistPosition
+        setShowComingSoon(!isWhitelisted)
+      }
     }
   }, [user])
 
