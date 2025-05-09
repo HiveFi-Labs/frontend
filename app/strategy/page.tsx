@@ -46,6 +46,7 @@ export default function StrategyPage() {
 
   const { postChat, isPending, error, cancelRequest } = useChat({
     sessionId: sessionId || '',
+    apiVersion: apiVersion,
   })
 
   useEffect(() => {
