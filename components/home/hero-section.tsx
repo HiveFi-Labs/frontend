@@ -74,7 +74,7 @@ export default function HeroSection() {
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
-              <div className="inline-block px-4 py-2 rounded-full bg-zinc-800/50 backdrop-blur-sm border border-zinc-700 animate-float">
+              <div className="inline-block px-4 py-2 rounded-full bg-zinc-800/50 backdrop-blur-sm border border-zinc-700">
                 <span className="text-sm font-medium text-zinc-300 flex items-center gap-2">
                   <HiveFiLogo size={24} /> Revolutionizing DeFi Trading
                 </span>

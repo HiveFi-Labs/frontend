@@ -25,7 +25,7 @@ export function GlassCard({
     <div
       className={cn(
         'glass-card rounded-xl relative overflow-hidden',
-        hoverEffect && 'group transition-all hover:translate-y-[-5px]',
+        hoverEffect && 'group transition-all',
         onClick && 'cursor-pointer',
         className,
       )}
