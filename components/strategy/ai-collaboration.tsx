@@ -343,9 +343,17 @@ export default function AICollaboration({
                   </p>
                 ) : (
                   <>
-                    <div className="prose prose-sm prose-invert max-w-none">
+                    <div className="prose prose-sm prose-invert max-w-none markdown-content">
                       <ReactMarkdown>{m.message}</ReactMarkdown>
                     </div>
+
+                    {m.attachment && m.attachment.type === 'code' && (
+                      <div className="mt-3 p-3 bg-zinc-600/50 rounded-lg overflow-x-auto">
+                        <pre className="text-sm text-zinc-300 font-mono">
+                          <code>{m.attachment.data}</code>
+                        </pre>
+                      </div>
+                    )}
 
                     {/* ===== Run Back-test (v1 only) ===== */}
                     {i === conversations.length - 1 && apiVersion === 'v1' && (
@@ -361,13 +369,6 @@ export default function AICollaboration({
                       </div>
                     )}
 
-                    {m.attachment && m.attachment.type === 'code' && (
-                      <div className="mt-3 p-3 bg-zinc-600/50 rounded-lg overflow-x-auto">
-                        <pre className="text-xs text-zinc-300 font-mono">
-                          <code>{m.attachment.data}</code>
-                        </pre>
-                      </div>
-                    )}
                   </>
                 )}
 

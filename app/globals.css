@@ -29,6 +29,11 @@ body {
   @apply bg-black text-white;
 }
 
+/* カスタム マークダウン スタイル */
+.markdown-content code {
+  @apply text-xs;
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
