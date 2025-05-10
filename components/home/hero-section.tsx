@@ -101,8 +101,8 @@ export default function HeroSection() {
               </div>
             </div>
             <div className="relative">
-              <div className="absolute -inset-4 bg-gradient-to-br from-purple-600/20 to-blue-600/20 rounded-xl blur-xl animate-pulse-slow" />
-              <div className="relative glass-card rounded-xl overflow-hidden border border-zinc-700/50 backdrop-blur-md">
+              <div className="absolute -inset-4 bg-gradient-to-br from-purple-600/20 to-blue-600/20 rounded-xl blur-xl animate-pulse-slow " />
+              <div className="relative glass-card rounded-xl overflow-hidden border border-zinc-700/50 backdrop-blur-md hover:translate-y-[-5px]">
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500" />
                 <div className="p-6">
                   <div className="flex justify-between items-center mb-6">
