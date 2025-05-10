@@ -144,10 +144,14 @@ export default function StrategyPage() {
   const handleSamplePrompt = (version: string) => {
     if (version === 'v0') {
       setApiVersion('v0')
-      postChat('Create an ATR breakout strategy for moderately volatile markets.')
+      postChat(
+        'Create an ATR breakout strategy for moderately volatile markets.',
+      )
     } else {
       setApiVersion('v1')
-      postChat('Create an ATR breakout strategy for moderately volatile markets.')
+      postChat(
+        'Create an ATR breakout strategy for moderately volatile markets.',
+      )
     }
   }
 
@@ -196,14 +200,21 @@ export default function StrategyPage() {
               <div className="text-center mb-6">
                 <h2 className="text-2xl font-bold mb-2">Let's begin.</h2>
                 <p className="text-zinc-400">
-                  Currently, as this is an alpha version, only a limited set of strategies can be executed.
+                  Currently, as this is an alpha version, only a limited set of
+                  strategies can be executed.
                 </p>
               </div>
             )}
 
-          {/* -------- Splitter -------- */}
+            {/* -------- Splitter -------- */}
 
-            <AICollaboration sessionId={sessionId} postChat={postChat} isPending={isPending} error={error} cancelRequest={cancelRequest} />
+            <AICollaboration
+              sessionId={sessionId}
+              postChat={postChat}
+              isPending={isPending}
+              error={error}
+              cancelRequest={cancelRequest}
+            />
 
             {!hasConversations && (
               <div className="mt-2 ml-1">
@@ -213,7 +224,8 @@ export default function StrategyPage() {
                   aria-label="Use Sample Prompt"
                   disabled={!sessionId}
                 >
-                  Create an ATR breakout strategy for moderately volatile markets. <ArrowUpIcon className="inline-block ml-0 text-xs" />
+                  Create an ATR breakout strategy for moderately volatile
+                  markets. <ArrowUpIcon className="inline-block ml-0 text-xs" />
                 </Button>
               </div>
             )}
