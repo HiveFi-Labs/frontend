@@ -34,14 +34,20 @@ import { useStrategyStore } from '@/stores/strategyStore'
 import ReactMarkdown from 'react-markdown'
 
 interface AICollaborationProps {
-  sessionId: string | null,
-  postChat: (message: string) => void,
-  isPending: boolean,
-  error: Error | null,
-  cancelRequest: () => void,
+  sessionId: string | null
+  postChat: (message: string) => void
+  isPending: boolean
+  error: Error | null
+  cancelRequest: () => void
 }
 
-export default function AICollaboration({ sessionId, postChat, isPending, error, cancelRequest }: AICollaborationProps) {
+export default function AICollaboration({
+  sessionId,
+  postChat,
+  isPending,
+  error,
+  cancelRequest,
+}: AICollaborationProps) {
   const [activeAgent] = useState('strategist')
   const [inputMessage, setInputMessage] = useState('')
   const [tradingPair, setTradingPair] = useState('solusdc')
@@ -57,7 +63,8 @@ export default function AICollaboration({ sessionId, postChat, isPending, error,
   const resetSessionState = useStrategyStore((state) => state.resetSessionState)
   const currentParams = useStrategyStore((state) => state.currentParams)
 
-  const [isBacktestButtonDisabled, setIsBacktestButtonDisabled] = useState(false)
+  const [isBacktestButtonDisabled, setIsBacktestButtonDisabled] =
+    useState(false)
 
   // const { postChat, isPending, error, cancelRequest } = useChat({
   //   sessionId: sessionId || '',
@@ -89,7 +96,7 @@ export default function AICollaboration({ sessionId, postChat, isPending, error,
   }
 
   const handleRunBacktest = () => {
-    postChat("Run backtest")
+    postChat('Run backtest')
     setIsBacktestButtonDisabled(true)
   }
 
@@ -118,7 +125,11 @@ export default function AICollaboration({ sessionId, postChat, isPending, error,
       >
         <div className="flex items-center text-xs">
           <div className="flex items-center relative group">
-            <Select value={tradingPair} onValueChange={setTradingPair} disabled={true}>
+            <Select
+              value={tradingPair}
+              onValueChange={setTradingPair}
+              disabled={true}
+            >
               <SelectTrigger className="bg-transparent border-0 text-zinc-500 h-6 p-0 min-w-20 w-auto text-xs font-medium cursor-not-allowed opacity-50">
                 <SelectValue>{tradingPairDisplay[tradingPair]}</SelectValue>
               </SelectTrigger>
@@ -136,7 +147,11 @@ export default function AICollaboration({ sessionId, postChat, isPending, error,
           </div>
 
           <div className="flex items-center relative group">
-            <Select value={timeframe} onValueChange={setTimeframe} disabled={true}>
+            <Select
+              value={timeframe}
+              onValueChange={setTimeframe}
+              disabled={true}
+            >
               <SelectTrigger className="bg-transparent border-0 text-zinc-500 h-6 p-0 min-w-8 w-auto text-xs font-medium cursor-not-allowed opacity-50">
                 <SelectValue>{timeframeDisplay[timeframe]}</SelectValue>
               </SelectTrigger>
@@ -282,18 +297,22 @@ export default function AICollaboration({ sessionId, postChat, isPending, error,
                   </div>
                 )}
 
-                {index === conversations.length - 1 && message.agent !== 'user' && currentParams && (
-                  <div className="border-t border-zinc-700 p-2 flex justify-end">
-                    <Button
-                      disabled={conversations.length === 0 || isBacktestButtonDisabled}
-                      onClick={handleRunBacktest}
-                      className="gradient-button flex items-center gap-2"
-                    >
-                      <Play className="h-4 w-4" />
-                      Run Backtest
-                    </Button>
-                  </div>
-                )}
+                {index === conversations.length - 1 &&
+                  message.agent !== 'user' &&
+                  currentParams && (
+                    <div className="border-t border-zinc-700 p-2 flex justify-end">
+                      <Button
+                        disabled={
+                          conversations.length === 0 || isBacktestButtonDisabled
+                        }
+                        onClick={handleRunBacktest}
+                        className="gradient-button flex items-center gap-2"
+                      >
+                        <Play className="h-4 w-4" />
+                        Run Backtest
+                      </Button>
+                    </div>
+                  )}
 
                 {message.attachment && message.attachment.type === 'code' && (
                   <div className="mt-3 p-3 bg-zinc-600/50 rounded-lg overflow-x-auto">
@@ -347,7 +366,11 @@ export default function AICollaboration({ sessionId, postChat, isPending, error,
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.nativeEvent.isComposing && !e.shiftKey) {
+                if (
+                  e.key === 'Enter' &&
+                  !e.nativeEvent.isComposing &&
+                  !e.shiftKey
+                ) {
                   e.preventDefault()
                   handleSendMessage()
                   setTimeout(() => setInputMessage(''), 0)
@@ -381,7 +404,8 @@ export default function AICollaboration({ sessionId, postChat, isPending, error,
             </div>
             {hasConversations && (
               <p className="text-xs text-zinc-500 mt-1 text-center">
-                Currently, as this is an alpha version, only a limited set of strategies can be executed.
+                Currently, as this is an alpha version, only a limited set of
+                strategies can be executed.
               </p>
             )}
           </div>
