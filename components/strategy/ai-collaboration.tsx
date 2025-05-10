@@ -330,10 +330,12 @@ export default function AICollaboration({
                 className={`glass-card p-3 rounded-xl max-w-[85%] ${m.agent === 'user' ? 'bg-purple-800/30' : 'bg-zinc-700/30'}`}
               >
                 <div className="flex justify-between mb-1">
-                  <span className="text-sm font-semibold capitalize">
+                  <span className="text-sm font-semibold capitalize mr-2">
                     {m.agent === 'user' ? 'You' : m.agent}
                   </span>
-                  <span className="text-xs text-zinc-300">{m.timestamp}</span>
+                  <span className="text-xs text-zinc-300 flex-shrink-0 ml-auto">
+                    {m.timestamp}
+                  </span>
                 </div>
                 {m.agent === 'user' ? (
                   <p className="text-sm text-zinc-200 whitespace-pre-wrap">
@@ -341,9 +343,17 @@ export default function AICollaboration({
                   </p>
                 ) : (
                   <>
-                    <div className="prose prose-sm prose-invert max-w-none">
+                    <div className="prose prose-sm prose-invert max-w-none markdown-content">
                       <ReactMarkdown>{m.message}</ReactMarkdown>
                     </div>
+
+                    {m.attachment && m.attachment.type === 'code' && (
+                      <div className="mt-3 p-3 bg-zinc-600/50 rounded-lg overflow-x-auto">
+                        <pre className="text-sm text-zinc-300 font-mono">
+                          <code>{m.attachment.data}</code>
+                        </pre>
+                      </div>
+                    )}
 
                     {/* ===== Run Back-test (v1 only) ===== */}
                     {i === conversations.length - 1 && apiVersion === 'v1' && (
@@ -359,13 +369,6 @@ export default function AICollaboration({
                       </div>
                     )}
 
-                    {m.attachment && m.attachment.type === 'code' && (
-                      <div className="mt-3 p-3 bg-zinc-600/50 rounded-lg overflow-x-auto">
-                        <pre className="text-xs text-zinc-300 font-mono">
-                          <code>{m.attachment.data}</code>
-                        </pre>
-                      </div>
-                    )}
                   </>
                 )}
 
