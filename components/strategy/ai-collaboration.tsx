@@ -45,6 +45,9 @@ interface AICollaborationProps {
   cancelRequest: () => void
 }
 
+// 環境変数からAPI V1が利用可能かどうかを確認
+const isApiV1Enabled = process.env.NEXT_PUBLIC_ENABLE_API_V1 === 'true'
+
 export default function AICollaboration({
   sessionId,
   postChat,
@@ -60,7 +63,7 @@ export default function AICollaboration({
   const [timeframe, setTimeframe] = useState('1h')
   const [startDate, setStartDate] = useState('2024-01-01')
   const [endDate, setEndDate] = useState('2025-01-01')
-  
+
   // ステータスバーを非表示にする
   const enableMarketControls = false
 
@@ -156,7 +159,9 @@ export default function AICollaboration({
               onValueChange={setTradingPair}
               disabled={!enableMarketControls}
             >
-              <SelectTrigger className={`bg-transparent border-0 text-zinc-500 h-6 p-0 min-w-20 w-auto text-xs font-medium ${!enableMarketControls ? 'cursor-not-allowed opacity-50' : ''}`}>
+              <SelectTrigger
+                className={`bg-transparent border-0 text-zinc-500 h-6 p-0 min-w-20 w-auto text-xs font-medium ${!enableMarketControls ? 'cursor-not-allowed opacity-50' : ''}`}
+              >
                 <SelectValue>{tradingPairDisplay[tradingPair]}</SelectValue>
               </SelectTrigger>
               <SelectContent className="bg-zinc-900 border-zinc-800">
@@ -182,7 +187,9 @@ export default function AICollaboration({
               onValueChange={setTimeframe}
               disabled={!enableMarketControls}
             >
-              <SelectTrigger className={`bg-transparent border-0 text-zinc-500 h-6 p-0 min-w-20 w-auto text-xs font-medium ${!enableMarketControls ? 'cursor-not-allowed opacity-50' : ''}`}>
+              <SelectTrigger
+                className={`bg-transparent border-0 text-zinc-500 h-6 p-0 min-w-20 w-auto text-xs font-medium ${!enableMarketControls ? 'cursor-not-allowed opacity-50' : ''}`}
+              >
                 <SelectValue>{timeframeDisplay[timeframe]}</SelectValue>
               </SelectTrigger>
               <SelectContent className="bg-zinc-900 border-zinc-800">
@@ -251,15 +258,15 @@ export default function AICollaboration({
               disabled={apiVersion === 'v0'}
             >
               <Zap className="h-3.5 w-3.5 mr-2 text-zinc-300" />
-              Easy Mode (v0)
+              Easy Mode
             </DropdownMenuItem>
             <DropdownMenuItem
               className={`text-xs focus:bg-zinc-600 cursor-pointer ${apiVersion === 'v1' ? 'text-purple-300 font-semibold' : 'text-zinc-200'}`}
               onClick={() => setApiVersion('v1')}
-              disabled={apiVersion === 'v1'}
+              disabled={apiVersion === 'v1' || !isApiV1Enabled}
             >
               <Hammer className="h-3.5 w-3.5 mr-2 text-zinc-300" />
-              Build Mode (v1)
+              Build Mode
             </DropdownMenuItem>
             <DropdownMenuSeparator className="bg-zinc-600" />
             <DropdownMenuItem

@@ -1,6 +1,11 @@
 import { create } from 'zustand'
 import type { ChatMessage } from '@/types/strategy-development'
 
+// 環境変数からAPI V1が利用可能かどうかを確認
+const isApiV1Enabled = process.env.NEXT_PUBLIC_ENABLE_API_V1 === 'true'
+// デフォルトのAPIバージョンを環境変数から取得 (未設定時はV0)
+const defaultApiVersion = isApiV1Enabled ? 'v1' : 'v0'
+
 // Plotly のデータ構造に合わせて型定義 (必要であれば拡張)
 interface PlotlyDataObject {
   data: Array<Record<string, unknown>>
@@ -54,8 +59,12 @@ export const useStrategyStore = create<StrategyState>((set) => ({
   setSessionId: (id) => set({ sessionId: id }),
 
   // APIバージョンのデフォルト値と更新関数
-  apiVersion: 'v1',
-  setApiVersion: (version) => set({ apiVersion: version }),
+  apiVersion: defaultApiVersion,
+  setApiVersion: (version) => {
+    // V1が無効化されている場合は強制的にV0を使用
+    const validVersion = isApiV1Enabled ? version : 'v0'
+    set({ apiVersion: validVersion })
+  },
 
   messages: [], // 初期メッセージは空配列
   addMessage: (message) =>
