@@ -7,12 +7,33 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import StrategyCode from '@/components/strategy/strategy-code'
 import PerformanceMetrics from '@/components/strategy/performance-metrics'
+import PerformanceMetricsV0 from '@/components/strategy/performance-metrics-v0'
 import TradeCharts from '@/components/strategy/trade-charts'
 import TradeHistoryTable from '@/components/strategy/trade-history-table'
+import { useStrategyStore } from '@/stores/strategyStore'
 
 export default function BacktestingResults() {
-  const [isRunningBacktest, setIsRunningBacktest] = useState(false)
-  const [activeView, setActiveView] = useState('preview')
+  const [activeView, setActiveView] = useState('backtest')
+  const backtestStatus = useStrategyStore((s) => s.backtestStatus)
+
+  const apiVersion = useStrategyStore((s) => s.apiVersion)
+
+  // backtestStatusに基づいて表示を変更できます
+  const isRunning =
+    backtestStatus === 'prompt' ||
+    backtestStatus === 'code' ||
+    backtestStatus === 'backtest'
+
+  const statusDisplay = {
+    idle: '',
+    prompt: 'Generating...',
+    code: 'Generating code...',
+    backtest: 'Running backtest...',
+    completed: 'Completed!',
+    error: 'Error occurred',
+  }
+
+  const statusMessage = statusDisplay[backtestStatus] || ''
 
   // activeViewの変更を検知して親コンポーネントのshowCodeを更新
   const handleViewChange = (value: string) => {
@@ -32,7 +53,7 @@ export default function BacktestingResults() {
             >
               <TabsList className="bg-zinc-800/50 backdrop-blur-sm h-6 p-0">
                 <TabsTrigger
-                  value="preview"
+                  value="backtest"
                   className="flex items-center gap-1 h-6 py-0 px-2 text-xs data-[state=active]:bg-zinc-700"
                 >
                   <MonitorSmartphone className="w-3.5 h-3.5" />
@@ -62,13 +83,15 @@ export default function BacktestingResults() {
         </div>
 
         <CardContent className="space-y-6 overflow-auto flex-1 pb-6 pt-4">
-          {activeView === 'preview' ? (
+          {activeView === 'backtest' ? (
             <>
               {/* Chart View */}
               <TradeCharts />
-
-              {/* Performance Metrics */}
-              <PerformanceMetrics />
+              {apiVersion === 'v0' ? (
+                <PerformanceMetricsV0 />
+              ) : (
+                <PerformanceMetrics />
+              )}
 
               {/* Trade History */}
               <TradeHistoryTable />
