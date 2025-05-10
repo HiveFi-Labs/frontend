@@ -19,6 +19,7 @@ export default function StrategyPage() {
   const setSessionId = useStrategyStore((state) => state.setSessionId)
   const apiVersion = useStrategyStore((s) => s.apiVersion)
   const setApiVersion = useStrategyStore((s) => s.setApiVersion)
+  const backtestStatus = useStrategyStore((s) => s.backtestStatus)
   const backtestResults = useStrategyStore((state) => state.backtestResults)
   const backtestResultsJson = useStrategyStore(
     (state) => state.backtestResultsJson,
@@ -56,9 +57,13 @@ export default function StrategyPage() {
   }, [authenticated, apiVersion, sessionId, setSessionId])
 
   /* ---- split auto adjust ---- */
+  const isRunning =
+    backtestStatus === 'code' ||
+    backtestStatus === 'backtest'
+
   useEffect(() => {
-    setSplitRatio(backtestResults || backtestResultsJson ? 50 : 100)
-  }, [backtestResults, backtestResultsJson])
+    setSplitRatio(backtestResults || backtestResultsJson || isRunning ? 50 : 100)
+  }, [backtestResults, backtestResultsJson, isRunning])
 
   /* ---- resize handler ---- */
   const handleResize = (e: MouseEvent) => {
@@ -69,7 +74,7 @@ export default function StrategyPage() {
     setSplitRatio(ratio)
   }
 
-  const showSplit = !!backtestResults || !!backtestResultsJson
+  const showSplit = !!backtestResults || !!backtestResultsJson || isRunning
 
   const handleSamplePrompt = (version: string) => {
     if (version === 'v0') {
