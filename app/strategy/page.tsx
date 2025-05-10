@@ -2,13 +2,11 @@
 
 import { useEffect, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
-import { useQuery } from '@tanstack/react-query'
 import { ArrowUpIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import AICollaboration from '@/components/strategy/ai-collaboration'
 import BacktestingResults from '@/components/strategy/backtesting-results'
 import { useStrategyStore } from '@/stores/strategyStore'
-import { apiV0, type PlotlyDataObject } from '@/lib/backtest.api'
 import { apiV1 } from '@/lib/backtest.api'
 import { usePrivy } from '@privy-io/react-auth'
 import useChat from '@/hooks/useChat'
@@ -24,9 +22,6 @@ export default function StrategyPage() {
   const backtestResults = useStrategyStore((state) => state.backtestResults)
   const backtestResultsJson = useStrategyStore(
     (state) => state.backtestResultsJson,
-  )
-  const setBacktestResultsJson = useStrategyStore(
-    (s) => s.setBacktestResultsJson,
   )
   const conversations = useStrategyStore((s) => s.messages)
   const hasConversations = conversations.length > 0
@@ -59,26 +54,6 @@ export default function StrategyPage() {
     }
     if (!sessionId) initializeSession()
   }, [authenticated, apiVersion, sessionId, setSessionId])
-
-  /* ---- back-test JSON (v0 only for now) ---- */
-  const shouldFetchV0 = apiVersion === 'v0' && conversations.length > 0
-  const { data: fetchedJson, isSuccess } = useQuery<PlotlyDataObject, Error>({
-    queryKey: ['backtestResultsJson', sessionId],
-    queryFn: () => {
-      if (!sessionId) throw new Error('Session ID is required')
-      return apiV0.getBacktestResults(sessionId)
-    },
-    enabled:
-      shouldFetchV0 && !!sessionId && !!backtestResults && !backtestResultsJson,
-    staleTime: Infinity,
-    refetchOnWindowFocus: false,
-  })
-
-  useEffect(() => {
-    if (isSuccess && fetchedJson && !backtestResultsJson) {
-      setBacktestResultsJson(fetchedJson)
-    }
-  }, [isSuccess, fetchedJson, backtestResultsJson, setBacktestResultsJson])
 
   /* ---- split auto adjust ---- */
   useEffect(() => {
