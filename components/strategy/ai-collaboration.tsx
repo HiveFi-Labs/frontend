@@ -49,6 +49,9 @@ interface AICollaborationProps {
 // 環境変数からAPI V1が利用可能かどうかを確認
 const isApiV1Enabled = process.env.NEXT_PUBLIC_ENABLE_API_V1 === 'true'
 
+  // ステータスバーを表示・非表示にする
+const enableMarketControls = process.env.NEXT_PUBLIC_ENABLE_MARKET_CONTROLS === 'true'
+
 export default function AICollaboration({
   sessionId,
   postChat,
@@ -63,9 +66,6 @@ export default function AICollaboration({
   const [timeframe, setTimeframe] = useState('1h')
   const [startDate, setStartDate] = useState('2024-01-01')
   const [endDate, setEndDate] = useState('2025-01-01')
-
-  // ステータスバーを非表示にする
-  const enableMarketControls = false
 
   /* ---------------- store ---------------- */
   const conversations = useStrategyStore((s) => s.messages)
