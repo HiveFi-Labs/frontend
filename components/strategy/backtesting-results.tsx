@@ -10,6 +10,7 @@ import PerformanceMetrics from '@/components/strategy/performance-metrics'
 import PerformanceMetricsV0 from '@/components/strategy/performance-metrics-v0'
 import TradeCharts from '@/components/strategy/trade-charts'
 import TradeHistoryTable from '@/components/strategy/trade-history-table'
+import CodeLoading from '@/components/strategy/code-loading'
 import { useStrategyStore } from '@/stores/strategyStore'
 
 export default function BacktestingResults() {
@@ -20,20 +21,8 @@ export default function BacktestingResults() {
 
   // backtestStatusに基づいて表示を変更できます
   const isRunning =
-    backtestStatus === 'prompt' ||
     backtestStatus === 'code' ||
     backtestStatus === 'backtest'
-
-  const statusDisplay = {
-    idle: '',
-    prompt: 'Generating...',
-    code: 'Generating code...',
-    backtest: 'Running backtest...',
-    completed: 'Completed!',
-    error: 'Error occurred',
-  }
-
-  const statusMessage = statusDisplay[backtestStatus] || ''
 
   // activeViewの変更を検知して親コンポーネントのshowCodeを更新
   const handleViewChange = (value: string) => {
@@ -83,23 +72,27 @@ export default function BacktestingResults() {
         </div>
 
         <CardContent className="space-y-6 overflow-auto flex-1 pb-6 pt-4">
-          {activeView === 'backtest' ? (
-            <>
-              {/* Chart View */}
-              <TradeCharts />
-              {apiVersion === 'v0' ? (
-                <PerformanceMetricsV0 />
-              ) : (
-                <PerformanceMetrics />
-              )}
-
-              {/* Trade History */}
-              <TradeHistoryTable />
-            </>
+          {isRunning ? (
+            <CodeLoading />
           ) : (
-            <div className="h-full">
-              <StrategyCode />
-            </div>
+            activeView === 'backtest' ? (
+              <>
+                {/* Chart View */}
+                <TradeCharts />
+                {apiVersion === 'v0' ? (
+                  <PerformanceMetricsV0 />
+                ) : (
+                  <PerformanceMetrics />
+                )}
+
+                {/* Trade History */}
+                <TradeHistoryTable />
+              </>
+            ) : (
+              <div className="h-full">
+                <StrategyCode />
+              </div>
+            )
           )}
         </CardContent>
       </Card>

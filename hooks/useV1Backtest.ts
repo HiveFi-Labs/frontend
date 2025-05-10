@@ -9,7 +9,6 @@ export default function useV1Backtest(sessionId: string | null) {
   const apiVersion = useStrategyStore((s) => s.apiVersion)
 
   const messages = useStrategyStore((s) => s.messages)
-  const backtestStatus = useStrategyStore((s) => s.backtestStatus)
   const addMessage = useStrategyStore((s) => s.addMessage)
   const setBacktestStatus = useStrategyStore((s) => s.setBacktestStatus)
   const setBacktestResults = useStrategyStore((s) => s.setResults)
@@ -85,5 +84,5 @@ export default function useV1Backtest(sessionId: string | null) {
     setError(null)
   }
 
-  return { run, status: backtestStatus, error, reset }
+  return { run, error, reset }
 }

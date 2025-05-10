@@ -31,7 +31,7 @@ export default function useChat({
   const addMessage = useStrategyStore((s) => s.addMessage)
   const setParams = useStrategyStore((s) => s.setParams)
   const setResults = useStrategyStore((s) => s.setResults)
-
+  const setBacktestStatus = useStrategyStore((s) => s.setBacktestStatus)
   /* --------- v1 セッション初期化フラグ --------- */
   const v1SessionReadyRef = useRef(false)
 
@@ -109,6 +109,7 @@ export default function useChat({
   /* --------- 公開メソッド --------- */
   const postChat = useCallback(
     (input: string) => {
+      setBacktestStatus('idle')
       chatMutation.mutate(input)
     },
     [chatMutation],

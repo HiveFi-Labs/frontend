@@ -13,6 +13,8 @@ import {
   Play,
   Zap,
   Hammer,
+  CheckCircle,
+  AlertCircle,
 } from 'lucide-react'
 import {
   DropdownMenu,
@@ -31,11 +33,10 @@ import {
 } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import useChat from '@/hooks/useChat'
 import useV1Backtest from '@/hooks/useV1Backtest'
+import useV0Backtest from '@/hooks/useV0Backtest'
 import { useStrategyStore } from '@/stores/strategyStore'
 import ReactMarkdown from 'react-markdown'
-import { apiV1 } from '@/lib/backtest.api'
 
 interface AICollaborationProps {
   sessionId: string | null
@@ -48,6 +49,9 @@ interface AICollaborationProps {
 // 環境変数からAPI V1が利用可能かどうかを確認
 const isApiV1Enabled = process.env.NEXT_PUBLIC_ENABLE_API_V1 === 'true'
 
+  // ステータスバーを表示・非表示にする
+const enableMarketControls = process.env.NEXT_PUBLIC_ENABLE_MARKET_CONTROLS === 'true'
+
 export default function AICollaboration({
   sessionId,
   postChat,
@@ -55,7 +59,6 @@ export default function AICollaboration({
   error,
   cancelRequest,
 }: AICollaborationProps) {
-  const [activeAgent] = useState('strategist')
   const apiVersion = useStrategyStore((s) => s.apiVersion)
   const setApiVersion = useStrategyStore((s) => s.setApiVersion)
   const [inputMessage, setInputMessage] = useState('')
@@ -63,9 +66,6 @@ export default function AICollaboration({
   const [timeframe, setTimeframe] = useState('1h')
   const [startDate, setStartDate] = useState('2024-01-01')
   const [endDate, setEndDate] = useState('2025-01-01')
-
-  // ステータスバーを非表示にする
-  const enableMarketControls = false
 
   /* ---------------- store ---------------- */
   const conversations = useStrategyStore((s) => s.messages)
@@ -77,15 +77,12 @@ export default function AICollaboration({
   const containerRef = useRef<HTMLDivElement>(null)
 
   /* ---------------- hooks ---------------- */
-  // const {
-  //   postChat,
-  //   isPending: isPending,
-  //   error: chatErr,
-  //   cancelRequest,
-  // } = useChat({ sessionId: sessionId || '', apiVersion })
 
   const { run: runBacktest, error: btError } = useV1Backtest(
     apiVersion === 'v1' ? sessionId : null,
+  )
+  const { startBacktest, error: v0BtError } = useV0Backtest(
+    apiVersion === 'v0' ? sessionId : null,
   )
   const currentParams = useStrategyStore((state) => state.currentParams)
 
@@ -120,7 +117,25 @@ export default function AICollaboration({
     completed: 'Done!',
   }
 
+  const StatusIcon = () => {
+    switch (backtestStatus) {
+      case 'prompt':
+        return <Lightbulb className="w-4 h-4 text-yellow-300 animate-pulse" />
+      case 'code':
+        return <Code className="w-4 h-4 text-blue-300 animate-pulse" />
+      case 'backtest':
+        return <BarChart4 className="w-4 h-4 text-green-300 animate-pulse" />
+      case 'completed':
+        return <CheckCircle className="w-4 h-4 text-green-400" />
+      case 'error':
+        return <AlertCircle className="w-4 h-4 text-red-400" />
+      default:
+        return null
+    }
+  }
+
   const handleRunBacktest = () => {
+    startBacktest()
     postChat('Run backtest')
     setIsBacktestButtonDisabled(true)
   }
@@ -386,19 +401,25 @@ export default function AICollaboration({
               <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-blue-500 flex items-center justify-center">
                 <Lightbulb className="w-4 h-4 text-white" />
               </div>
-              <div className="glass-card p-3 rounded-xl bg-zinc-700/30">
-                <div className="flex space-x-2">
-                  <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
-                  <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse delay-150"></div>
-                  <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse delay-300"></div>
+              <div className="glass-card p-3 rounded-xl bg-zinc-700/30 w-auto">
+                <div className="flex items-center gap-2">
+                  <div className="flex space-x-2">
+                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse delay-150"></div>
+                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse delay-300"></div>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-sm text-blue-200">
+                    <StatusIcon />
+                    <span>{statusLabel[backtestStatus]}</span>
+                  </div>
                 </div>
               </div>
             </div>
           )}
 
-          {(error || btError) && (
+          {(error || btError || v0BtError) && (
             <div className="text-red-500 text-sm text-center m-3">
-              Failed to get response: {(error || btError)?.message}
+              Failed to get response: {(error || btError || v0BtError)?.message}
             </div>
           )}
         </div>
