@@ -60,6 +60,9 @@ export default function AICollaboration({
   const [timeframe, setTimeframe] = useState('1h')
   const [startDate, setStartDate] = useState('2024-01-01')
   const [endDate, setEndDate] = useState('2025-01-01')
+  
+  // ステータスバーを非表示にする
+  const enableMarketControls = false
 
   /* ---------------- store ---------------- */
   const conversations = useStrategyStore((s) => s.messages)
@@ -147,49 +150,80 @@ export default function AICollaboration({
         {/* left side (market conf) */}
         <div className="flex items-center text-xs">
           {/* pair */}
-          <Select value={tradingPair} onValueChange={setTradingPair}>
-            <SelectTrigger className="bg-transparent border-0 h-6 p-0 min-w-20 text-xs text-zinc-300 hover:text-purple-400">
-              <SelectValue>{tradingPairDisplay[tradingPair]}</SelectValue>
-            </SelectTrigger>
-            <SelectContent className="bg-zinc-900 border-zinc-800">
-              {Object.entries(tradingPairDisplay).map(([v, l]) => (
-                <SelectItem key={v} value={v}>
-                  {l}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <span className="mx-2 text-zinc-300">|</span>
+          <div className="flex items-center relative group">
+            <Select
+              value={tradingPair}
+              onValueChange={setTradingPair}
+              disabled={!enableMarketControls}
+            >
+              <SelectTrigger className={`bg-transparent border-0 text-zinc-500 h-6 p-0 min-w-20 w-auto text-xs font-medium ${!enableMarketControls ? 'cursor-not-allowed opacity-50' : ''}`}>
+                <SelectValue>{tradingPairDisplay[tradingPair]}</SelectValue>
+              </SelectTrigger>
+              <SelectContent className="bg-zinc-900 border-zinc-800">
+                {Object.entries(tradingPairDisplay).map(([v, l]) => (
+                  <SelectItem key={v} value={v}>
+                    {l}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {!enableMarketControls && (
+              <div className="absolute opacity-0 group-hover:opacity-100 bg-zinc-800 text-zinc-200 text-xs px-2 py-1 rounded pointer-events-none whitespace-nowrap transition-opacity duration-200 top-8 left-0 shadow-lg z-10">
+                Coming soon
+              </div>
+            )}
+            <span className="text-zinc-500 mx-2">|</span>
+          </div>
 
           {/* timeframe */}
-          <Select value={timeframe} onValueChange={setTimeframe}>
-            <SelectTrigger className="bg-transparent border-0 h-6 p-0 min-w-8 text-xs text-zinc-200 hover:text-purple-300">
-              <SelectValue>{timeframeDisplay[timeframe]}</SelectValue>
-            </SelectTrigger>
-            <SelectContent className="bg-zinc-900 border-zinc-800">
-              {Object.entries(timeframeDisplay).map(([v, l]) => (
-                <SelectItem key={v} value={v}>
-                  {l}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <span className="mx-2 text-zinc-500">|</span>
+          <div className="flex items-center relative group">
+            <Select
+              value={timeframe}
+              onValueChange={setTimeframe}
+              disabled={!enableMarketControls}
+            >
+              <SelectTrigger className={`bg-transparent border-0 text-zinc-500 h-6 p-0 min-w-20 w-auto text-xs font-medium ${!enableMarketControls ? 'cursor-not-allowed opacity-50' : ''}`}>
+                <SelectValue>{timeframeDisplay[timeframe]}</SelectValue>
+              </SelectTrigger>
+              <SelectContent className="bg-zinc-900 border-zinc-800">
+                {Object.entries(timeframeDisplay).map(([v, l]) => (
+                  <SelectItem key={v} value={v}>
+                    {l}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {!enableMarketControls && (
+              <div className="absolute opacity-0 group-hover:opacity-100 bg-zinc-800 text-zinc-200 text-xs px-2 py-1 rounded pointer-events-none whitespace-nowrap transition-opacity duration-200 top-8 left-0 shadow-lg z-10">
+                Coming soon
+              </div>
+            )}
+            <span className="text-zinc-500 mx-2">|</span>
+          </div>
 
           {/* date range */}
-          <input
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-            className="bg-transparent text-xs w-auto text-zinc-200"
-          />
-          <span className="mx-2 text-zinc-300">→</span>
-          <input
-            type="date"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-            className="bg-transparent text-xs w-auto text-zinc-200"
-          />
+          <div className="flex items-center relative group">
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className={`bg-transparent text-zinc-500 border-0 p-0 w-auto text-xs font-medium ${!enableMarketControls ? 'cursor-not-allowed opacity-50' : ''}`}
+              disabled={!enableMarketControls}
+            />
+            <span className="text-zinc-500 mx-2">→</span>
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              className={`bg-transparent text-zinc-500 border-0 p-0 w-auto text-xs font-medium ${!enableMarketControls ? 'cursor-not-allowed opacity-50' : ''}`}
+              disabled={!enableMarketControls}
+            />
+            {!enableMarketControls && (
+              <div className="absolute opacity-0 group-hover:opacity-100 bg-zinc-800 text-zinc-200 text-xs px-2 py-1 rounded pointer-events-none whitespace-nowrap transition-opacity duration-200 top-8 left-0 shadow-lg z-10">
+                Coming soon
+              </div>
+            )}
+          </div>
         </div>
 
         {/* settings */}
@@ -389,6 +423,7 @@ export default function AICollaboration({
               {isPending ? (
                 <Button
                   onClick={cancelRequest}
+                  aria-label="Cancel request"
                   className="h-8 w-8 rounded-full bg-red-400 hover:bg-red-500 p-0"
                 >
                   <span className="text-white text-xs font-bold">✕</span>
@@ -396,6 +431,7 @@ export default function AICollaboration({
               ) : (
                 <Button
                   disabled={!inputMessage.trim()}
+                  aria-label="Send message"
                   onClick={sendMessage}
                   className="h-8 w-8 rounded-full gradient-button p-0"
                 >
