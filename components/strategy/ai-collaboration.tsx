@@ -330,10 +330,12 @@ export default function AICollaboration({
                 className={`glass-card p-3 rounded-xl max-w-[85%] ${m.agent === 'user' ? 'bg-purple-800/30' : 'bg-zinc-700/30'}`}
               >
                 <div className="flex justify-between mb-1">
-                  <span className="text-sm font-semibold capitalize">
+                  <span className="text-sm font-semibold capitalize mr-2">
                     {m.agent === 'user' ? 'You' : m.agent}
                   </span>
-                  <span className="text-xs text-zinc-300">{m.timestamp}</span>
+                  <span className="text-xs text-zinc-300 flex-shrink-0 ml-auto">
+                    {m.timestamp}
+                  </span>
                 </div>
                 {m.agent === 'user' ? (
                   <p className="text-sm text-zinc-200 whitespace-pre-wrap">
