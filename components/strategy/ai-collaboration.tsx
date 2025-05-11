@@ -37,7 +37,7 @@ import useV1Backtest from '@/hooks/useV1Backtest'
 import useV0Backtest from '@/hooks/useV0Backtest'
 import { useStrategyStore } from '@/stores/strategyStore'
 import ReactMarkdown from 'react-markdown'
-
+import ChatInput from './chatInput'
 interface AICollaborationProps {
   sessionId: string | null
   postChat: (message: string) => void
@@ -429,54 +429,16 @@ export default function AICollaboration({
 
         {/* input */}
         <div className={hasConversations ? 'mt-4' : ''}>
-          <div className="relative rounded-b-lg border border-zinc-700 bg-zinc-800/50">
-            <textarea
-              disabled={!sessionId}
-              placeholder={
-                sessionId
-                  ? 'Ask AI to help you create a trading strategy...'
-                  : 'Loading...'
-              }
-              className="w-full min-h-[60px] max-h-[120px] bg-transparent py-3 pl-4 pr-12 text-zinc-300 resize-none focus:outline-none"
-              value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
-              onKeyDown={(e) => {
-                if (
-                  e.key === 'Enter' &&
-                  !e.nativeEvent.isComposing &&
-                  !e.shiftKey
-                ) {
-                  e.preventDefault()
-                }
-              }}
-            />
-            <div className="absolute bottom-2 right-2">
-              {isPending ? (
-                <Button
-                  onClick={cancelRequest}
-                  aria-label="Cancel request"
-                  className="h-8 w-8 rounded-full bg-red-400 hover:bg-red-500 p-0"
-                >
-                  <span className="text-white text-xs font-bold">✕</span>
-                </Button>
-              ) : (
-                <Button
-                  disabled={!inputMessage.trim()}
-                  aria-label="Send message"
-                  onClick={sendMessage}
-                  className="h-8 w-8 rounded-full gradient-button p-0"
-                >
-                  <ArrowRight className="w-4 h-4" />
-                </Button>
-              )}
-            </div>
-            {hasConversations && (
-              <p className="text-xs text-zinc-500 mt-1 text-center">
-                Currently, as this is an alpha version, only a limited set of
-                strategies can be executed.
-              </p>
-            )}
-          </div>
+          <ChatInput
+            disabled={!sessionId}
+            sending={isPending}
+            onCancel={cancelRequest}
+            onSend={(msg) => {
+              postChat(msg)
+              setIsBacktestButtonDisabled(false)
+            }}
+            hasConversations={hasConversations}
+          />
         </div>
       </CardContent>
     </Card>

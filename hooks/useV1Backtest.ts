@@ -48,7 +48,7 @@ export default function useV1Backtest(sessionId: string | null) {
 
       /* コード生成のステータスチェック */
       if (codeRes.status !== 'success') {
-        throw new Error(`コード生成が失敗しました: ${codeRes.status}`)
+        throw new Error(`Code generation failed: ${codeRes.status}`)
       }
 
       const codeRef = codeRes.script_path ?? '' // sync 実装なら script_path が返る
