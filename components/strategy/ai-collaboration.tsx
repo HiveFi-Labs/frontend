@@ -437,13 +437,8 @@ export default function AICollaboration({
               postChat(msg)
               setIsBacktestButtonDisabled(false)
             }}
+            hasConversations={hasConversations}
           />
-          {hasConversations && (
-            <p className="text-xs text-zinc-500 mt-1 text-center">
-              Currently, as this is an alpha version, only a limited set of
-              strategies can be executed.
-            </p>
-          )}
         </div>
       </CardContent>
     </Card>

@@ -13,6 +13,8 @@ type Props = {
   onCancel?: () => void
   /** true なら ✕ ボタンを表示 */
   sending?: boolean
+  /** 会話がある場合に true を渡す */
+  hasConversations?: boolean
 }
 
 export default function ChatInput({
@@ -20,6 +22,7 @@ export default function ChatInput({
   onSend,
   onCancel,
   sending,
+  hasConversations,
 }: Props) {
   const [text, setText] = useState('')
   const ref = useRef<HTMLTextAreaElement>(null)
@@ -91,6 +94,12 @@ export default function ChatInput({
           </Button>
         )}
       </div>
+      {hasConversations && (
+            <p className="text-xs text-zinc-500 mt-1 text-center">
+              Currently, as this is an alpha version, only a limited set of
+              strategies can be executed.
+            </p>
+          )}
     </div>
   )
 }
