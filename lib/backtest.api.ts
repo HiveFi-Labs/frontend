@@ -1,224 +1,217 @@
-// lib/backtest.api.ts
-
-// Updated base path to /api/v0
-// Corrected fallback logic for environment variable
+/* =========================================================================
+ *  共通設定・ユーティリティ
+ * ========================================================================= */
 const backendApiUrl =
   process.env.NEXT_PUBLIC_BACKEND_API_URL || 'http://localhost:8000'
-const API_BASE_URL = `${backendApiUrl}/api/v0`
 
-interface ChatMessage {
-  message: string
-}
+/** API バージョン → ベース URLを返す */
+const base = (ver: 'v0' | 'v1') => `${backendApiUrl}/api/${ver}`
 
-// Define the expected API response structure based on the documentation.
-// You might want to create more specific types for params and results.
-interface ChatResponse {
-  status: 'success' | 'error'
-  response?: string
-  current_params?: Record<string, unknown> | null // Use a more specific type if possible
-  result_metrics?: Record<string, unknown> | null // Use a more specific type if possible
-  intent?: 'backtest' | 'parameter_suggestion' | 'general_chat'
-  message?: string // Used for error messages from the API
-}
-
-// For GET /status/{session_id} response
-interface SessionStatusResponse {
-  session_id: string
-  has_parameters: boolean
-  has_backtest_results: boolean
-  chat_history_length: number
-  current_params: Record<string, unknown> | null // Or a more specific type
-  // Note: API doc uses 'backtest_results', ChatResponse uses 'result_metrics'. Clarify which key is correct for status.
-  backtest_results: Record<string, unknown> | null // Or a more specific type
-}
-
-// For POST /reset/{session_id} response
-interface ResetSessionResponse {
-  status: 'success'
-  message: string
-}
-
-// Export the interface
+/* ----------------- 共通型定義（v0/v1 で使い回す） ----------------- */
 export interface PlotlyDataObject {
   data: Array<Record<string, unknown>>
   layout: Record<string, unknown>
 }
-
 export type BacktestResultsJsonResponse = PlotlyDataObject
 
-interface CsvGenerationResponse {
-  status: 'success' | 'error'
-}
+/* =========================================================================
+ *  1. v0 クライアント（以前のコードを移植）
+ * ========================================================================= */
+namespace V0 {
+  /* ========== 型 ========== */
+  interface ChatMessage {
+    message: string
+  }
+  interface ChatResponse {
+    status: 'success' | 'error'
+    response?: string
+    current_params?: Record<string, unknown> | null
+    result_metrics?: Record<string, unknown> | null
+    intent?: 'backtest' | 'parameter_suggestion' | 'general_chat'
+    message?: string
+  }
+  interface SessionStatusResponse {
+    session_id: string
+    has_parameters: boolean
+    has_backtest_results: boolean
+    chat_history_length: number
+    current_params: Record<string, unknown> | null
+    backtest_results: Record<string, unknown> | null
+  }
+  interface ResetSessionResponse {
+    status: 'success'
+    message: string
+  }
+  interface CsvGenerationResponse {
+    status: 'success' | 'error'
+  }
 
-/**
- * Sends a message to the chat API endpoint.
- * @param sessionId The unique identifier for the chat session.
- * @param message The user's message content.
- * @param signal An optional AbortSignal to cancel the request
- * @returns A promise that resolves with the API response.
- */
-export const postChatMessage = async (
-  sessionId: string,
-  message: string,
-  signal?: AbortSignal,
-): Promise<ChatResponse> => {
-  // Construct URL using the updated base URL
-  const url = `${API_BASE_URL}/chat/${sessionId}`
-  const payload: ChatMessage = { message }
+  /* ========== fetch ラッパ ========== */
+  const fetchJson = async <T>(url: string, init?: RequestInit): Promise<T> => {
+    const res = await fetch(url, init)
+    const data = await res.json()
+    if (!res.ok)
+      throw new Error(data?.message || data?.detail || res.statusText)
+    return data as T
+  }
 
-  try {
-    const response = await fetch(url, {
+  /* ========== エンドポイント ========== */
+  const API = base('v0')
+
+  export const postChatMessage = (
+    sessionId: string,
+    message: string,
+    signal?: AbortSignal,
+  ) =>
+    fetchJson<ChatResponse>(`${API}/chat/${sessionId}`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-      signal: signal,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message } satisfies ChatMessage),
+      signal,
     })
 
-    const responseData = await response.json()
+  export const getSessionStatus = (sessionId: string) =>
+    fetchJson<SessionStatusResponse>(`${API}/status/${sessionId}`)
 
-    if (!response.ok) {
-      console.error(`API Error (${response.status}):`, responseData)
-      throw new Error(
-        `API request failed with status ${response.status}: ${responseData?.message || responseData?.detail || response.statusText}`,
-      )
-    }
-
-    return responseData as ChatResponse
-  } catch (error) {
-    console.error('Error sending chat message:', error)
-    throw error
-  }
-}
-
-// --- New API Client Functions ---
-
-/**
- * Retrieves the current status of a specific chat session.
- * @param sessionId The unique identifier for the chat session.
- * @returns A promise that resolves with the session status.
- */
-export const getSessionStatus = async (
-  sessionId: string,
-): Promise<SessionStatusResponse> => {
-  const url = `${API_BASE_URL}/status/${sessionId}`
-  try {
-    const response = await fetch(url, { method: 'GET' })
-    const responseData = await response.json()
-    if (!response.ok) {
-      console.error(`API Error (${response.status}):`, responseData)
-      throw new Error(
-        `API request failed with status ${response.status}: ${responseData?.detail || response.statusText}`,
-      )
-    }
-    return responseData as SessionStatusResponse
-  } catch (error) {
-    console.error('Error fetching session status:', error)
-    throw error
-  }
-}
-
-/**
- * Resets a specific chat session.
- * @param sessionId The unique identifier for the chat session.
- * @returns A promise that resolves with the reset confirmation.
- */
-export const resetSession = async (
-  sessionId: string,
-): Promise<ResetSessionResponse> => {
-  const url = `${API_BASE_URL}/reset/${sessionId}`
-  try {
-    const response = await fetch(url, { method: 'POST' }) // Corrected method to POST
-    const responseData = await response.json()
-    if (!response.ok) {
-      console.error(`API Error (${response.status}):`, responseData)
-      throw new Error(
-        `API request failed with status ${response.status}: ${responseData?.detail || response.statusText}`,
-      )
-    }
-    return responseData as ResetSessionResponse
-  } catch (error) {
-    console.error('Error resetting session:', error)
-    throw error
-  }
-}
-
-/**
- * Retrieves the raw JSON backtest results for a specific chat session.
- * @param sessionId The unique identifier for the chat session.
- * @returns A promise that resolves with the backtest results JSON (as PlotlyDataObject).
- */
-export const getBacktestResults = async (
-  sessionId: string,
-): Promise<PlotlyDataObject> => {
-  // Return type updated
-  const url = `${API_BASE_URL}/results/${sessionId}`
-  try {
-    const response = await fetch(url, { method: 'GET' })
-    const responseData = await response.json()
-    if (!response.ok) {
-      console.error(`API Error (${response.status}):`, responseData)
-      throw new Error(
-        `API request failed with status ${response.status}: ${responseData?.detail || response.statusText}`,
-      )
-    }
-    // Type assertion updated
-    return responseData as PlotlyDataObject
-  } catch (error) {
-    console.error('Error fetching backtest results:', error)
-    throw error
-  }
-}
-
-/**
- * バックテスト用のCSVデータを生成するリクエストを送信します
- * @param sessionId セッションの一意識別子
- * @param symbol トレーディングペア
- * @param timeframe 時間枠
- * @param start_date 開始日
- * @param end_date 終了日
- * @returns 生成結果を含むレスポンス
- */
-export const generateCsvData = async (
-  sessionId: string,
-  symbol: string,
-  timeframe: string,
-  start_date: Date,
-  end_date: Date,
-): Promise<CsvGenerationResponse> => {
-  const url = `${API_BASE_URL}/generate-csv/${sessionId}`
-
-  const formattedParams = {
-    symbol: symbol,
-    timeframe: timeframe,
-    start_date: start_date.toISOString().split('T')[0],
-    end_date: end_date.toISOString().split('T')[0],
-  }
-
-  console.log('formattedParams', formattedParams)
-
-  try {
-    const response = await fetch(url, {
+  export const resetSession = (sessionId: string) =>
+    fetchJson<ResetSessionResponse>(`${API}/reset/${sessionId}`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(formattedParams),
     })
 
-    const responseData = await response.json()
+  export const getBacktestResults = (sessionId: string) =>
+    fetchJson<PlotlyDataObject>(`${API}/results/${sessionId}`)
+}
 
-    if (!response.ok) {
-      console.error(`API Error (${response.status}):`, responseData)
-      throw new Error(
-        `API request failed with status ${response.status}: ${responseData?.message || responseData?.detail || response.statusText}`,
-      )
-    }
-
-    return responseData as CsvGenerationResponse
-  } catch (error) {
-    console.error('CSVデータ生成中にエラーが発生しました:', error)
-    throw error
+/* =========================================================================
+ *  2. v1 クライアント（新規追加）
+ *    openapi_v1.yaml に合わせ最低限の主要エンドポイントを実装
+ * ========================================================================= */
+namespace V1 {
+  /* ========== 型（OpenAPI の schema を TypeScript に落とし込み） ========== */
+  // --- Session 周り ---
+  export interface SessionCreated {
+    session_id: string
+    user_id: string
   }
+  export interface SessionState {
+    session_id: string
+    messages: ChatMessage[]
+    current_prompt: string | null
+    backtest_results: Record<string, unknown> | null
+  }
+  export interface ChatMessage {
+    role: 'user' | 'assistant'
+    content: string
+  }
+  export interface AssistantResponse {
+    session_id: string
+    user_message: ChatMessage
+    assistant_message: ChatMessage
+    current_prompt: string | null
+  }
+  // --- Prompt ---
+  export interface PromptResponse {
+    session_id: string
+    current_prompt: string
+  }
+  // --- Code Generation ---
+  export interface CodeGenerationResponse {
+    session_id: string
+    code_generation_job_id: string
+    script_path: string
+    status: 'success' | 'needs_fix' | 'fixed' | 'failed'
+    // sync 実装では generated_code を返してくる場合もある
+    script?: string
+  }
+  // --- Backtest ---
+  export interface BacktestResponse {
+    backtest_results: {
+      script_path: string
+      plot_json: PlotlyDataObject
+      stats: Record<string, unknown> | null
+    }
+  }
+
+  /* ========== fetch ラッパ ========== */
+  const fetchJson = async <T>(url: string, init?: RequestInit): Promise<T> => {
+    const res = await fetch(url, init)
+    const data = await res.json()
+    if (!res.ok)
+      throw new Error(data?.message ?? data?.detail ?? res.statusText)
+    return data as T
+  }
+
+  /* ========== エンドポイント実装 ========== */
+  const API = base('v1')
+
+  /* --- セッション --- */
+  /** 新規セッション作成 */
+  export const createSession = (userId: string) =>
+    fetchJson<SessionCreated>(`${API}/sessions`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ user_id: userId }),
+    })
+
+  /** セッション状態取得 */
+  export const getSession = (sessionId: string) =>
+    fetchJson<SessionState>(`${API}/sessions/${sessionId}`)
+
+  /* --- メッセージ --- */
+  export const sendMessage = (sessionId: string, message: string) =>
+    fetchJson<AssistantResponse>(`${API}/sessions/${sessionId}/messages`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message }),
+    })
+
+  export const getMessages = (sessionId: string) =>
+    fetchJson<ChatMessage[]>(`${API}/sessions/${sessionId}/messages`)
+
+  /* --- プロンプト --- */
+  export const setStrategyPrompt = (sessionId: string, prompt: string) =>
+    fetchJson<PromptResponse>(`${API}/sessions/${sessionId}/strategy/prompt`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt }),
+    })
+
+  export const getStrategyPrompt = (sessionId: string) =>
+    fetchJson<PromptResponse>(`${API}/sessions/${sessionId}/strategy/prompt`)
+
+  /* --- コード生成（現行は同期 200） --- */
+  export const generateCode = (sessionId: string) =>
+    fetchJson<CodeGenerationResponse>(
+      `${API}/sessions/${sessionId}/strategy/code`,
+      { method: 'POST' },
+    )
+
+  export const getLatestGeneratedCode = (sessionId: string) =>
+    fetchJson<CodeGenerationResponse>(
+      `${API}/sessions/${sessionId}/strategy/code`,
+    )
+
+  /* --- バックテスト（現行は同期 200） --- */
+  export const runBacktest = (sessionId: string, code_reference: string) =>
+    fetchJson<BacktestResponse>(`${API}/sessions/${sessionId}/backtests`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code_reference }),
+    })
+
+  export const getLatestBacktest = (sessionId: string) =>
+    fetchJson<BacktestResponse>(`${API}/sessions/${sessionId}/backtests`)
+}
+
+/* =========================================================================
+ *  3. export
+ * ========================================================================= */
+/** 既存コードはそのまま apiV0 を import して使える */
+export const apiV0 = {
+  ...V0,
+}
+
+/** 新しい v1 用クライアント */
+export const apiV1 = {
+  ...V1,
 }

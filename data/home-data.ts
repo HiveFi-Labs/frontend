@@ -12,25 +12,30 @@ export const featuresData: Feature[] = [
   {
     title: 'Effortless Automation',
     description:
-      'Automate your trading strategies seamlessly using AI, simplifying complex processes.',
+      'Automate trading strategies using a chat-based LLM interface without manual coding. ' +
+      'Sets up data collection and analysis environments, allowing full focus on alpha exploration.',
     icon: 'Code2',
   },
   {
     title: 'Intelligent Analysis',
     description:
-      'Automatically analyze your trades statistically, providing clear insights to optimize strategy performance.',
+      'Objectively evaluates strategy performance via backtesting. ' +
+      'Forecasts maximum risks and average returns, clearly defining risk management and exit strategies.',
     icon: 'BarChart3',
   },
   {
     title: '24/7 Hands-Free Operation',
     description:
-      'Keep your automated strategies running continuously without manual oversight.',
+      'Runs continuously and stably without manual oversight. ' +
+      'Centralized maintenance eliminates downtime and individual management burdens.',
     icon: 'MessageSquare',
   },
   {
     title: 'Monetize via DeFi',
     description:
-      'Instantly convert your successful strategies into profitable DeFi products, boosting your returns.',
+      'Rapidly transforms successful strategies into profitable DeFi products. ' +
+      'Offers private and trustless execution through Trusted Execution Environments (TEE). ' +
+      'Leverages depositor funds in vaults to amplify strategy yields.',
     icon: 'Shield',
   },
 ]

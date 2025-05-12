@@ -74,7 +74,7 @@ export default function HeroSection() {
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
-              <div className="inline-block px-4 py-2 rounded-full bg-zinc-800/50 backdrop-blur-sm border border-zinc-700 animate-float">
+              <div className="inline-block px-4 py-2 rounded-full bg-zinc-800/50 backdrop-blur-sm border border-zinc-700">
                 <span className="text-sm font-medium text-zinc-300 flex items-center gap-2">
                   <HiveFiLogo size={24} /> Revolutionizing DeFi Trading
                 </span>
@@ -101,8 +101,8 @@ export default function HeroSection() {
               </div>
             </div>
             <div className="relative">
-              <div className="absolute -inset-4 bg-gradient-to-br from-purple-600/20 to-blue-600/20 rounded-xl blur-xl animate-pulse-slow" />
-              <div className="relative glass-card rounded-xl overflow-hidden border border-zinc-700/50 backdrop-blur-md">
+              <div className="absolute -inset-4 bg-gradient-to-br from-purple-600/20 to-blue-600/20 rounded-xl blur-xl animate-pulse-slow " />
+              <div className="relative glass-card rounded-xl overflow-hidden border border-zinc-700/50 backdrop-blur-md hover:translate-y-[-5px]">
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500" />
                 <div className="p-6">
                   <div className="flex justify-between items-center mb-6">

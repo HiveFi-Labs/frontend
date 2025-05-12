@@ -105,8 +105,12 @@ export default function Header() {
                     className="mr-2"
                   />
                   {shortenAddress(desiredWallet)}
-                  <Clipboard className={`ml-2 w-4 h-4 ${copySuccess ? 'hidden' : 'block'}`} />
-                  <Check className={`ml-2 w-4 h-4 text-green-500 ${copySuccess ? 'block' : 'hidden'}`} />
+                  <Clipboard
+                    className={`ml-2 w-4 h-4 ${copySuccess ? 'hidden' : 'block'}`}
+                  />
+                  <Check
+                    className={`ml-2 w-4 h-4 text-green-500 ${copySuccess ? 'block' : 'hidden'}`}
+                  />
                 </div>
                 <Button
                   variant="outline"
@@ -195,8 +199,12 @@ export default function Header() {
                       className="mr-2"
                     />
                     {shortenAddress(desiredWallet)}
-                    <Clipboard className={`ml-2 w-4 h-4 ${copySuccess ? 'hidden' : 'block'}`} />
-                    <Check className={`ml-2 w-4 h-4 text-green-500 ${copySuccess ? 'block' : 'hidden'}`} />
+                    <Clipboard
+                      className={`ml-2 w-4 h-4 ${copySuccess ? 'hidden' : 'block'}`}
+                    />
+                    <Check
+                      className={`ml-2 w-4 h-4 text-green-500 ${copySuccess ? 'block' : 'hidden'}`}
+                    />
                   </div>
                   <Button
                     variant="outline"

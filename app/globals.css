@@ -29,6 +29,11 @@ body {
   @apply bg-black text-white;
 }
 
+/* カスタム マークダウン スタイル */
+.markdown-content code {
+  @apply text-xs;
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
@@ -131,7 +136,6 @@ body {
 
 .glass-card:hover {
   @apply bg-zinc-900/40 border-purple-900/50;
-  transform: translateY(-5px);
   box-shadow: 0 10px 25px -5px rgba(147, 51, 234, 0.2);
 }
 

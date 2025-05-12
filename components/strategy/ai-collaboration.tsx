@@ -10,9 +10,12 @@ import {
   RefreshCw,
   ArrowRight,
   Trash2,
+  Play,
+  Zap,
+  Hammer,
+  CheckCircle,
+  AlertCircle,
 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,55 +31,113 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import useChat from '@/hooks/useChat'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import useV1Backtest from '@/hooks/useV1Backtest'
+import useV0Backtest from '@/hooks/useV0Backtest'
 import { useStrategyStore } from '@/stores/strategyStore'
 import ReactMarkdown from 'react-markdown'
-
+import ChatInput from './chatInput'
 interface AICollaborationProps {
   sessionId: string | null
+  postChat: (message: string) => void
+  isPending: boolean
+  error: Error | null
+  cancelRequest: () => void
 }
 
-export default function AICollaboration({ sessionId }: AICollaborationProps) {
-  const [activeAgent] = useState('strategist')
+// 環境変数からAPI V1が利用可能かどうかを確認
+const isApiV1Enabled = process.env.NEXT_PUBLIC_ENABLE_API_V1 === 'true'
+
+  // ステータスバーを表示・非表示にする
+const enableMarketControls = process.env.NEXT_PUBLIC_ENABLE_MARKET_CONTROLS === 'true'
+
+export default function AICollaboration({
+  sessionId,
+  postChat,
+  isPending,
+  error,
+  cancelRequest,
+}: AICollaborationProps) {
+  const apiVersion = useStrategyStore((s) => s.apiVersion)
+  const setApiVersion = useStrategyStore((s) => s.setApiVersion)
   const [inputMessage, setInputMessage] = useState('')
   const [tradingPair, setTradingPair] = useState('solusdc')
   const [timeframe, setTimeframe] = useState('1h')
   const [startDate, setStartDate] = useState('2024-01-01')
   const [endDate, setEndDate] = useState('2025-01-01')
 
-  const messagesContainerRef = useRef<HTMLDivElement>(null)
-
-  const conversations = useStrategyStore((state) => state.messages)
+  /* ---------------- store ---------------- */
+  const conversations = useStrategyStore((s) => s.messages)
+  const resetSessionState = useStrategyStore((s) => s.resetSessionState)
+  const backtestStatus = useStrategyStore((s) => s.backtestStatus)
   const hasConversations = conversations.length > 0
 
-  const resetSessionState = useStrategyStore((state) => state.resetSessionState)
+  /* ---------------- refs ---------------- */
+  const containerRef = useRef<HTMLDivElement>(null)
 
-  const { postChat, isPending, error, cancelRequest } = useChat({
-    sessionId: sessionId || '',
-  })
+  /* ---------------- hooks ---------------- */
 
+  const { run: runBacktest, error: btError } = useV1Backtest(
+    apiVersion === 'v1' ? sessionId : null,
+  )
+  const { startBacktest, error: v0BtError } = useV0Backtest(
+    apiVersion === 'v0' ? sessionId : null,
+  )
+  const currentParams = useStrategyStore((state) => state.currentParams)
+
+  const [isBacktestButtonDisabled, setIsBacktestButtonDisabled] =
+    useState(false)
+
+  /* ---------------- effects ---------------- */
   useEffect(() => {
-    if (messagesContainerRef.current) {
-      messagesContainerRef.current.scrollTop =
-        messagesContainerRef.current.scrollHeight
+    if (containerRef.current) {
+      containerRef.current.scrollTop = containerRef.current.scrollHeight
     }
   }, [conversations])
 
-  const handleSendMessage = () => {
+  /* ---------------- helpers ---------------- */
+  const sendMessage = () => {
     if (!inputMessage.trim() || isPending) return
-
-    const messageToSend = inputMessage
-    postChat(messageToSend)
+    postChat(inputMessage)
     setInputMessage('')
+    setIsBacktestButtonDisabled(false)
   }
 
-  const handleResetConversation = () => {
-    console.log('Resetting session:', sessionId)
-    resetSessionState()
+  const sending =
+    isPending ||
+    backtestStatus === 'prompt' ||
+    backtestStatus === 'code' ||
+    backtestStatus === 'backtest'
+  const statusLabel: Record<string, string> = {
+    idle: '',
+    prompt: 'Generating prompt…',
+    code: 'Generating code…',
+    backtest: 'Running back-test…',
+    completed: 'Done!',
   }
 
-  const handleCancelRequest = () => {
-    cancelRequest()
+  const StatusIcon = () => {
+    switch (backtestStatus) {
+      case 'prompt':
+        return <Lightbulb className="w-4 h-4 text-yellow-300 animate-pulse" />
+      case 'code':
+        return <Code className="w-4 h-4 text-blue-300 animate-pulse" />
+      case 'backtest':
+        return <BarChart4 className="w-4 h-4 text-green-300 animate-pulse" />
+      case 'completed':
+        return <CheckCircle className="w-4 h-4 text-green-400" />
+      case 'error':
+        return <AlertCircle className="w-4 h-4 text-red-400" />
+      default:
+        return null
+    }
+  }
+
+  const handleRunBacktest = () => {
+    startBacktest()
+    postChat('Run backtest')
+    setIsBacktestButtonDisabled(true)
   }
 
   const tradingPairDisplay: Record<string, string> = {
@@ -85,7 +146,6 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
     solusdc: 'SOL-PERP',
     bnbusdt: 'BNB-PERP',
   }
-
   const timeframeDisplay: Record<string, string> = {
     '5m': '5m',
     '15m': '15m',
@@ -94,265 +154,291 @@ export default function AICollaboration({ sessionId }: AICollaborationProps) {
     '1d': '1d',
   }
 
+  /* =========================================================================
+   *  JSX
+   * ========================================================================= */
   return (
     <Card
-      className={`glass-card overflow-hidden flex flex-col mt-2 flex-1 min-h-0 ${!hasConversations ? 'flex justify-center ' : ''}`}
+      className={`glass-card overflow-hidden flex flex-col mt-2 flex-1 min-h-0 ${!hasConversations ? 'justify-center' : ''}`}
     >
-      {/* Status Bar */}
+      {/* === Top bar === */}
       <div
         className={`bg-zinc-800/80 border-zinc-700 py-2 px-4 flex items-center justify-between ${hasConversations ? 'border-b' : ''}`}
       >
+        {/* left side (market conf) */}
         <div className="flex items-center text-xs">
+          {/* pair */}
           <div className="flex items-center relative group">
-            <Select value={tradingPair} onValueChange={setTradingPair} disabled={true}>
-              <SelectTrigger className="bg-transparent border-0 text-zinc-500 h-6 p-0 min-w-20 w-auto text-xs font-medium cursor-not-allowed opacity-50">
+            <Select
+              value={tradingPair}
+              onValueChange={setTradingPair}
+              disabled={!enableMarketControls}
+            >
+              <SelectTrigger
+                className={`bg-transparent border-0 text-zinc-500 h-6 p-0 min-w-20 w-auto text-xs font-medium ${!enableMarketControls ? 'cursor-not-allowed opacity-50' : ''}`}
+              >
                 <SelectValue>{tradingPairDisplay[tradingPair]}</SelectValue>
               </SelectTrigger>
               <SelectContent className="bg-zinc-900 border-zinc-800">
-                <SelectItem value="btcusdt">BTC/USDT</SelectItem>
-                <SelectItem value="ethusdt">ETH/USDT</SelectItem>
-                <SelectItem value="solusdc">SOL/USDC</SelectItem>
-                <SelectItem value="bnbusdt">BNB/USDT</SelectItem>
+                {Object.entries(tradingPairDisplay).map(([v, l]) => (
+                  <SelectItem key={v} value={v}>
+                    {l}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
-            <div className="absolute opacity-0 group-hover:opacity-100 bg-zinc-800 text-zinc-200 text-xs px-2 py-1 rounded pointer-events-none whitespace-nowrap transition-opacity duration-200 top-8 left-0 shadow-lg z-10">
-              Coming soon
-            </div>
+            {!enableMarketControls && (
+              <div className="absolute opacity-0 group-hover:opacity-100 bg-zinc-800 text-zinc-200 text-xs px-2 py-1 rounded pointer-events-none whitespace-nowrap transition-opacity duration-200 top-8 left-0 shadow-lg z-10">
+                Coming soon
+              </div>
+            )}
             <span className="text-zinc-500 mx-2">|</span>
           </div>
 
+          {/* timeframe */}
           <div className="flex items-center relative group">
-            <Select value={timeframe} onValueChange={setTimeframe} disabled={true}>
-              <SelectTrigger className="bg-transparent border-0 text-zinc-500 h-6 p-0 min-w-8 w-auto text-xs font-medium cursor-not-allowed opacity-50">
+            <Select
+              value={timeframe}
+              onValueChange={setTimeframe}
+              disabled={!enableMarketControls}
+            >
+              <SelectTrigger
+                className={`bg-transparent border-0 text-zinc-500 h-6 p-0 min-w-20 w-auto text-xs font-medium ${!enableMarketControls ? 'cursor-not-allowed opacity-50' : ''}`}
+              >
                 <SelectValue>{timeframeDisplay[timeframe]}</SelectValue>
               </SelectTrigger>
               <SelectContent className="bg-zinc-900 border-zinc-800">
-                <SelectItem value="5m">5m</SelectItem>
-                <SelectItem value="15m">15m</SelectItem>
-                <SelectItem value="1h">1h</SelectItem>
-                <SelectItem value="4h">4h</SelectItem>
-                <SelectItem value="1d">1d</SelectItem>
+                {Object.entries(timeframeDisplay).map(([v, l]) => (
+                  <SelectItem key={v} value={v}>
+                    {l}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
-            <div className="absolute opacity-0 group-hover:opacity-100 bg-zinc-800 text-zinc-200 text-xs px-2 py-1 rounded pointer-events-none whitespace-nowrap transition-opacity duration-200 top-8 left-0 shadow-lg z-10">
-              Coming soon
-            </div>
+            {!enableMarketControls && (
+              <div className="absolute opacity-0 group-hover:opacity-100 bg-zinc-800 text-zinc-200 text-xs px-2 py-1 rounded pointer-events-none whitespace-nowrap transition-opacity duration-200 top-8 left-0 shadow-lg z-10">
+                Coming soon
+              </div>
+            )}
             <span className="text-zinc-500 mx-2">|</span>
           </div>
 
+          {/* date range */}
           <div className="flex items-center relative group">
             <input
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              className="bg-transparent text-zinc-500 border-0 p-0 w-auto text-xs font-medium cursor-not-allowed opacity-50"
-              disabled={true}
+              className={`bg-transparent text-zinc-500 border-0 p-0 w-auto text-xs font-medium ${!enableMarketControls ? 'cursor-not-allowed opacity-50' : ''}`}
+              disabled={!enableMarketControls}
             />
             <span className="text-zinc-500 mx-2">→</span>
             <input
               type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
-              className="bg-transparent text-zinc-500 border-0 p-0 w-auto text-xs font-medium cursor-not-allowed opacity-50"
-              disabled={true}
+              className={`bg-transparent text-zinc-500 border-0 p-0 w-auto text-xs font-medium ${!enableMarketControls ? 'cursor-not-allowed opacity-50' : ''}`}
+              disabled={!enableMarketControls}
             />
-            <div className="absolute opacity-0 group-hover:opacity-100 bg-zinc-800 text-zinc-200 text-xs px-2 py-1 rounded pointer-events-none whitespace-nowrap transition-opacity duration-200 top-8 left-0 shadow-lg z-10">
-              Coming soon
-            </div>
+            {!enableMarketControls && (
+              <div className="absolute opacity-0 group-hover:opacity-100 bg-zinc-800 text-zinc-200 text-xs px-2 py-1 rounded pointer-events-none whitespace-nowrap transition-opacity duration-200 top-8 left-0 shadow-lg z-10">
+                Coming soon
+              </div>
+            )}
           </div>
         </div>
 
-        {/* 設定ボタン */}
-        <div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-6 w-6 text-zinc-300 hover:text-purple-300 transition-colors"
-              >
-                <Settings className="h-3.5 w-3.5" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="end"
-              className="bg-zinc-700 border-zinc-600"
+        {/* settings */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-6 w-6 text-zinc-300"
             >
-              <DropdownMenuLabel className="text-xs">
-                Chat Settings
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator className="bg-zinc-600" />
-              <DropdownMenuItem
-                className="text-xs text-zinc-200 focus:text-white focus:bg-zinc-600 cursor-pointer"
-                onClick={handleResetConversation}
-                disabled={isPending}
-              >
-                <Trash2 className="h-3.5 w-3.5 mr-2 text-zinc-300" />
-                Clear Chat
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+              <Settings className="h-3.5 w-3.5" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            align="end"
+            className="bg-zinc-700 border-zinc-600"
+          >
+            <DropdownMenuLabel className="text-xs">
+              Chat Settings
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator className="bg-zinc-600" />
+            <DropdownMenuItem
+              className={`text-xs focus:bg-zinc-600 cursor-pointer ${apiVersion === 'v0' ? 'text-purple-300 font-semibold' : 'text-zinc-200'}`}
+              onClick={() => setApiVersion('v0')}
+              disabled={apiVersion === 'v0'}
+            >
+              <Zap className="h-3.5 w-3.5 mr-2 text-zinc-300" />
+              Easy Mode
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className={`text-xs focus:bg-zinc-600 cursor-pointer ${apiVersion === 'v1' ? 'text-purple-300 font-semibold' : 'text-zinc-200'}`}
+              onClick={() => setApiVersion('v1')}
+              disabled={apiVersion === 'v1' || !isApiV1Enabled}
+            >
+              <Hammer className="h-3.5 w-3.5 mr-2 text-zinc-300" />
+              Build Mode
+            </DropdownMenuItem>
+            <DropdownMenuSeparator className="bg-zinc-600" />
+            <DropdownMenuItem
+              className="text-xs text-zinc-200 focus:text-white focus:bg-zinc-600 cursor-pointer"
+              onClick={resetSessionState}
+              disabled={isPending}
+            >
+              <Trash2 className="h-3.5 w-3.5 mr-2 text-zinc-300" />
+              Clear Chat
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
+      {/* === Body === */}
       <CardContent
-        className={`p-0 bg-zinc-900 flex flex-col min-h-0 overflow-hidden ${hasConversations ? 'flex-2 h-[calc(81vh)] min-h-[calc(480px)]' : ''}`}
+        className={`p-0 bg-zinc-900 flex flex-col min-h-0 overflow-hidden ${hasConversations ? 'flex-2 h-[calc(82vh)]' : ''}`}
       >
+        {/* messages */}
         <div
-          ref={messagesContainerRef}
-          className={`${hasConversations ? 'flex-1 min-h-0 overflow-y-auto pr-2 space-y-4' : 'h-0 overflow-hidden'}`}
+          ref={containerRef}
+          className={`${hasConversations ? 'flex-1 overflow-y-auto pr-2 space-y-4' : 'h-0'}`}
         >
-          {conversations.map((message, index) => (
+          {conversations.map((m, i) => (
             <div
-              key={`${message.agent}-${message.timestamp}-${index}`}
-              className={`flex m-3 gap-3  ${message.agent === 'user' ? 'justify-end' : ''}`}
+              key={i}
+              className={`flex m-3 gap-3 ${m.agent === 'user' ? 'justify-end' : ''}`}
             >
-              {message.agent !== 'user' && (
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-blue-500 flex items-center justify-center flex-shrink-0">
-                  {message.agent === 'strategist' && (
+              {m.agent !== 'user' && (
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-blue-500 flex items-center justify-center">
+                  {m.agent === 'strategist' && (
                     <Lightbulb className="w-4 h-4 text-white" />
                   )}
-                  {message.agent === 'developer' && (
+                  {m.agent === 'developer' && (
                     <Code className="w-4 h-4 text-white" />
                   )}
-                  {message.agent === 'analyst' && (
+                  {m.agent === 'analyst' && (
                     <BarChart4 className="w-4 h-4 text-white" />
                   )}
-                  {message.agent === 'optimizer' && (
+                  {m.agent === 'optimizer' && (
                     <RefreshCw className="w-4 h-4 text-white" />
                   )}
                 </div>
               )}
               <div
-                className={`glass-card p-3 rounded-xl max-w-[85%] ${message.agent === 'user' ? 'bg-purple-800/30' : 'bg-zinc-700/30'}`}
+                className={`glass-card p-3 rounded-xl max-w-[85%] ${m.agent === 'user' ? 'bg-purple-800/30' : 'bg-zinc-700/30'}`}
               >
-                <div className="flex justify-between items-start mb-1">
+                <div className="flex justify-between mb-1">
                   <span className="text-sm font-semibold capitalize mr-2">
-                    {message.agent === 'user' ? 'You' : message.agent}
+                    {m.agent === 'user' ? 'You' : m.agent}
                   </span>
-                  <span className="text-xs text-zinc-300">
-                    {message.timestamp}
+                  <span className="text-xs text-zinc-300 flex-shrink-0 ml-auto">
+                    {m.timestamp}
                   </span>
                 </div>
-                {message.agent === 'user' ? (
+                {m.agent === 'user' ? (
                   <p className="text-sm text-zinc-200 whitespace-pre-wrap">
-                    {message.message}
+                    {m.message}
                   </p>
                 ) : (
-                  <div className="prose prose-sm prose-invert max-w-none">
-                    <ReactMarkdown>{message.message}</ReactMarkdown>
-                  </div>
+                  <>
+                    <div className="prose prose-sm prose-invert max-w-none markdown-content">
+                      <ReactMarkdown>{m.message}</ReactMarkdown>
+                    </div>
+
+                    {m.attachment && m.attachment.type === 'code' && (
+                      <div className="mt-3 p-3 bg-zinc-600/50 rounded-lg overflow-x-auto">
+                        <pre className="text-sm text-zinc-300 font-mono">
+                          <code>{m.attachment.data}</code>
+                        </pre>
+                      </div>
+                    )}
+
+                    {/* ===== Run Back-test (v1 only) ===== */}
+                    {i === conversations.length - 1 && apiVersion === 'v1' && (
+                      <div className="border-t border-zinc-700 p-2 flex justify-end">
+                        <Button
+                          disabled={sending || conversations.length === 0}
+                          onClick={runBacktest}
+                          className="gradient-button flex items-center gap-2"
+                        >
+                          <Play className="h-4 w-4" />
+                          Run Backtest
+                        </Button>
+                      </div>
+                    )}
+
+                  </>
                 )}
 
-                {message.attachment && message.attachment.type === 'chart' && (
-                  <div className="mt-3 p-3 bg-zinc-600/50 rounded-lg">
-                    <div className="text-sm font-medium mb-2">
-                      {message.attachment.data.title}
+                {i === conversations.length - 1 &&
+                  m.agent !== 'user' &&
+                  currentParams &&
+                  apiVersion === 'v0' && (
+                    <div className="border-t border-zinc-700 p-2 flex justify-end">
+                      <Button
+                        disabled={
+                          conversations.length === 0 || isBacktestButtonDisabled
+                        }
+                        onClick={handleRunBacktest}
+                        className="gradient-button flex items-center gap-2"
+                      >
+                        <Play className="h-4 w-4" />
+                        Run Backtest
+                      </Button>
                     </div>
-                    <div className="grid grid-cols-3 gap-2">
-                      {Object.entries(message.attachment.data.metrics).map(
-                        ([key, value], i) => (
-                          <div key={key} className="text-center">
-                            <div className="text-xs text-zinc-400 capitalize">
-                              {key.replace(/([A-Z])/g, ' $1').trim()}
-                            </div>
-                            <div
-                              className={`text-sm font-medium ${(value as string).startsWith('+') ? 'text-green-400' : (value as string).startsWith('-') ? 'text-red-400' : 'text-zinc-300'}`}
-                            >
-                              {value as React.ReactNode}
-                            </div>
-                          </div>
-                        ),
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {message.attachment && message.attachment.type === 'code' && (
-                  <div className="mt-3 p-3 bg-zinc-600/50 rounded-lg overflow-x-auto">
-                    <pre className="text-xs text-zinc-300 font-mono">
-                      <code>{message.attachment.data}</code>
-                    </pre>
-                  </div>
-                )}
+                  )}
               </div>
-              {message.agent === 'user' && (
-                <div className="w-8 h-8 rounded-full bg-purple-600/80 flex items-center justify-center flex-shrink-0">
+              {m.agent === 'user' && (
+                <div className="w-8 h-8 rounded-full bg-purple-600/80 flex items-center justify-center">
                   <MessageSquare className="w-4 h-4 text-white" />
                 </div>
               )}
             </div>
           ))}
 
-          {isPending && (
-            <div className="flex gap-3 m-3 ">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-blue-500 flex items-center justify-center flex-shrink-0">
+          {/* loading bubbles */}
+          {sending && (
+            <div className="flex gap-3 m-3">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-blue-500 flex items-center justify-center">
                 <Lightbulb className="w-4 h-4 text-white" />
               </div>
-              <div className="glass-card p-3 rounded-xl max-w-[85%] bg-zinc-700/30">
-                <div className="flex items-center space-x-2">
-                  <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
-                  <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse delay-150"></div>
-                  <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse delay-300"></div>
+              <div className="glass-card p-3 rounded-xl bg-zinc-700/30 w-auto">
+                <div className="flex items-center gap-2">
+                  <div className="flex space-x-2">
+                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse delay-150"></div>
+                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse delay-300"></div>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-sm text-blue-200">
+                    <StatusIcon />
+                    <span>{statusLabel[backtestStatus]}</span>
+                  </div>
                 </div>
               </div>
             </div>
           )}
 
-          {error && (
-            <div className="text-red-500 text-sm p-2 text-center m-3 ">
-              Failed to get response: {error.message}
+          {(error || btError || v0BtError) && (
+            <div className="text-red-500 text-sm text-center m-3">
+              Failed to get response: {(error || btError || v0BtError)?.message}
             </div>
           )}
         </div>
 
+        {/* input */}
         <div className={hasConversations ? 'mt-4' : ''}>
-          <div className="relative rounded-b-lg border border-zinc-700 bg-zinc-800/50 overflow-hidden">
-            <textarea
-              disabled={!sessionId}
-              placeholder={
-                sessionId
-                  ? 'Ask AI to help you create a trading strategy...'
-                  : 'Loading...'
-              }
-              className="w-full min-h-[60px] max-h-[120px] bg-transparent py-3 pl-4 pr-12 text-zinc-300 focus:outline-none resize-none block"
-              rows={2}
-              value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.nativeEvent.isComposing && !e.shiftKey) {
-                  e.preventDefault()
-                  handleSendMessage()
-                  setTimeout(() => setInputMessage(''), 0)
-                }
-              }}
-            />
-            <div className="absolute bottom-2 right-2">
-              {isPending ? (
-                <Button
-                  className="h-8 w-8 rounded-full bg-red-400 hover:bg-red-500 p-0 flex items-center justify-center"
-                  onClick={handleCancelRequest}
-                  aria-label="Cancel request"
-                >
-                  <div className="w-4 h-4 flex items-center justify-center">
-                    <span className="text-white text-xs font-bold">✕</span>
-                  </div>
-                </Button>
-              ) : (
-                <Button
-                  className="h-8 w-8 rounded-full gradient-button p-0 flex items-center justify-center"
-                  onClick={(e) => {
-                    e.preventDefault()
-                    handleSendMessage()
-                  }}
-                  disabled={!inputMessage.trim()}
-                  aria-label="Send message"
-                >
-                  <ArrowRight className="w-4 h-4" />
-                </Button>
-              )}
-            </div>
-          </div>
+          <ChatInput
+            disabled={!sessionId}
+            sending={isPending}
+            onCancel={cancelRequest}
+            onSend={(msg) => {
+              postChat(msg)
+              setIsBacktestButtonDisabled(false)
+            }}
+            hasConversations={hasConversations}
+          />
         </div>
       </CardContent>
     </Card>
