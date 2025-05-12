@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Play } from 'lucide-react'
 
 export default function VideoUpdateSection() {
-  const [videoIds, setVideoIds] = useState(['qcwOXQzlzD0', 'jcPxFGm0tl4'])
+  const [videoIds, setVideoIds] = useState(['5gcIcfQ4owI', 'qcwOXQzlzD0', 'jcPxFGm0tl4'])
 
   return (
     <section className="py-20 relative overflow-hidden">
