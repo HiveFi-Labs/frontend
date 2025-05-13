@@ -14,7 +14,7 @@ import AuthWrapper from '@/components/common/AuthWrapper'
 import ComingSoonScreen from '@/components/common/ComingSoonScreen'
 
 export default function StrategyPage() {
-  const { authenticated } = usePrivy()
+  const { authenticated, user } = usePrivy()
   const sessionId = useStrategyStore((state) => state.sessionId)
   const setSessionId = useStrategyStore((state) => state.setSessionId)
   const apiVersion = useStrategyStore((s) => s.apiVersion)
@@ -36,12 +36,11 @@ export default function StrategyPage() {
   })
 
   useEffect(() => {
-    const initializeSession = async () => {
-      console.log('initializeSession', apiVersion, sessionId)
+    const initializeSession = async (userId: string) => {
+      console.log('initializeSession', apiVersion, sessionId, userId)
       if (apiVersion === 'v1') {
         try {
-          const randomUserId = `user_${Math.random().toString(36).substring(2, 9)}`
-          const response = await apiV1.createSession(randomUserId)
+          const response = await apiV1.createSession(userId)
           if (response && response.session_id) {
             setSessionId(response.session_id)
           }
@@ -53,8 +52,8 @@ export default function StrategyPage() {
         setSessionId(uuidv4())
       }
     }
-    if (!sessionId) initializeSession()
-  }, [authenticated, apiVersion, sessionId, setSessionId])
+    if (!sessionId && user?.id) initializeSession(user.id)
+  }, [authenticated, user?.id, apiVersion, sessionId, setSessionId])
 
   /* ---- split auto adjust ---- */
   const isRunning =
