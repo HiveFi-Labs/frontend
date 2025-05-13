@@ -12,7 +12,7 @@ export default function HiveFiLogo({ className, size = 40 }: HiveFiLogoProps) {
       style={{ width: size, height: size }}
     >
       <Image
-        src="/images/hivefi-logo.png"
+        src="/hivefi_logo_3_w.png"
         alt="HiveFi Logo"
         width={size}
         height={size}
