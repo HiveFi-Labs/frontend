@@ -1,11 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import { Mail } from 'lucide-react'
+import { Mail, BookOpen } from 'lucide-react'
 import { SiX, SiDiscord, SiGithub } from '@icons-pack/react-simple-icons'
 import ComingSoonModal from '@/components/coming-soon-modal'
 import HiveFiLogo from '@/components/hivefi-logo'
-
+import Link from 'next/link'
 export default function Footer() {
   const [comingSoonModal, setComingSoonModal] = useState({
     isOpen: false,
@@ -27,10 +27,14 @@ export default function Footer() {
             {/* Brand Column */}
             <div className="space-y-6 text-center">
               <div className="flex items-center justify-center gap-2">
-                <HiveFiLogo size={40} />
-                <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-blue-500">
-                  HiveFi
-                </span>
+                <Link href="/" className="mb-2">
+                  <HiveFiLogo size={28} />
+                </Link>
+                <Link href="/">
+                  <span className="text-2xl font-bold bg-clip-text text-[#FFFFFF]">
+                    HiveFi
+                  </span>
+                </Link>
               </div>
               <div className="flex space-x-4 justify-center">
                 <a
@@ -59,6 +63,13 @@ export default function Footer() {
                   aria-label="HiveFi on GitHub"
                 >
                   <SiGithub className="w-5 h-5 text-zinc-300" />
+                </a>
+                <a
+                  href="https://hivefi.gitbook.io/hivefi" target="_blank" rel="noopener noreferrer"
+                  className="w-10 h-10 rounded-full bg-zinc-800 hover:bg-zinc-700 flex items-center justify-center transition-colors"
+                  aria-label="HiveFi Documentation"
+                >
+                  <BookOpen className="w-5 h-5 text-zinc-300" />
                 </a>
                 <a
                   href="mailto:maff@hive.xyz"
