@@ -91,6 +91,15 @@ export default function Header() {
               <span>Portfolio</span>
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-500 to-blue-500 transition-all duration-300 group-hover:w-full"></span>
             </button>
+            <Link
+              href="https://hivefi.gitbook.io/hivefi"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-zinc-300 hover:text-white transition-colors relative group"
+            >
+              <span>Docs</span>
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-500 to-blue-500 transition-all duration-300 group-hover:w-full"></span>
+            </Link>
             {desiredWallet ? (
               <div className="flex items-center gap-2">
                 <div
@@ -163,7 +172,7 @@ export default function Header() {
               <Link
                 href="/strategy"
                 onClick={() => setMobileMenuOpen(false)}
-                className="text-zinc-300 hover:text-white transition-colors py-2"
+                className="text-zinc-300 hover:text-white transition-colors py-2 text-center"
               >
                 Builder
               </Link>
@@ -172,7 +181,7 @@ export default function Header() {
                   setMobileMenuOpen(false)
                   showComingSoon('Strategy Marketplace')
                 }}
-                className="text-zinc-300 hover:text-white transition-colors py-2"
+                className="text-zinc-300 hover:text-white transition-colors py-2 text-center"
               >
                 Strategies
               </button>
@@ -181,10 +190,19 @@ export default function Header() {
                   setMobileMenuOpen(false)
                   showComingSoon('Portfolio Management')
                 }}
-                className="text-zinc-300 hover:text-white transition-colors py-2"
+                className="text-zinc-300 hover:text-white transition-colors py-2 text-center"
               >
                 Portfolio
               </button>
+              <Link
+                href="https://hivefi.gitbook.io/hivefi"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-zinc-300 hover:text-white transition-colors py-2 text-center"
+              >
+                Docs
+              </Link>
               {walletReady && desiredWallet ? (
                 <div className="flex flex-col space-y-2">
                   <div
