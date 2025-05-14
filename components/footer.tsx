@@ -5,7 +5,7 @@ import { Mail } from 'lucide-react'
 import { SiX, SiDiscord, SiGithub } from '@icons-pack/react-simple-icons'
 import ComingSoonModal from '@/components/coming-soon-modal'
 import HiveFiLogo from '@/components/hivefi-logo'
-
+import Link from 'next/link'
 export default function Footer() {
   const [comingSoonModal, setComingSoonModal] = useState({
     isOpen: false,
@@ -27,10 +27,14 @@ export default function Footer() {
             {/* Brand Column */}
             <div className="space-y-6 text-center">
               <div className="flex items-center justify-center gap-2">
-                <HiveFiLogo size={40} />
-                <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-blue-500">
-                  HiveFi
-                </span>
+                <Link href="/" className="mb-2">
+                  <HiveFiLogo size={28} />
+                </Link>
+                <Link href="/">
+                  <span className="text-2xl font-bold bg-clip-text text-[#FFFFFF]">
+                    HiveFi
+                  </span>
+                </Link>
               </div>
               <div className="flex space-x-4 justify-center">
                 <a
