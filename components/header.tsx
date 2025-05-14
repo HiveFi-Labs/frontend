@@ -60,11 +60,11 @@ export default function Header() {
       >
         <div className="container mx-auto px-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Link href="/">
-              <HiveFiLogo size={48} />
+            <Link href="/" className="flex items-center mb-2">
+              <HiveFiLogo size={28} />
             </Link>
             <Link href="/">
-              <span className="text-2xl font-bold gradient-text">HiveFi</span>
+              <span className="text-2xl font-bold text-[#FFFFFF]">HiveFi</span>
             </Link>
           </div>
 
