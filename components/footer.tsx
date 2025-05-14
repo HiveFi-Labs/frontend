@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Mail } from 'lucide-react'
+import { Mail, BookOpen } from 'lucide-react'
 import { SiX, SiDiscord, SiGithub } from '@icons-pack/react-simple-icons'
 import ComingSoonModal from '@/components/coming-soon-modal'
 import HiveFiLogo from '@/components/hivefi-logo'
@@ -63,6 +63,13 @@ export default function Footer() {
                   aria-label="HiveFi on GitHub"
                 >
                   <SiGithub className="w-5 h-5 text-zinc-300" />
+                </a>
+                <a
+                  href="https://hivefi.gitbook.io/hivefi" target="_blank" rel="noopener noreferrer"
+                  className="w-10 h-10 rounded-full bg-zinc-800 hover:bg-zinc-700 flex items-center justify-center transition-colors"
+                  aria-label="HiveFi Documentation"
+                >
+                  <BookOpen className="w-5 h-5 text-zinc-300" />
                 </a>
                 <a
                   href="mailto:maff@hive.xyz"
