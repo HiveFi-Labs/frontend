@@ -20,9 +20,7 @@ export default function BacktestingResults() {
   const apiVersion = useStrategyStore((s) => s.apiVersion)
 
   // backtestStatusに基づいて表示を変更できます
-  const isRunning =
-    backtestStatus === 'code' ||
-    backtestStatus === 'backtest'
+  const isRunning = backtestStatus === 'code' || backtestStatus === 'backtest'
 
   // activeViewの変更を検知して親コンポーネントのshowCodeを更新
   const handleViewChange = (value: string) => {
@@ -31,7 +29,12 @@ export default function BacktestingResults() {
 
   return (
     <>
-      <Card className="glass-card overflow-hidden h-full flex flex-col mt-2">
+      <Card
+        className="glass-card overflow-hidden h-full flex flex-col"
+        style={{
+          height: 'calc(100vh - 80px)',
+        }}
+      >
         {/* コンパクトなステータスバー */}
         <div className="bg-zinc-900/80 border-b border-zinc-800 py-2 px-4 flex items-center justify-between">
           <div className="flex items-center">
@@ -74,25 +77,23 @@ export default function BacktestingResults() {
         <CardContent className="space-y-6 overflow-auto flex-1 pb-6 pt-4">
           {isRunning ? (
             <CodeLoading />
-          ) : (
-            activeView === 'backtest' ? (
-              <>
-                {/* Chart View */}
-                <TradeCharts />
-                {apiVersion === 'v0' ? (
-                  <PerformanceMetricsV0 />
-                ) : (
-                  <PerformanceMetrics />
-                )}
+          ) : activeView === 'backtest' ? (
+            <>
+              {/* Chart View */}
+              <TradeCharts />
+              {apiVersion === 'v0' ? (
+                <PerformanceMetricsV0 />
+              ) : (
+                <PerformanceMetrics />
+              )}
 
-                {/* Trade History */}
-                <TradeHistoryTable />
-              </>
-            ) : (
-              <div className="h-full">
-                <StrategyCode />
-              </div>
-            )
+              {/* Trade History */}
+              <TradeHistoryTable />
+            </>
+          ) : (
+            <div className="h-full">
+              <StrategyCode />
+            </div>
           )}
         </CardContent>
       </Card>

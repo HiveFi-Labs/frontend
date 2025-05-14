@@ -49,8 +49,9 @@ interface AICollaborationProps {
 // 環境変数からAPI V1が利用可能かどうかを確認
 const isApiV1Enabled = process.env.NEXT_PUBLIC_ENABLE_API_V1 === 'true'
 
-  // ステータスバーを表示・非表示にする
-const enableMarketControls = process.env.NEXT_PUBLIC_ENABLE_MARKET_CONTROLS === 'true'
+// ステータスバーを表示・非表示にする
+const enableMarketControls =
+  process.env.NEXT_PUBLIC_ENABLE_MARKET_CONTROLS === 'true'
 
 export default function AICollaboration({
   sessionId,
@@ -159,7 +160,7 @@ export default function AICollaboration({
    * ========================================================================= */
   return (
     <Card
-      className={`glass-card overflow-hidden flex flex-col mt-2 flex-1 min-h-0 ${!hasConversations ? 'justify-center' : ''}`}
+      className={`glass-card overflow-hidden flex flex-col flex-1 min-h-0 ${!hasConversations ? 'justify-center' : ''}`}
     >
       {/* === Top bar === */}
       <div
@@ -298,12 +299,15 @@ export default function AICollaboration({
 
       {/* === Body === */}
       <CardContent
-        className={`p-0 bg-zinc-900 flex flex-col min-h-0 overflow-hidden ${hasConversations ? 'flex-2 h-[calc(82vh)]' : ''}`}
+        className={`p-0 bg-zinc-900 flex flex-col min-h-0 overflow-hidden ${hasConversations ? 'flex-2 ' : ''}`}
+        style={{
+          height: hasConversations ? 'calc(100vh - 123px)' : '100%',
+        }}
       >
         {/* messages */}
         <div
           ref={containerRef}
-          className={`${hasConversations ? 'flex-1 overflow-y-auto pr-2 space-y-4' : 'h-0'}`}
+          className={`${hasConversations ? 'flex-1 overflow-y-auto pr-2 flex-2 space-y-4 ' : 'h-0'}`}
         >
           {conversations.map((m, i) => (
             <div
@@ -368,7 +372,6 @@ export default function AICollaboration({
                         </Button>
                       </div>
                     )}
-
                   </>
                 )}
 

@@ -4,9 +4,9 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { ThemeProvider } from '@/components/theme-provider'
 import Header from '@/components/header'
-import Footer from '@/components/footer'
 import BackgroundEffect from '@/components/background-effect'
 import Providers from './providers'
+import { FooterProvider } from '@/components/footer-provider'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -47,12 +47,13 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <Providers>
-            <div className="flex flex-col min-h-screen">
-              <BackgroundEffect />
-              <Header />
-              <main className="flex-1">{children}</main>
-              <Footer />
-            </div>
+            <FooterProvider>
+              <div className="flex flex-col min-h-screen">
+                <BackgroundEffect />
+                <Header />
+                <main className="flex-1">{children}</main>
+              </div>
+            </FooterProvider>
           </Providers>
         </ThemeProvider>
       </body>

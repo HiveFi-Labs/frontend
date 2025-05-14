@@ -56,12 +56,12 @@ export default function StrategyPage() {
   }, [authenticated, user?.id, apiVersion, sessionId, setSessionId])
 
   /* ---- split auto adjust ---- */
-  const isRunning =
-    backtestStatus === 'code' ||
-    backtestStatus === 'backtest'
+  const isRunning = backtestStatus === 'code' || backtestStatus === 'backtest'
 
   useEffect(() => {
-    setSplitRatio(backtestResults || backtestResultsJson || isRunning ? 50 : 100)
+    setSplitRatio(
+      backtestResults || backtestResultsJson || isRunning ? 50 : 100,
+    )
   }, [backtestResults, backtestResultsJson, isRunning])
 
   /* ---- resize handler ---- */
@@ -92,22 +92,27 @@ export default function StrategyPage() {
   return (
     <AuthWrapper>
       <ComingSoonScreen>
-        <div className="min-h-screen bg-black text-white pt-20 pb-10">
-          <div className="container mx-auto px-4 max-w-full">
+        <div
+          className="min-h-screen h-screen bg-black text-white pt-20 flex flex-col overflow-auto"
+          style={{
+            height: 'calc(100vh - 120px)',
+          }}
+        >
+          <div className="container mx-auto px-4 max-w-full h-full ">
             <div
-              className={`flex flex-row gap-0 h-[calc(90vh)] min-h-[500px] overflow-hidden relative split-container ${!showSplit ? 'justify-center' : ''}`}
+              className={`flex flex-row gap-0 flex-1 h-full relative split-container ${!showSplit ? 'justify-center' : ''}`}
             >
               {/* -------- Left (chat) -------- */}
               <div
-                className={`overflow-hidden flex flex-col flex-1 min-h-0 ${!hasConversations ? 'pb-20' : ''} ${!showSplit ? 'max-w-3xl self-center' : ''}`}
+                className={` flex flex-col flex-1 min-h-0 ${!hasConversations ? 'pb-20' : ''} ${!showSplit ? 'max-w-3xl self-center' : ''}`}
                 style={{ width: showSplit ? `${splitRatio}%` : '100%' }}
               >
                 {!hasConversations && (
                   <div className="text-center mb-6">
                     <h2 className="text-2xl font-bold mb-2">Let's begin.</h2>
                     <p className="text-zinc-400">
-                      Ï Currently, as this is an alpha version, only a limited
-                      set of strategies can be executed.
+                      Currently, as this is an alpha version, only a limited set
+                      of strategies can be executed.
                     </p>
                   </div>
                 )}

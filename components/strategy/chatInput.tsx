@@ -70,7 +70,9 @@ export default function ChatInput({
         disabled={disabled}
         enterKeyHint="send"
         placeholder={
-          disabled ? 'Loading…' : 'Ask AI to help you create a trading strategy…'
+          disabled
+            ? 'Loading…'
+            : 'Ask AI to help you create a trading strategy…'
         }
         className="w-full min-h-[60px] max-h-[120px] bg-transparent py-3 pl-4 pr-12 text-zinc-300 resize-none focus:outline-none"
       />
@@ -95,11 +97,11 @@ export default function ChatInput({
         )}
       </div>
       {hasConversations && (
-            <p className="text-xs text-zinc-500 mt-1 text-center">
-              Currently, as this is an alpha version, only a limited set of
-              strategies can be executed.
-            </p>
-          )}
+        <p className="text-xs text-zinc-500 mt-1 text-center">
+          Currently, as this is an alpha version, only a limited set of
+          strategies can be executed.
+        </p>
+      )}
     </div>
   )
 }
