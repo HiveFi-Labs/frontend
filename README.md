@@ -105,19 +105,6 @@ HiveFi is built using:
 
 - **Backend Repository**: [HiveFi-Labs/vectorbt-pro-sandbox](https://github.com/HiveFi-Labs/vectorbt-pro-sandbox) - Contains the backtesting engine and strategy execution logic
 
-## Future Roadmap
-
-### Coming Soon
-
-- **Invest in Strategies**: Browse and invest in decentralized, proven trading strategies
-- **Deploy Strategies**: Monetize your trading expertise by providing strategies and earning performance-based fees
-- **Strategy Builder**: User-friendly interface to design strategies without coding
-- **Trusted Execution Environment (TEE)**: Secure deployment of strategy logic, maintaining confidentiality
-
-## Contributing
-
-We welcome contributions from the community! Please reach out to the team for more information on how to get involved.
-
-## Contact
-
-[Contact information] 
+## Documentation
+- For more detailed information, please visit our official documentation.
+- https://hivefi.gitbook.io/hivefi
