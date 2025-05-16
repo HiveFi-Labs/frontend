@@ -112,6 +112,16 @@ HiveFi is built using:
 
 - **Smart Contracts**: [HiveFi-Labs/contracts](https://github.com/HiveFi-Labs/contracts) - Contains various smart contracts for the HiveFi project
 
+## Live Demo
+
+The application is hosted and available at [https://hivefi.xyz/](https://hivefi.xyz/). Check out our platform to experience the future of algorithmic trading in DeFi.
+
 ## Documentation
 
 For more detailed information, please visit our [official documentation](https://hivefi.gitbook.io/hivefi).
+
+## Community
+
+Join our growing community to get early access, exclusive benefits, and connect with like-minded traders:
+
+- Join our [Discord server](https://discord.com/invite/u93QSsPNd6) for real-time updates and discussions
