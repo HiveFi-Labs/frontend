@@ -36,22 +36,26 @@ Test and validate trading strategies with our comprehensive backtesting system:
 ### Installation
 
 1. Clone the repository
+
 ```bash
 git clone https://github.com/yourusername/hivefi.git
 cd hivefi/frontend
 ```
 
 2. Install dependencies
+
 ```bash
 pnpm install
 ```
 
 3. Create a `.env` file based on `.env.example`
+
 ```bash
 cp .env.example .env
 ```
 
 4. Configure environment variables in the `.env` file:
+
 ```
 # Authentication (for future implementation)
 NEXT_PUBLIC_PRIVY_APP_ID=
@@ -67,6 +71,7 @@ NEXT_PUBLIC_ENABLE_MARKET_CONTROLS=true  # Enable selection of different trading
 ```
 
 5. Start the development server
+
 ```bash
 pnpm dev
 ```
@@ -103,8 +108,10 @@ HiveFi is built using:
 
 ## Related Repositories
 
-- **Backend Repository**: [HiveFi-Labs/vectorbt-pro-sandbox](https://github.com/HiveFi-Labs/vectorbt-pro-sandbox) - Contains the backtesting engine and strategy execution logic
+- **Backend Repository**: [HiveFi-Labs/vectorbt-pro-sandbox](https://github.com/HiveFi-Labs/vectorbt-pro-sandbox) - Contains the backtesting engine and strategy execution logic. It is currently private.
+
+- **Smart Contracts**: [HiveFi-Labs/contracts](https://github.com/HiveFi-Labs/contracts) - Contains various smart contracts for the HiveFi project
 
 ## Documentation
-- For more detailed information, please visit our official documentation.
-- https://hivefi.gitbook.io/hivefi
+
+For more detailed information, please visit our [official documentation](https://hivefi.gitbook.io/hivefi).
