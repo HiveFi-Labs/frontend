@@ -1,8 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useIsMobile } from '@/hooks/use-mobile'
 import { v4 as uuidv4 } from 'uuid'
-import { ArrowUpIcon } from 'lucide-react'
+import { ArrowUpIcon, ChevronDown, ChevronUp } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import AICollaboration from '@/components/strategy/ai-collaboration'
 import BacktestingResults from '@/components/strategy/backtesting-results'
@@ -29,6 +30,8 @@ export default function StrategyPage() {
 
   /* ---- split ---- */
   const [splitRatio, setSplitRatio] = useState(50)
+  const isMobile = useIsMobile()
+  const [mobileResultsVisible, setMobileResultsVisible] = useState(false)
 
   const { postChat, isPending, error, cancelRequest } = useChat({
     sessionId: sessionId || '',
@@ -75,6 +78,16 @@ export default function StrategyPage() {
 
   const showSplit = !!backtestResults || !!backtestResultsJson || isRunning
 
+  useEffect(() => {
+    if (!isMobile) {
+      setMobileResultsVisible(true)
+    } else if (showSplit) {
+      setMobileResultsVisible(true)
+    } else {
+      setMobileResultsVisible(false)
+    }
+  }, [isMobile, showSplit])
+
   const handleSamplePrompt = (version: string) => {
     if (version === 'v0') {
       setApiVersion('v0')
@@ -100,12 +113,14 @@ export default function StrategyPage() {
         >
           <div className="container mx-auto px-4 max-w-full h-full ">
             <div
-              className={`flex flex-row gap-0 flex-1 h-full relative split-container ${!showSplit ? 'justify-center' : ''}`}
+              className={`flex flex-col md:flex-row gap-0 flex-1 h-full relative split-container ${!showSplit ? 'justify-center' : ''}`}
             >
               {/* -------- Left (chat) -------- */}
               <div
                 className={` flex flex-col flex-1 min-h-0 ${!hasConversations ? 'pb-20' : ''} ${!showSplit ? 'max-w-3xl self-center' : ''}`}
-                style={{ width: showSplit ? `${splitRatio}%` : '100%' }}
+                style={{
+                  width: !isMobile && showSplit ? `${splitRatio}%` : '100%',
+                }}
               >
                 {!hasConversations && (
                   <div className="text-center mb-6">
@@ -143,7 +158,7 @@ export default function StrategyPage() {
                 )}
               </div>
               {/* リサイズハンドラー - showSplitLayoutがtrueの時のみ表示 */}
-              {showSplit && (
+              {showSplit && !isMobile && (
                 <div
                   className="w-1 cursor-col-resize"
                   onMouseDown={(e) => {
@@ -161,12 +176,49 @@ export default function StrategyPage() {
 
               {/* -------- Right (results) -------- */}
               {showSplit && (
-                <div
-                  className="overflow-hidden flex flex-col"
-                  style={{ width: `${100 - splitRatio}%` }}
-                >
-                  <BacktestingResults />
-                </div>
+                <>
+                  {isMobile ? (
+                    <>
+                      {mobileResultsVisible && (
+                        <div
+                          className="overflow-hidden flex flex-col flex-1 min-h-0 mt-4"
+                          style={{ width: '100%' }}
+                        >
+                          <BacktestingResults />
+                          <div className="flex justify-center mt-2">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="rounded-t-md bg-zinc-800 text-zinc-200"
+                              onClick={() => setMobileResultsVisible(false)}
+                            >
+                              <ChevronDown className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                      {!mobileResultsVisible && (
+                        <div className="flex justify-center mt-2">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="rounded-t-md bg-zinc-800 text-zinc-200"
+                            onClick={() => setMobileResultsVisible(true)}
+                          >
+                            <ChevronUp className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <div
+                      className="overflow-hidden flex flex-col flex-1 min-h-0 mt-4 md:mt-0"
+                      style={{ width: `${100 - splitRatio}%` }}
+                    >
+                      <BacktestingResults />
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </div>
