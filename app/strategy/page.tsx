@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useIsMobile } from '@/hooks/use-mobile'
 import { v4 as uuidv4 } from 'uuid'
 import { ArrowUpIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -29,6 +30,7 @@ export default function StrategyPage() {
 
   /* ---- split ---- */
   const [splitRatio, setSplitRatio] = useState(50)
+  const isMobile = useIsMobile()
 
   const { postChat, isPending, error, cancelRequest } = useChat({
     sessionId: sessionId || '',
@@ -100,12 +102,14 @@ export default function StrategyPage() {
         >
           <div className="container mx-auto px-4 max-w-full h-full ">
             <div
-              className={`flex flex-row gap-0 flex-1 h-full relative split-container ${!showSplit ? 'justify-center' : ''}`}
+              className={`flex flex-col md:flex-row gap-0 flex-1 h-full relative split-container ${!showSplit ? 'justify-center' : ''}`}
             >
               {/* -------- Left (chat) -------- */}
               <div
                 className={` flex flex-col flex-1 min-h-0 ${!hasConversations ? 'pb-20' : ''} ${!showSplit ? 'max-w-3xl self-center' : ''}`}
-                style={{ width: showSplit ? `${splitRatio}%` : '100%' }}
+                style={{
+                  width: !isMobile && showSplit ? `${splitRatio}%` : '100%',
+                }}
               >
                 {!hasConversations && (
                   <div className="text-center mb-6">
@@ -143,7 +147,7 @@ export default function StrategyPage() {
                 )}
               </div>
               {/* リサイズハンドラー - showSplitLayoutがtrueの時のみ表示 */}
-              {showSplit && (
+              {showSplit && !isMobile && (
                 <div
                   className="w-1 cursor-col-resize"
                   onMouseDown={(e) => {
@@ -162,8 +166,8 @@ export default function StrategyPage() {
               {/* -------- Right (results) -------- */}
               {showSplit && (
                 <div
-                  className="overflow-hidden flex flex-col"
-                  style={{ width: `${100 - splitRatio}%` }}
+                  className="overflow-hidden flex flex-col flex-1 min-h-0 mt-4 md:mt-0"
+                  style={{ width: !isMobile ? `${100 - splitRatio}%` : '100%' }}
                 >
                   <BacktestingResults />
                 </div>
