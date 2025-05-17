@@ -164,10 +164,10 @@ export default function AICollaboration({
     >
       {/* === Top bar === */}
       <div
-        className={`bg-zinc-800/80 border-zinc-700 py-2 px-4 flex items-center justify-between ${hasConversations ? 'border-b' : ''}`}
+        className={`bg-zinc-800/80 border-zinc-700 py-2 px-4 flex flex-wrap items-center justify-between gap-y-2 ${hasConversations ? 'border-b' : ''}`}
       >
         {/* left side (market conf) */}
-        <div className="flex items-center text-xs">
+        <div className="flex items-center text-xs flex-wrap gap-x-2 gap-y-2">
           {/* pair */}
           <div className="flex items-center relative group">
             <Select
