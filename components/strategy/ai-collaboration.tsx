@@ -156,7 +156,7 @@ export default function AICollaboration({
   }
 
   /* =========================================================================
-   *  JSX
+   *  JSX rendering
    * ========================================================================= */
   return (
     <Card
@@ -164,15 +164,16 @@ export default function AICollaboration({
     >
       {/* === Top bar === */}
       <div
-        className={`bg-zinc-800/80 border-zinc-700 py-2 px-4 flex items-center justify-between ${hasConversations ? 'border-b' : ''}`}
+        className={`bg-zinc-800/80 border-zinc-700 py-2 px-4 flex items-start justify-between ${hasConversations ? 'border-b' : ''}`}
       >
         {/* left side (market conf) */}
-        <div className="flex items-center text-xs">
-          {/* pair */}
-          <div className="flex items-center relative group">
-            <Select
-              value={tradingPair}
-              onValueChange={setTradingPair}
+        <div className="flex flex-col md:flex-row md:items-center text-xs">
+          <div className="flex items-center">
+            {/* pair */}
+            <div className="flex items-center relative group">
+              <Select
+                value={tradingPair}
+                onValueChange={setTradingPair}
               disabled={!enableMarketControls}
             >
               <SelectTrigger
@@ -192,17 +193,15 @@ export default function AICollaboration({
               <div className="absolute opacity-0 group-hover:opacity-100 bg-zinc-800 text-zinc-200 text-xs px-2 py-1 rounded pointer-events-none whitespace-nowrap transition-opacity duration-200 top-8 left-0 shadow-lg z-10">
                 Coming soon
               </div>
-            )}
+              )}
             <span className="text-zinc-500 mx-2">|</span>
-          </div>
-
-          {/* timeframe */}
-          <div className="flex items-center relative group">
-            <Select
-              value={timeframe}
-              onValueChange={setTimeframe}
-              disabled={!enableMarketControls}
-            >
+            {/* timeframe */}
+            <div className="flex items-center relative group">
+              <Select
+                value={timeframe}
+                onValueChange={setTimeframe}
+                disabled={!enableMarketControls}
+              >
               <SelectTrigger
                 className={`bg-transparent border-0 text-zinc-500 h-6 p-0 min-w-20 w-auto text-xs font-medium ${!enableMarketControls ? 'cursor-not-allowed opacity-50' : ''}`}
               >
@@ -220,12 +219,9 @@ export default function AICollaboration({
               <div className="absolute opacity-0 group-hover:opacity-100 bg-zinc-800 text-zinc-200 text-xs px-2 py-1 rounded pointer-events-none whitespace-nowrap transition-opacity duration-200 top-8 left-0 shadow-lg z-10">
                 Coming soon
               </div>
-            )}
-            <span className="text-zinc-500 mx-2">|</span>
+              )}
           </div>
-
-          {/* date range */}
-          <div className="flex items-center relative group">
+          <div className="flex items-center relative group mt-1 md:mt-0 md:ml-2">
             <input
               type="date"
               value={startDate}
@@ -245,7 +241,7 @@ export default function AICollaboration({
               <div className="absolute opacity-0 group-hover:opacity-100 bg-zinc-800 text-zinc-200 text-xs px-2 py-1 rounded pointer-events-none whitespace-nowrap transition-opacity duration-200 top-8 left-0 shadow-lg z-10">
                 Coming soon
               </div>
-            )}
+              )}
           </div>
         </div>
 
