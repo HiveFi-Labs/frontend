@@ -204,9 +204,9 @@ export default function Header() {
                 Docs
               </Link>
               {walletReady && desiredWallet ? (
-                <div className="flex flex-col space-y-2">
+                <div className="flex flex-col space-y-2 items-center">
                   <div
-                    className="text-zinc-300 px-3 py-2 bg-zinc-800/50 rounded-md flex items-center cursor-pointer"
+                    className="text-zinc-300 px-3 py-2 bg-zinc-800/50 rounded-md flex items-center justify-center cursor-pointer"
                     onClick={handleCopy}
                   >
                     <Image
