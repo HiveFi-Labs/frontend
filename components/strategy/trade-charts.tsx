@@ -3,6 +3,7 @@
 import dynamic from 'next/dynamic'
 import { useStrategyStore } from '@/stores/strategyStore'
 import type { PlotlyDataObject } from '@/lib/backtest.api'
+import { useIsMobile } from '@/hooks/use-mobile'
 
 // ─── Plotly は動的 import ───────────────────────────────
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false })
@@ -47,11 +48,11 @@ const filterEquity = (data: PlotlyDataObject | null) => {
  * ========================================================================= */
 export default function TradeCharts() {
   const chartData = useStrategyStore((s) => s.backtestResultsJson)
-
+  const isMobile = useIsMobile()
   // --- データがまだ無い場合のプレースホルダ -----------------------------
   if (!chartData) {
     return (
-      <div className="bg-zinc-900/70 rounded-lg p-4">
+      <div className={`bg-zinc-900/70 rounded-lg ${isMobile ? 'p-1' : 'p-4'}`}>
         <h3 className="text-lg font-medium text-white mb-4">
           Trade Signals &amp; History
         </h3>
