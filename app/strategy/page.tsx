@@ -3,6 +3,13 @@
 import { useEffect, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { ArrowUpIcon } from 'lucide-react'
+import SessionHistory from '@/components/strategy/session-history'
+import {
+  getSessionHistory,
+  saveSessionHistory,
+  getLastSessionId,
+  saveLastSessionId,
+} from '@/utils/session-cookie'
 import { Button } from '@/components/ui/button'
 import AICollaboration from '@/components/strategy/ai-collaboration'
 import BacktestingResults from '@/components/strategy/backtesting-results'
@@ -17,6 +24,9 @@ export default function StrategyPage() {
   const { authenticated, user } = usePrivy()
   const sessionId = useStrategyStore((state) => state.sessionId)
   const setSessionId = useStrategyStore((state) => state.setSessionId)
+  const sessionHistory = useStrategyStore((s) => s.sessionHistory)
+  const setSessionHistory = useStrategyStore((s) => s.setSessionHistory)
+  const addSessionToHistory = useStrategyStore((s) => s.addSessionToHistory)
   const apiVersion = useStrategyStore((s) => s.apiVersion)
   const setApiVersion = useStrategyStore((s) => s.setApiVersion)
   const backtestStatus = useStrategyStore((s) => s.backtestStatus)
@@ -34,6 +44,24 @@ export default function StrategyPage() {
     sessionId: sessionId || '',
     apiVersion: apiVersion,
   })
+
+  useEffect(() => {
+    const history = getSessionHistory()
+    if (history.length) setSessionHistory(history)
+    const last = getLastSessionId()
+    if (last) setSessionId(last)
+  }, [setSessionHistory, setSessionId])
+
+  useEffect(() => {
+    if (sessionId) {
+      addSessionToHistory(sessionId)
+      saveLastSessionId(sessionId)
+    }
+  }, [sessionId, addSessionToHistory])
+
+  useEffect(() => {
+    saveSessionHistory(sessionHistory)
+  }, [sessionHistory])
 
   useEffect(() => {
     const initializeSession = async (userId: string) => {
@@ -93,11 +121,12 @@ export default function StrategyPage() {
     <AuthWrapper>
       <ComingSoonScreen>
         <div
-          className="min-h-screen h-screen bg-black text-white pt-20 flex flex-col overflow-auto"
+          className="relative min-h-screen h-screen bg-black text-white pt-20 flex flex-col overflow-auto"
           style={{
             height: 'calc(100vh - 120px)',
           }}
         >
+          <SessionHistory />
           <div className="container mx-auto px-4 max-w-full h-full ">
             <div
               className={`flex flex-row gap-0 flex-1 h-full relative split-container ${!showSplit ? 'justify-center' : ''}`}
