@@ -38,12 +38,14 @@ import useV0Backtest from '@/hooks/useV0Backtest'
 import { useStrategyStore } from '@/stores/strategyStore'
 import ReactMarkdown from 'react-markdown'
 import ChatInput from './chatInput'
+import { useIsMobile } from '@/hooks/use-mobile'
 interface AICollaborationProps {
   sessionId: string | null
   postChat: (message: string) => void
   isPending: boolean
   error: Error | null
   cancelRequest: () => void
+  showSplit: boolean
 }
 
 // 環境変数からAPI V1が利用可能かどうかを確認
@@ -59,6 +61,7 @@ export default function AICollaboration({
   isPending,
   error,
   cancelRequest,
+  showSplit,
 }: AICollaborationProps) {
   const apiVersion = useStrategyStore((s) => s.apiVersion)
   const setApiVersion = useStrategyStore((s) => s.setApiVersion)
@@ -67,6 +70,7 @@ export default function AICollaboration({
   const [timeframe, setTimeframe] = useState('1h')
   const [startDate, setStartDate] = useState('2024-01-01')
   const [endDate, setEndDate] = useState('2025-01-01')
+  const isMobile = useIsMobile()
 
   /* ---------------- store ---------------- */
   const conversations = useStrategyStore((s) => s.messages)
@@ -160,14 +164,13 @@ export default function AICollaboration({
    * ========================================================================= */
   return (
     <Card
-      className={`glass-card overflow-hidden flex flex-col flex-1 min-h-0 ${!hasConversations ? 'justify-center' : ''}`}
+      className={`glass-card overflow-hidden flex flex-col min-h-0 ${!hasConversations ? 'justify-center' : ''}`}
     >
       {/* === Top bar === */}
       <div
-        className={`bg-zinc-800/80 border-zinc-700 py-2 px-4 flex items-center justify-between ${hasConversations ? 'border-b' : ''}`}
-      >
+        className={`bg-zinc-800/80 border-zinc-700 py-2 px-4 flex items-center justify-between ${hasConversations ? 'border-b' : ''}`}      >
         {/* left side (market conf) */}
-        <div className="flex items-center text-xs">
+        <div className="flex items-center text-xs flex-wrap gap-x-2 gap-y-2">
           {/* pair */}
           <div className="flex items-center relative group">
             <Select
@@ -295,13 +298,14 @@ export default function AICollaboration({
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+
       </div>
 
       {/* === Body === */}
       <CardContent
         className={`p-0 bg-zinc-900 flex flex-col min-h-0 overflow-hidden ${hasConversations ? 'flex-2 ' : ''}`}
         style={{
-          height: hasConversations ? 'calc(100vh - 123px)' : '100%',
+          height: hasConversations ? (showSplit && isMobile ? 'calc(50vh - 123px)' : 'calc(100vh - 123px)') : '100%',
         }}
       >
         {/* messages */}

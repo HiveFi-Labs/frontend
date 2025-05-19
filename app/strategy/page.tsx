@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useIsMobile } from '@/hooks/use-mobile'
 import { v4 as uuidv4 } from 'uuid'
 import { ArrowUpIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -29,6 +30,7 @@ export default function StrategyPage() {
 
   /* ---- split ---- */
   const [splitRatio, setSplitRatio] = useState(50)
+  const isMobile = useIsMobile()
 
   const { postChat, isPending, error, cancelRequest } = useChat({
     sessionId: sessionId || '',
@@ -69,8 +71,11 @@ export default function StrategyPage() {
     const container = document.querySelector('.split-container')
     if (!container) return
     const { left, width } = container.getBoundingClientRect()
-    const ratio = Math.min(Math.max(((e.clientX - left) / width) * 100, 20), 80)
-    setSplitRatio(ratio)
+    const newRatio = ((e.clientX - left) / width) * 100
+    const clampedRatio = Math.min(Math.max(newRatio, 20), 80)
+    setSplitRatio(clampedRatio)
+    
+    e.preventDefault()
   }
 
   const showSplit = !!backtestResults || !!backtestResultsJson || isRunning
@@ -98,14 +103,16 @@ export default function StrategyPage() {
             height: 'calc(100vh - 120px)',
           }}
         >
-          <div className="container mx-auto px-4 max-w-full h-full ">
+          <div className={`container mx-auto ${isMobile ? 'px-1' : 'px-4'} max-w-full h-full`}>
             <div
-              className={`flex flex-row gap-0 flex-1 h-full relative split-container ${!showSplit ? 'justify-center' : ''}`}
+              className={`flex flex-col md:flex-row gap-0 flex-1 h-full relative split-container ${!showSplit ? 'justify-center' : ''}`}
             >
               {/* -------- Left (chat) -------- */}
               <div
-                className={` flex flex-col flex-1 min-h-0 ${!hasConversations ? 'pb-20' : ''} ${!showSplit ? 'max-w-3xl self-center' : ''}`}
-                style={{ width: showSplit ? `${splitRatio}%` : '100%' }}
+                className={` flex flex-col min-h-0 ${!hasConversations ? 'pb-20' : ''} ${!showSplit ? 'max-w-3xl self-center' : ''}`}
+                style={{
+                  width: !isMobile && showSplit ? `${splitRatio}%` : '100%',
+                }}
               >
                 {!hasConversations && (
                   <div className="text-center mb-6">
@@ -125,15 +132,17 @@ export default function StrategyPage() {
                   isPending={isPending}
                   error={error}
                   cancelRequest={cancelRequest}
+                  showSplit={showSplit}
                 />
 
                 {!hasConversations && (
                   <div className="mt-2 ml-1">
                     <Button
-                      className="px-4 py-0 h-8 rounded-full bg-black border border-zinc-800 hover:border-zinc-700 hover:bg-zinc-900 text-zinc-200 button-sm"
+                      className={`rounded-full bg-black border border-zinc-800 hover:border-zinc-700 hover:bg-zinc-900 text-zinc-200 button-sm`}
                       onClick={() => handleSamplePrompt('v0')}
                       aria-label="Use Sample Prompt"
                       disabled={!sessionId}
+                      style={{ whiteSpace: 'normal', wordBreak: 'break-word', padding: '0em 1em', lineHeight: '1.5', height: 'auto', minHeight: '2em' }}
                     >
                       Create an ATR breakout strategy for moderately volatile
                       markets.{' '}
@@ -142,16 +151,20 @@ export default function StrategyPage() {
                   </div>
                 )}
               </div>
-              {/* リサイズハンドラー - showSplitLayoutがtrueの時のみ表示 */}
-              {showSplit && (
+              {/* リサイズハンドラー */}
+              {showSplit && !isMobile && (
                 <div
-                  className="w-1 cursor-col-resize"
+                  className="w-1 transition-colors cursor-col-resize"
                   onMouseDown={(e) => {
                     e.preventDefault()
-                    const move = (ev: MouseEvent) => handleResize(ev)
+                    const move = (ev: MouseEvent) => {
+                      handleResize(ev)
+                      document.body.style.cursor = 'col-resize'
+                    }
                     const up = () => {
                       document.removeEventListener('mousemove', move)
                       document.removeEventListener('mouseup', up)
+                      document.body.style.cursor = ''
                     }
                     document.addEventListener('mousemove', move)
                     document.addEventListener('mouseup', up)
@@ -162,9 +175,9 @@ export default function StrategyPage() {
               {/* -------- Right (results) -------- */}
               {showSplit && (
                 <div
-                  className="overflow-hidden flex flex-col"
-                  style={{ width: `${100 - splitRatio}%` }}
-                >
+                  className="overflow-hidden flex flex-col flex-1 min-h-0"
+                  style={{ width: !isMobile ? `${100 - splitRatio}%` : '100%' }}
+                  >
                   <BacktestingResults />
                 </div>
               )}

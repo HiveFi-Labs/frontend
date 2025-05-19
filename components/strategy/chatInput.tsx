@@ -3,7 +3,7 @@
 import { useState, useRef, KeyboardEvent } from 'react'
 import { Button } from '@/components/ui/button'
 import { ArrowRight } from 'lucide-react'
-
+import { useIsMobile } from '@/hooks/use-mobile'
 type Props = {
   /** true のときは入力欄と送信ボタンを無効化 */
   disabled?: boolean
@@ -28,7 +28,7 @@ export default function ChatInput({
   const ref = useRef<HTMLTextAreaElement>(null)
   const MAX_ROWS = 5
   const LINE_HEIGHT = 24
-
+  const isMobile = useIsMobile()
   /** IME 確定 Enter を除外して送信 */
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (
@@ -96,7 +96,7 @@ export default function ChatInput({
           </Button>
         )}
       </div>
-      {hasConversations && (
+      {hasConversations && !isMobile && (
         <p className="text-xs text-zinc-500 mt-1 text-center">
           Currently, as this is an alpha version, only a limited set of
           strategies can be executed.

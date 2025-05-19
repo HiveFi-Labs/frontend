@@ -54,8 +54,8 @@ export default function Header() {
       <header
         className={`fixed w-full z-50 transition-all duration-300 ${
           isScrolled
-            ? 'py-3 bg-black/80 backdrop-blur-lg border-b border-zinc-800/50'
-            : 'py-5 bg-transparent'
+            ? 'py-3 bg-black/90 backdrop-blur-lg border-b border-zinc-800/50'
+            : 'py-5 bg-black/30 backdrop-blur-sm'
         }`}
       >
         <div className="container mx-auto px-4 flex items-center justify-between">
@@ -204,9 +204,9 @@ export default function Header() {
                 Docs
               </Link>
               {walletReady && desiredWallet ? (
-                <div className="flex flex-col space-y-2">
+                <div className="flex flex-col space-y-2 items-center">
                   <div
-                    className="text-zinc-300 px-3 py-2 bg-zinc-800/50 rounded-md flex items-center cursor-pointer"
+                    className="text-zinc-300 px-3 py-2 bg-zinc-800/50 rounded-md flex items-center justify-center cursor-pointer"
                     onClick={handleCopy}
                   >
                     <Image
