@@ -28,6 +28,10 @@ interface StrategyState {
   sessionId: string | null
   setSessionId: (id: string | null) => void
 
+  sessionHistory: string[]
+  setSessionHistory: (ids: string[]) => void
+  addSessionToHistory: (id: string) => void
+
   // APIバージョン設定を追加
   apiVersion: 'v0' | 'v1'
   setApiVersion: (version: 'v0' | 'v1') => void
@@ -57,6 +61,15 @@ interface StrategyState {
 export const useStrategyStore = create<StrategyState>((set) => ({
   sessionId: null,
   setSessionId: (id) => set({ sessionId: id }),
+
+  sessionHistory: [],
+  setSessionHistory: (ids) => set({ sessionHistory: ids }),
+  addSessionToHistory: (id) =>
+    set((state) =>
+      state.sessionHistory.includes(id)
+        ? state
+        : { sessionHistory: [...state.sessionHistory, id] },
+    ),
 
   // APIバージョンのデフォルト値と更新関数
   apiVersion: defaultApiVersion,
