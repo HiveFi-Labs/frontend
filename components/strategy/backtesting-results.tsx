@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { Code, MonitorSmartphone, Save } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Code, MonitorSmartphone, Save, ChevronDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -17,8 +17,8 @@ import { useIsMobile } from '@/hooks/use-mobile'
 export default function BacktestingResults() {
   const [activeView, setActiveView] = useState('backtest')
   const backtestStatus = useStrategyStore((s) => s.backtestStatus)
-
   const apiVersion = useStrategyStore((s) => s.apiVersion)
+  const isMobileBacktestVisible = useStrategyStore((s) => s.isMobileBacktestVisible)
 
   // backtestStatusに基づいて表示を変更できます
   const isRunning = backtestStatus === 'code' || backtestStatus === 'backtest'
@@ -29,16 +29,69 @@ export default function BacktestingResults() {
     setActiveView(value)
   }
 
+  // バックテスト結果が得られたときに自動的に表示する
+  useEffect(() => {
+    if (isMobile && (backtestStatus === 'completed' || backtestStatus === 'error')) {
+      useStrategyStore.getState().setIsMobileBacktestVisible(true)
+    }
+  }, [isMobile, backtestStatus])
+
   return (
     <>
-      <Card
-        className="glass-card overflow-hidden h-full flex flex-col"
-        style={{
-          height: 'calc(100vh - 80px)',
-        }}
-      >
-        {/* コンパクトなステータスバー */}
-        {!isMobile && (
+      {isMobile && (
+        <div 
+          className={`fixed bottom-0 left-0 right-0 z-30 transition-transform duration-300 ${
+            isMobileBacktestVisible ? 'translate-y-0' : 'translate-y-full'
+          }`}
+        >
+          <Card
+            className="glass-card overflow-hidden h-[calc(86vh)] flex flex-col rounded-t-lg rounded-b-none shadow-2xl"
+          >
+            {/* Mobile Close Button */}
+            <div 
+              className="bg-zinc-900 border-b border-zinc-800 p-2 flex justify-center cursor-pointer shadow-lg"
+              onClick={() => useStrategyStore.getState().setIsMobileBacktestVisible(false)}
+            >
+              <div className="flex items-center gap-1">
+                <span className="text-sm">Hide Backtest Results</span>
+                <ChevronDown className="w-4 h-4" />
+              </div>
+            </div>
+            
+            <CardContent className={`space-y-6 overflow-auto flex-1 ${isMobile ? 'p-1' : 'pb-6 pt-4'}`}>
+              {isRunning ? (
+                <CodeLoading />
+              ) : activeView === 'backtest' ? (
+                <>
+                  {/* Chart View */}
+                  <TradeCharts />
+                  {apiVersion === 'v0' ? (
+                    <PerformanceMetricsV0 />
+                  ) : (
+                    <PerformanceMetrics />
+                  )}
+
+                  {/* Trade History */}
+                  <TradeHistoryTable />
+                </>
+              ) : (
+                <div className="h-full">
+                  <StrategyCode />
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {!isMobile && (
+        <Card
+          className="glass-card overflow-hidden h-full flex flex-col"
+          style={{
+            height: 'calc(100vh - 80px)',
+          }}
+        >
+          {/* コンパクトなステータスバー */}
           <div className="bg-zinc-900/80 border-b border-zinc-800 py-2 px-4 flex items-center justify-between">
             <div className="flex items-center">
               <Tabs
@@ -76,31 +129,31 @@ export default function BacktestingResults() {
               Save Strategy
             </Button>
           </div>
-        )}
 
-        <CardContent className={`space-y-6 overflow-auto flex-1 ${isMobile ? 'p-1' : 'pb-6 pt-4'}`}>
-          {isRunning ? (
-            <CodeLoading />
-          ) : activeView === 'backtest' ? (
-            <>
-              {/* Chart View */}
-              <TradeCharts />
-              {apiVersion === 'v0' ? (
-                <PerformanceMetricsV0 />
-              ) : (
-                <PerformanceMetrics />
-              )}
+          <CardContent className={`space-y-6 overflow-auto flex-1 ${isMobile ? 'p-1' : 'pb-6 pt-4'}`}>
+            {isRunning ? (
+              <CodeLoading />
+            ) : activeView === 'backtest' ? (
+              <>
+                {/* Chart View */}
+                <TradeCharts />
+                {apiVersion === 'v0' ? (
+                  <PerformanceMetricsV0 />
+                ) : (
+                  <PerformanceMetrics />
+                )}
 
-              {/* Trade History */}
-              <TradeHistoryTable />
-            </>
-          ) : (
-            <div className="h-full">
-              <StrategyCode />
-            </div>
-          )}
-        </CardContent>
-      </Card>
+                {/* Trade History */}
+                <TradeHistoryTable />
+              </>
+            ) : (
+              <div className="h-full">
+                <StrategyCode />
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
     </>
   )
 }

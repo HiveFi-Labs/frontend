@@ -61,10 +61,15 @@ export default function StrategyPage() {
   const isRunning = backtestStatus === 'code' || backtestStatus === 'backtest'
 
   useEffect(() => {
-    setSplitRatio(
-      backtestResults || backtestResultsJson || isRunning ? 50 : 100,
-    )
-  }, [backtestResults, backtestResultsJson, isRunning])
+    // モバイル表示の場合はsplitRatioを100%に固定
+    if (isMobile) {
+      setSplitRatio(100)
+    } else {
+      setSplitRatio(
+        backtestResults || backtestResultsJson || isRunning ? 50 : 100,
+      )
+    }
+  }, [backtestResults, backtestResultsJson, isRunning, isMobile])
 
   /* ---- resize handler ---- */
   const handleResize = (e: MouseEvent) => {
@@ -74,11 +79,12 @@ export default function StrategyPage() {
     const newRatio = ((e.clientX - left) / width) * 100
     const clampedRatio = Math.min(Math.max(newRatio, 20), 80)
     setSplitRatio(clampedRatio)
-    
+
     e.preventDefault()
   }
 
-  const showSplit = !!backtestResults || !!backtestResultsJson || isRunning
+  const showSplit =
+    !isMobile && (!!backtestResults || !!backtestResultsJson || isRunning)
 
   const handleSamplePrompt = (version: string) => {
     if (version === 'v0') {
@@ -103,13 +109,15 @@ export default function StrategyPage() {
             height: 'calc(100vh - 120px)',
           }}
         >
-          <div className={`container mx-auto ${isMobile ? 'px-1' : 'px-4'} max-w-full h-full`}>
+          <div
+            className={`container mx-auto ${isMobile ? 'px-1' : 'px-4'} max-w-full h-full`}
+          >
             <div
               className={`flex flex-col md:flex-row gap-0 flex-1 h-full relative split-container ${!showSplit ? 'justify-center' : ''}`}
             >
               {/* -------- Left (chat) -------- */}
               <div
-                className={` flex flex-col min-h-0 ${!hasConversations ? 'pb-20' : ''} ${!showSplit ? 'max-w-3xl self-center' : ''}`}
+                className={` flex flex-col min-h-0 ${!hasConversations ? 'pb-20' : ''} ${isMobile || !showSplit ? 'max-w-3xl self-center' : ''}`}
                 style={{
                   width: !isMobile && showSplit ? `${splitRatio}%` : '100%',
                 }}
@@ -142,7 +150,14 @@ export default function StrategyPage() {
                       onClick={() => handleSamplePrompt('v0')}
                       aria-label="Use Sample Prompt"
                       disabled={!sessionId}
-                      style={{ whiteSpace: 'normal', wordBreak: 'break-word', padding: '0em 1em', lineHeight: '1.5', height: 'auto', minHeight: '2em' }}
+                      style={{
+                        whiteSpace: 'normal',
+                        wordBreak: 'break-word',
+                        padding: '0em 1em',
+                        lineHeight: '1.5',
+                        height: 'auto',
+                        minHeight: '2em',
+                      }}
                     >
                       Create an ATR breakout strategy for moderately volatile
                       markets.{' '}
@@ -177,12 +192,17 @@ export default function StrategyPage() {
                 <div
                   className="overflow-hidden flex flex-col flex-1 min-h-0"
                   style={{ width: !isMobile ? `${100 - splitRatio}%` : '100%' }}
-                  >
+                >
                   <BacktestingResults />
                 </div>
               )}
             </div>
           </div>
+
+          {/* モバイル表示時のバックテストパネル */}
+          {isMobile && (backtestResults || backtestResultsJson || isRunning) && (
+            <BacktestingResults />
+          )}
         </div>
       </ComingSoonScreen>
     </AuthWrapper>
