@@ -15,6 +15,8 @@ import {
   Hammer,
   CheckCircle,
   AlertCircle,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react'
 import {
   DropdownMenu,
@@ -76,7 +78,10 @@ export default function AICollaboration({
   const conversations = useStrategyStore((s) => s.messages)
   const resetSessionState = useStrategyStore((s) => s.resetSessionState)
   const backtestStatus = useStrategyStore((s) => s.backtestStatus)
+  const backtestResults = useStrategyStore((s) => s.backtestResults)
+  const backtestResultsJson = useStrategyStore((s) => s.backtestResultsJson)
   const hasConversations = conversations.length > 0
+  const isRunning = backtestStatus === 'code' || backtestStatus === 'backtest'
 
   /* ---------------- refs ---------------- */
   const containerRef = useRef<HTMLDivElement>(null)
@@ -168,7 +173,8 @@ export default function AICollaboration({
     >
       {/* === Top bar === */}
       <div
-        className={`bg-zinc-800/80 border-zinc-700 py-2 px-4 flex items-center justify-between ${hasConversations ? 'border-b' : ''}`}      >
+        className={`bg-zinc-800/80 border-zinc-700 py-2 px-4 flex items-center justify-between ${hasConversations ? 'border-b' : ''}`}
+      >
         {/* left side (market conf) */}
         <div className="flex items-center text-xs flex-wrap gap-x-2 gap-y-2">
           {/* pair */}
@@ -298,20 +304,29 @@ export default function AICollaboration({
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-
       </div>
 
       {/* === Body === */}
       <CardContent
         className={`p-0 bg-zinc-900 flex flex-col min-h-0 overflow-hidden ${hasConversations ? 'flex-2 ' : ''}`}
         style={{
-          height: hasConversations ? (showSplit && isMobile ? 'calc(50vh - 123px)' : 'calc(100vh - 123px)') : '100%',
+          height: hasConversations
+            ? showSplit && isMobile
+              ? 'calc(50vh - 123px)'
+              : 'calc(100vh - 123px)'
+            : '100%',
         }}
       >
         {/* messages */}
         <div
           ref={containerRef}
           className={`${hasConversations ? 'flex-1 overflow-y-auto pr-2 flex-2 space-y-4 ' : 'h-0'}`}
+          style={{
+            paddingBottom:
+              isMobile && useStrategyStore.getState().isMobileBacktestVisible
+                ? '40px'
+                : undefined,
+          }}
         >
           {conversations.map((m, i) => (
             <div
@@ -447,6 +462,23 @@ export default function AICollaboration({
             hasConversations={hasConversations}
           />
         </div>
+
+        {/* Mobile Backtest Toggle Button - Show Only */}
+        {isMobile &&
+          hasConversations &&
+          (backtestResults || backtestResultsJson || isRunning) && (
+            <div
+              className="bg-zinc-900 border-t border-x border-zinc-800 p-2 flex justify-center cursor-pointer shadow-lg mt-1 rounded-b-lg"
+              onClick={() =>
+                useStrategyStore.getState().setIsMobileBacktestVisible(true)
+              }
+            >
+              <div className="flex items-center gap-1">
+                <span className="text-sm">Show Backtest Results</span>
+                <ChevronUp className="w-4 h-4" />
+              </div>
+            </div>
+          )}
       </CardContent>
     </Card>
   )

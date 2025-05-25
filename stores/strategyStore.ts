@@ -50,6 +50,11 @@ interface StrategyState {
   backtestStatus: BacktestStatus
   setBacktestStatus: (status: BacktestStatus) => void
 
+  // モバイル表示時のバックテストカードの表示/非表示状態
+  isMobileBacktestVisible: boolean
+  setIsMobileBacktestVisible: (isVisible: boolean) => void
+  toggleMobileBacktestVisible: () => void
+
   // セッションリセット時にまとめてクリアするアクション
   resetSessionState: () => void
 }
@@ -84,6 +89,15 @@ export const useStrategyStore = create<StrategyState>((set) => ({
   // バックテストステータスの初期値を設定
   backtestStatus: 'idle',
   setBacktestStatus: (status) => set({ backtestStatus: status }),
+
+  // モバイル表示時のバックテストカードの表示/非表示状態の初期値を設定
+  isMobileBacktestVisible: false,
+  setIsMobileBacktestVisible: (isVisible) =>
+    set({ isMobileBacktestVisible: isVisible }),
+  toggleMobileBacktestVisible: () =>
+    set((state) => ({
+      isMobileBacktestVisible: !state.isMobileBacktestVisible,
+    })),
 
   resetSessionState: () =>
     set({
