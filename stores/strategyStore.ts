@@ -92,8 +92,12 @@ export const useStrategyStore = create<StrategyState>((set) => ({
 
   // モバイル表示時のバックテストカードの表示/非表示状態の初期値を設定
   isMobileBacktestVisible: false,
-  setIsMobileBacktestVisible: (isVisible) => set({ isMobileBacktestVisible: isVisible }),
-  toggleMobileBacktestVisible: () => set((state) => ({ isMobileBacktestVisible: !state.isMobileBacktestVisible })),
+  setIsMobileBacktestVisible: (isVisible) =>
+    set({ isMobileBacktestVisible: isVisible }),
+  toggleMobileBacktestVisible: () =>
+    set((state) => ({
+      isMobileBacktestVisible: !state.isMobileBacktestVisible,
+    })),
 
   resetSessionState: () =>
     set({

@@ -200,9 +200,10 @@ export default function StrategyPage() {
           </div>
 
           {/* モバイル表示時のバックテストパネル */}
-          {isMobile && (backtestResults || backtestResultsJson || isRunning) && (
-            <BacktestingResults />
-          )}
+          {isMobile &&
+            (backtestResults || backtestResultsJson || isRunning) && (
+              <BacktestingResults />
+            )}
         </div>
       </ComingSoonScreen>
     </AuthWrapper>
