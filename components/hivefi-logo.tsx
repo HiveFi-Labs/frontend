@@ -16,6 +16,7 @@ export default function HiveFiLogo({ className, size = 40 }: HiveFiLogoProps) {
         alt="HiveFi Logo"
         width={size}
         height={size}
+        style={{ width: 'auto', height: 'auto' }}
         className="object-contain"
       />
     </div>

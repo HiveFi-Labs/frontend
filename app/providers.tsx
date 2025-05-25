@@ -16,7 +16,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
           appearance: {
             theme: 'dark', // アプリがダークテーマを使用しているので合わせる
             accentColor: '#9333ea',
-            logo: 'https://hivefi.xyz/images/hivefi-logo.png', // ロゴのURLを設定
+            logo: 'https://hivefi.xyz/hivefi_logo_3_w.png', // ロゴのURLを設定
           },
           solanaClusters: [
             { name: 'testnet', rpcUrl: 'https://api.testnet.solana.com' },

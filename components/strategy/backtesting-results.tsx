@@ -16,6 +16,7 @@ import { useIsMobile } from '@/hooks/use-mobile'
 
 // Constants
 const DESKTOP_CARD_HEIGHT = 'calc(100vh - 80px)'
+const MOBILE_CARD_HEIGHT = 'calc(86vh)'
 
 export default function BacktestingResults() {
   // View state
@@ -93,7 +94,10 @@ export default function BacktestingResults() {
             isMobileBacktestVisible ? 'translate-y-0' : 'translate-y-full'
           }`}
         >
-          <Card className="glass-card overflow-hidden h-[calc(86vh)] flex flex-col rounded-t-lg rounded-b-none shadow-2xl">
+          <Card 
+            className="glass-card overflow-hidden flex flex-col rounded-t-lg rounded-b-none shadow-2xl"
+            style={{ height: MOBILE_CARD_HEIGHT }}
+          >
             {/* Mobile Close Button */}
             <div
               className="bg-zinc-900 border-b border-zinc-800 p-2 flex justify-center cursor-pointer shadow-lg"
