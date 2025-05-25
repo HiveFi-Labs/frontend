@@ -34,8 +34,8 @@ export default function BackgroundEffect() {
       pulseSpeed: number
 
       constructor() {
-        this.x = Math.random() * canvas.width
-        this.y = Math.random() * canvas.height
+        this.x = Math.random() * (canvas?.width || 0)
+        this.y = Math.random() * (canvas?.height || 0)
         this.size = Math.random() * 2 + 0.5
         this.speedX = (Math.random() - 0.5) * 0.5
         this.speedY = (Math.random() - 0.5) * 0.5
@@ -59,10 +59,10 @@ export default function BackgroundEffect() {
         this.x += this.speedX
         this.y += this.speedY
 
-        if (this.x > canvas.width) this.x = 0
-        else if (this.x < 0) this.x = canvas.width
-        if (this.y > canvas.height) this.y = 0
-        else if (this.y < 0) this.y = canvas.height
+        if (this.x > (canvas?.width || 0)) this.x = 0
+        else if (this.x < 0) this.x = (canvas?.width || 0)
+        if (this.y > (canvas?.height || 0)) this.y = 0
+        else if (this.y < 0) this.y = (canvas?.height || 0)
 
         // Pulsing effect
         if (this.pulse) {
@@ -136,19 +136,19 @@ export default function BackgroundEffect() {
 
       // Create gradient background
       const gradient = ctx.createRadialGradient(
-        canvas.width / 2,
-        canvas.height / 2,
+        (canvas?.width || 0) / 2,
+        (canvas?.height || 0) / 2,
         0,
-        canvas.width / 2,
-        canvas.height / 2,
-        canvas.width,
+        (canvas?.width || 0) / 2,
+        (canvas?.height || 0) / 2,
+        (canvas?.width || 0),
       )
       gradient.addColorStop(0, 'rgba(10, 10, 20, 1)')
       gradient.addColorStop(0.5, 'rgba(5, 5, 15, 1)')
       gradient.addColorStop(1, 'rgba(0, 0, 0, 1)')
 
       ctx.fillStyle = gradient
-      ctx.fillRect(0, 0, canvas.width, canvas.height)
+      ctx.fillRect(0, 0, (canvas?.width || 0), (canvas?.height || 0))
 
       // Update and draw particles
       for (let i = 0; i < particlesArray.length; i++) {

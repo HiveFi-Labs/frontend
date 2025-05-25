@@ -14,35 +14,79 @@ import CodeLoading from '@/components/strategy/code-loading'
 import { useStrategyStore } from '@/stores/strategyStore'
 import { useIsMobile } from '@/hooks/use-mobile'
 
+// Constants
+const DESKTOP_CARD_HEIGHT = 'calc(100vh - 80px)'
+
 export default function BacktestingResults() {
+  // View state
   const [activeView, setActiveView] = useState('backtest')
+
+  // Store state
   const backtestStatus = useStrategyStore((s) => s.backtestStatus)
   const apiVersion = useStrategyStore((s) => s.apiVersion)
   const isMobileBacktestVisible = useStrategyStore(
     (s) => s.isMobileBacktestVisible,
   )
+  const setMobileBacktestVisible = useStrategyStore(
+    (s) => s.setIsMobileBacktestVisible,
+  )
 
-  // backtestStatusに基づいて表示を変更できます
+  // Helper variables
   const isRunning = backtestStatus === 'code' || backtestStatus === 'backtest'
-
   const isMobile = useIsMobile()
-  // activeViewの変更を検知して親コンポーネントのshowCodeを更新
+
+  // Handle tab changes
   const handleViewChange = (value: string) => {
     setActiveView(value)
   }
 
-  // バックテスト結果が得られたときに自動的に表示する
+  // Show backtest results automatically when completed on mobile
   useEffect(() => {
     if (
       isMobile &&
       (backtestStatus === 'completed' || backtestStatus === 'error')
     ) {
-      useStrategyStore.getState().setIsMobileBacktestVisible(true)
+      setMobileBacktestVisible(true)
     }
-  }, [isMobile, backtestStatus])
+  }, [isMobile, backtestStatus, setMobileBacktestVisible])
+
+  // Toggle mobile backtest visibility
+  const handleHideBacktest = () => {
+    setMobileBacktestVisible(false)
+  }
+
+  // Render backtest content
+  const renderBacktestContent = () => (
+    <>
+      {/* Chart View */}
+      <TradeCharts />
+
+      {/* Performance Metrics */}
+      {apiVersion === 'v0' ? <PerformanceMetricsV0 /> : <PerformanceMetrics />}
+
+      {/* Trade History */}
+      <TradeHistoryTable />
+    </>
+  )
+
+  // Render main content (backtest or code)
+  const renderMainContent = () => {
+    if (isRunning) {
+      return <CodeLoading />
+    }
+
+    return activeView === 'backtest' ? (
+      renderBacktestContent()
+    ) : (
+      <div className="h-full">
+        <StrategyCode />
+      </div>
+    )
+  }
 
   return (
     <>
+      {/* Mobile Backtest Card */}
       {isMobile && (
         <div
           className={`fixed bottom-0 left-0 right-0 z-30 transition-transform duration-300 ${
@@ -53,9 +97,7 @@ export default function BacktestingResults() {
             {/* Mobile Close Button */}
             <div
               className="bg-zinc-900 border-b border-zinc-800 p-2 flex justify-center cursor-pointer shadow-lg"
-              onClick={() =>
-                useStrategyStore.getState().setIsMobileBacktestVisible(false)
-              }
+              onClick={handleHideBacktest}
             >
               <div className="flex items-center gap-1">
                 <span className="text-sm">Hide Backtest Results</span>
@@ -66,39 +108,19 @@ export default function BacktestingResults() {
             <CardContent
               className={`space-y-6 overflow-auto flex-1 ${isMobile ? 'p-1' : 'pb-6 pt-4'}`}
             >
-              {isRunning ? (
-                <CodeLoading />
-              ) : activeView === 'backtest' ? (
-                <>
-                  {/* Chart View */}
-                  <TradeCharts />
-                  {apiVersion === 'v0' ? (
-                    <PerformanceMetricsV0 />
-                  ) : (
-                    <PerformanceMetrics />
-                  )}
-
-                  {/* Trade History */}
-                  <TradeHistoryTable />
-                </>
-              ) : (
-                <div className="h-full">
-                  <StrategyCode />
-                </div>
-              )}
+              {renderMainContent()}
             </CardContent>
           </Card>
         </div>
       )}
 
+      {/* Desktop Backtest Card */}
       {!isMobile && (
         <Card
           className="glass-card overflow-hidden h-full flex flex-col"
-          style={{
-            height: 'calc(100vh - 80px)',
-          }}
+          style={{ height: DESKTOP_CARD_HEIGHT }}
         >
-          {/* コンパクトなステータスバー */}
+          {/* Status bar */}
           <div className="bg-zinc-900/80 border-b border-zinc-800 py-2 px-4 flex items-center justify-between">
             <div className="flex items-center">
               <Tabs
@@ -140,26 +162,7 @@ export default function BacktestingResults() {
           <CardContent
             className={`space-y-6 overflow-auto flex-1 ${isMobile ? 'p-1' : 'pb-6 pt-4'}`}
           >
-            {isRunning ? (
-              <CodeLoading />
-            ) : activeView === 'backtest' ? (
-              <>
-                {/* Chart View */}
-                <TradeCharts />
-                {apiVersion === 'v0' ? (
-                  <PerformanceMetricsV0 />
-                ) : (
-                  <PerformanceMetrics />
-                )}
-
-                {/* Trade History */}
-                <TradeHistoryTable />
-              </>
-            ) : (
-              <div className="h-full">
-                <StrategyCode />
-              </div>
-            )}
+            {renderMainContent()}
           </CardContent>
         </Card>
       )}
