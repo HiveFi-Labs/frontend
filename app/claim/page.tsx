@@ -54,35 +54,47 @@ export default function ClaimPage() {
         }),
       })
 
-      const data = await response.json()
-
-      if (data.success) {
-        setClaimed(true)
-        setTxSignature(data.signature)
-        setNetwork(data.network || 'devnet')
-        // Store claim status
-        localStorage.setItem(`claimed_${userWallet.address}`, data.signature)
-        
-        toast({
-          title: 'NFT Claimed Successfully!',
-          description: 'Your HiveFi Early Adopter NFT has been minted.',
-        })
-      } else {
-        // Check if it's a whitelist error (403 status)
-        if (!response.ok && response.status === 403) {
+      // Check status code first
+      if (!response.ok) {
+        if (response.status === 403) {
           toast({
             title: 'Not Eligible',
             description: 'You are not on the whitelist for this NFT claim. Only early adopters and selected community members can claim at this time.',
             variant: 'destructive',
           })
-        } else {
+          return
+        }
+        
+        // Try to parse error message from response
+        try {
+          const errorData = await response.json()
           toast({
             title: 'Claim Failed',
-            description: data.error || 'An error occurred while claiming the NFT.',
+            description: errorData.error || 'An error occurred while claiming the NFT.',
+            variant: 'destructive',
+          })
+        } catch {
+          toast({
+            title: 'Claim Failed',
+            description: 'An error occurred while claiming the NFT.',
             variant: 'destructive',
           })
         }
+        return
       }
+
+      // Success case
+      const data = await response.json()
+      setClaimed(true)
+      setTxSignature(data.signature)
+      setNetwork(data.network || 'devnet')
+      // Store claim status
+      localStorage.setItem(`claimed_${userWallet.address}`, data.signature)
+      
+      toast({
+        title: 'NFT Claimed Successfully!',
+        description: 'Your HiveFi Early Adopter NFT has been minted.',
+      })
     } catch (error) {
       console.error('Claim error:', error)
       toast({
