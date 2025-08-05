@@ -68,11 +68,20 @@ export default function ClaimPage() {
           description: 'Your HiveFi Early Adopter NFT has been minted.',
         })
       } else {
-        toast({
-          title: 'Claim Failed',
-          description: data.error || 'An error occurred while claiming the NFT.',
-          variant: 'destructive',
-        })
+        // Check if it's a whitelist error (403 status)
+        if (!response.ok && response.status === 403) {
+          toast({
+            title: 'Not Eligible',
+            description: 'You are not on the whitelist for this NFT claim. Only early adopters and selected community members can claim at this time.',
+            variant: 'destructive',
+          })
+        } else {
+          toast({
+            title: 'Claim Failed',
+            description: data.error || 'An error occurred while claiming the NFT.',
+            variant: 'destructive',
+          })
+        }
       }
     } catch (error) {
       console.error('Claim error:', error)
