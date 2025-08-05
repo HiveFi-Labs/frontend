@@ -17,6 +17,7 @@ export default function ClaimPage() {
   const [claimed, setClaimed] = useState(false)
   const [txSignature, setTxSignature] = useState<string | null>(null)
   const [network, setNetwork] = useState<string>('devnet')
+  const [errorMessage, setErrorMessage] = useState<string>('')
 
   // Get the user's primary Solana wallet
   const userWallet = wallets[0]
@@ -41,6 +42,7 @@ export default function ClaimPage() {
     }
 
     setClaiming(true)
+    setErrorMessage('') // Clear any previous error messages
 
     try {
       const response = await fetch('/api/claim', {
@@ -57,28 +59,16 @@ export default function ClaimPage() {
       // Check status code first
       if (!response.ok) {
         if (response.status === 403) {
-          toast({
-            title: 'Not Eligible',
-            description: 'You are not on the whitelist for this NFT claim. Only early adopters and selected community members can claim at this time.',
-            variant: 'destructive',
-          })
+          setErrorMessage('You are not on the whitelist for this NFT claim. Only early adopters and selected community members can claim at this time.')
           return
         }
         
         // Try to parse error message from response
         try {
           const errorData = await response.json()
-          toast({
-            title: 'Claim Failed',
-            description: errorData.error || 'An error occurred while claiming the NFT.',
-            variant: 'destructive',
-          })
+          setErrorMessage(errorData.error || 'An error occurred while claiming the NFT.')
         } catch {
-          toast({
-            title: 'Claim Failed',
-            description: 'An error occurred while claiming the NFT.',
-            variant: 'destructive',
-          })
+          setErrorMessage('An error occurred while claiming the NFT.')
         }
         return
       }
@@ -97,11 +87,7 @@ export default function ClaimPage() {
       })
     } catch (error) {
       console.error('Claim error:', error)
-      toast({
-        title: 'Claim Failed',
-        description: 'Failed to connect to the server. Please try again later.',
-        variant: 'destructive',
-      })
+      setErrorMessage('Failed to connect to the server. Please try again later.')
     } finally {
       setClaiming(false)
     }
@@ -237,6 +223,12 @@ export default function ClaimPage() {
                       'Claim NFT'
                     )}
                   </Button>
+
+                  {errorMessage && (
+                    <div className="mt-4 p-3 bg-red-900/20 border border-red-900/50 rounded-lg">
+                      <p className="text-sm text-red-400 text-center">{errorMessage}</p>
+                    </div>
+                  )}
 
                   <p className="text-xs text-center text-zinc-500">
                     This NFT is free to claim. You only pay the network fee.
