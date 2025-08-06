@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { usePrivy, useSolanaWallets } from '@privy-io/react-auth'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useToast } from '@/hooks/use-toast'
 import { CheckCircle2, Loader2, Wallet, Gift } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -59,7 +59,7 @@ export default function ClaimPage() {
       // Check status code first
       if (!response.ok) {
         if (response.status === 403) {
-          setErrorMessage('You are not on the whitelist for this NFT claim. Only early adopters and selected community members can claim at this time.')
+          setErrorMessage('You are not on the whitelist for this NFT claim. Only early adopters can claim at this time.')
           return
         }
         
@@ -83,7 +83,7 @@ export default function ClaimPage() {
       
       toast({
         title: 'NFT Claimed Successfully!',
-        description: 'Your HiveFi Early Adopter NFT has been minted.',
+        description: 'Your GENESIS PIONEER BEE NFT has been minted.',
       })
     } catch (error) {
       console.error('Claim error:', error)
@@ -127,10 +127,7 @@ export default function ClaimPage() {
               <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center">
                 <Gift className="w-10 h-10 text-white" />
               </div>
-              <CardTitle className="text-2xl mb-2">HiveFi Early Adopter NFT</CardTitle>
-              <CardDescription className="text-zinc-400">
-                This exclusive NFT grants you access to special features and rewards
-              </CardDescription>
+              <CardTitle className="text-2xl mb-2">GENESIS PIONEER BEE NFT</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               {!authenticated ? (
@@ -153,7 +150,7 @@ export default function ClaimPage() {
                     <CheckCircle2 className="w-16 h-16 mx-auto mb-4 text-green-500" />
                     <h3 className="text-xl font-semibold mb-2">NFT Claimed!</h3>
                     <p className="text-zinc-400 mb-4">
-                      You have successfully claimed your HiveFi Early Adopter NFT
+                      You have successfully claimed your GENESIS PIONEER BEE NFT
                     </p>
                     {txSignature && (
                       <div className="space-y-2">
@@ -176,25 +173,10 @@ export default function ClaimPage() {
                 <>
                   <div className="space-y-4">
                     <div className="p-4 bg-zinc-900/50 rounded-lg border border-zinc-800">
-                      <h4 className="font-semibold mb-2">NFT Benefits:</h4>
-                      <ul className="space-y-2 text-sm text-zinc-400">
-                        <li className="flex items-start">
-                          <span className="text-purple-400 mr-2">•</span>
-                          Early access to new features
-                        </li>
-                        <li className="flex items-start">
-                          <span className="text-purple-400 mr-2">•</span>
-                          Exclusive rewards and airdrops
-                        </li>
-                        <li className="flex items-start">
-                          <span className="text-purple-400 mr-2">•</span>
-                          Community governance rights
-                        </li>
-                        <li className="flex items-start">
-                          <span className="text-purple-400 mr-2">•</span>
-                          Special Discord role and channels
-                        </li>
-                      </ul>
+                      <h4 className="font-semibold mb-2">About this NFT:</h4>
+                      <p className="text-sm text-zinc-400">
+                        This NFT serves as proof of being one of the earliest committed members of the HiveFi community. Join us in shaping the future of HiveFi together.
+                      </p>
                     </div>
 
                     <div className="text-center text-sm text-zinc-500">
@@ -231,23 +213,12 @@ export default function ClaimPage() {
                   )}
 
                   <p className="text-xs text-center text-zinc-500">
-                    This NFT is free to claim. You only pay the network fee.
+                    This NFT is completely free to claim with no gas fees.
                   </p>
                 </>
               )}
             </CardContent>
           </Card>
-
-          {/* Additional Info */}
-          <div className="mt-8 text-center">
-            <p className="text-sm text-zinc-500">
-              Having issues? Join our{' '}
-              <Link href="#" className="text-purple-400 hover:text-purple-300 transition-colors">
-                Discord community
-              </Link>{' '}
-              for support.
-            </p>
-          </div>
         </div>
       </div>
     </div>
