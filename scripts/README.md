@@ -4,9 +4,17 @@
 
 ## 📋 スクリプト一覧
 
+### セットアップ用
 1. **create-merkle-tree.ts** - Merkle Tree を作成
+
+### 確認・デバッグ用
 2. **view-cnft.ts** - 発行済み cNFT の情報を表示
-3. **upload-metadata.ts** - NFT メタデータのアップロード準備
+3. **check-wallet-balance.ts** - ウォレットの SOL 残高を確認
+4. **check-tree-authority.ts** - Merkle Tree の権限を確認
+5. **check-nft-metadata.ts** - NFT メタデータを確認
+6. **check-irys-balance.ts** - Irys アカウントの残高を確認
+7. **check-network-config.ts** - ネットワーク設定を確認
+8. **test-collection-count.ts** - コレクション内の NFT 数を確認
 
 ## create-merkle-tree.ts
 
@@ -76,36 +84,47 @@ npx ts-node scripts/view-cnft.ts 4MZS5aYvSkAzvToyY4crZEFzWwULxubDsAc4t7X2AnU5 8
 - デフォルトの RPC では一部の情報が取得できない場合があります
 - DAS API 対応の RPC（Helius、Triton など）の使用を推奨
 
-## upload-metadata.ts
-
-NFT のメタデータ（名前、説明、画像など）をアップロードするための準備スクリプトです。
-
-### 使用方法
-
-```bash
-# メタデータファイルを生成
-npx ts-node scripts/upload-metadata.ts
-```
-
-### メタデータのアップロード先
-
-1. **Arweave**（推奨）- 永続的なストレージ
-   - ArDrive: https://ardrive.io
-   - Bundlr: https://bundlr.network
-
-2. **IPFS** - 分散型ストレージ
-   - Pinata: https://pinata.cloud
-   - NFT.Storage: https://nft.storage
-
-3. **その他** - テスト用
-   - AWS S3、Google Cloud Storage など
 
 ## 🎨 cNFT を表示する方法
 
 ### 1. スクリプトを使用
 
 ```bash
-npx ts-node scripts/view-cnft.ts 4MZS5aYvSkAzvToyY4crZEFzWwULxubDsAc4t7X2AnU5 8
+npx tsx scripts/view-cnft.ts 4MZS5aYvSkAzvToyY4crZEFzWwULxubDsAc4t7X2AnU5 8
+```
+
+## その他の便利なスクリプト
+
+### check-wallet-balance.ts
+
+ウォレットの SOL 残高を確認します。
+
+```bash
+npx tsx scripts/check-wallet-balance.ts
+```
+
+### check-tree-authority.ts
+
+Merkle Tree の権限を確認します。TreeAuthorityIncorrect エラーのデバッグに有用です。
+
+```bash
+npx tsx scripts/check-tree-authority.ts
+```
+
+### check-irys-balance.ts
+
+Irys アカウントの残高を確認します。Mainnet でのメタデータアップロードに必要です。
+
+```bash
+npx tsx scripts/check-irys-balance.ts
+```
+
+### test-collection-count.ts
+
+コレクション内の NFT 数を確認します。
+
+```bash
+npx tsx scripts/test-collection-count.ts
 ```
 
 ### 2. DAS API を使用
@@ -151,10 +170,26 @@ curl https://api.helius.xyz/v0/addresses/YOUR_WALLET_ADDRESS/assets?api-key=YOUR
 
 ## 📝 重要な情報
 
-発行された cNFT の情報：
-- **Merkle Tree**: `4MZS5aYvSkAzvToyY4crZEFzWwULxubDsAc4t7X2AnU5`
-- **Leaf Index**: `8`
-- **Collection**: `BWd5NGvGex4ikVFRzZuxSaFPw5TLcdXeL2PofLcJFtwy`
-- **Network**: devnet
+### 環境変数の設定例
 
-この情報を使用して、cNFT の詳細を確認できます。
+**Devnet:**
+```env
+NEXT_PUBLIC_SOLANA_NETWORK=devnet
+SOLANA_MERKLE_TREE_ADDRESS=4MZS5aYvSkAzvToyY4crZEFzWwULxubDsAc4t7X2AnU5
+SOLANA_COLLECTION_MINT=YR6XuTDu8F6hc5HHPgXk5Vunw7MoZW6MJtze2oTD8DL
+```
+
+**Mainnet:**
+```env
+NEXT_PUBLIC_SOLANA_NETWORK=mainnet
+SOLANA_MERKLE_TREE_ADDRESS=3PzT8RYNpWuPPoacQDwHFtUREQRS71Hc2XRJ41XjZkBv
+SOLANA_COLLECTION_MINT=8DHG6biZnpRYYxX4fneUH9A9fErZfzF8ssFcsLiz1HTR
+```
+
+### 必須環境変数チェックリスト
+
+- [ ] `NEXT_PUBLIC_SOLANA_NETWORK` - ネットワーク設定
+- [ ] `HELIUS_API_KEY` - DAS API 用（必須）
+- [ ] `SOLANA_BACKEND_PRIVATE_KEY` - バックエンドウォレット
+- [ ] `SOLANA_MERKLE_TREE_ADDRESS` - Merkle Tree アドレス
+- [ ] `SOLANA_COLLECTION_MINT` - コレクション Mint アドレス
