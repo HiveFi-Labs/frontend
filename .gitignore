@@ -16,6 +16,10 @@
 # production
 /build
 
+# data files
+/data/claimed-nfts.json
+/data/nft-counter.json
+
 # misc
 .DS_Store
 *.pem
