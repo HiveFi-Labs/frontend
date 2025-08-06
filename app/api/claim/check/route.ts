@@ -22,8 +22,8 @@ type CheckResponse = {
 }
 
 // Network configuration
-const IS_MAINNET = process.env.SOLANA_USE_MAINNET === 'true'
-const NETWORK = IS_MAINNET ? 'mainnet-beta' : 'devnet'
+const IS_MAINNET = process.env.NEXT_PUBLIC_SOLANA_NETWORK === 'mainnet'
+const NETWORK = process.env.NEXT_PUBLIC_SOLANA_NETWORK || 'devnet'
 
 // Merkle tree and collection configuration
 const MERKLE_TREE_ADDRESS = process.env.SOLANA_MERKLE_TREE_ADDRESS
