@@ -269,7 +269,7 @@ NFT の名前や画像が表示されない。
 
 1. **現在のネットワーク:**
    ```bash
-   echo $SOLANA_USE_MAINNET
+   echo $NEXT_PUBLIC_SOLANA_NETWORK
    ```
 
 2. **RPC の応答確認:**

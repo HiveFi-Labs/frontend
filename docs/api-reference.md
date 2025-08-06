@@ -139,7 +139,7 @@ API の動作に必要な環境変数：
 | 変数名 | 説明 | 例 |
 |-------|------|---|
 | SOLANA_BACKEND_PRIVATE_KEY | NFT 発行用の秘密鍵 | JSON配列、Base64、Base58形式 |
-| SOLANA_USE_MAINNET | mainnet 使用フラグ | true/false |
+| NEXT_PUBLIC_SOLANA_NETWORK | ネットワーク設定 | 'mainnet' または 'devnet' |
 | SOLANA_RPC_URL | カスタム RPC URL | https://api.devnet.solana.com |
 | SOLANA_MERKLE_TREE_ADDRESS | Merkle Tree アドレス | 4MZS5aYvSkAzvTo... |
 | SOLANA_COLLECTION_MINT | コレクションミントアドレス | YR6XuTDu8F6hc5... |

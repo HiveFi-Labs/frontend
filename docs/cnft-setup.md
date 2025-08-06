@@ -46,7 +46,7 @@ Compressed NFT (cNFT) は、Solana のスケーラビリティを大幅に向上
 
 ```env
 # ネットワーク設定（devnet または mainnet）
-SOLANA_USE_MAINNET=false  # devnet を使用
+NEXT_PUBLIC_SOLANA_NETWORK=devnet  # 'devnet' または 'mainnet'
 
 # バックエンドウォレットの秘密鍵
 # 形式: JSON配列、Base64、またはBase58
@@ -267,7 +267,7 @@ https://explorer.solana.com/tx/トランザクション署名?cluster=devnet
 
 ```env
 # mainnet を使用
-SOLANA_USE_MAINNET=true
+NEXT_PUBLIC_SOLANA_NETWORK=mainnet
 
 # mainnet 用の RPC（オプション - より高速な RPC を推奨）
 SOLANA_RPC_URL=https://api.mainnet-beta.solana.com

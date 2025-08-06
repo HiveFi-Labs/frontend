@@ -17,7 +17,7 @@ Compressed NFT を格納するための Merkle Tree を作成するスクリプ�
 1. 環境変数を設定（`.env.local`）:
    ```env
    SOLANA_BACKEND_PRIVATE_KEY=your_private_key_here
-   SOLANA_USE_MAINNET=false  # true for mainnet
+   NEXT_PUBLIC_SOLANA_NETWORK=devnet  # 'mainnet' or 'devnet'
    SOLANA_RPC_URL=https://api.devnet.solana.com  # optional
    ```
 
@@ -41,7 +41,7 @@ Compressed NFT を格納するための Merkle Tree を作成するスクリプ�
 ### ネットワークの選択
 
 - **コマンドライン引数**: `--network=devnet` または `--network=mainnet`
-- **環境変数**: `SOLANA_USE_MAINNET=true` または `false`
+- **環境変数**: `NEXT_PUBLIC_SOLANA_NETWORK=mainnet` または `devnet`
 - **優先順位**: コマンドライン引数 > 環境変数 > デフォルト（devnet）
 
 ### Merkle Tree の設定
