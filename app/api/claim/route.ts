@@ -11,12 +11,17 @@ import {
   keypairIdentity,
   publicKey,
 } from '@metaplex-foundation/umi'
+import { irysUploader } from '@metaplex-foundation/umi-uploader-irys'
 import { fromWeb3JsKeypair } from '@metaplex-foundation/umi-web3js-adapters'
 import { z } from 'zod'
 import bs58 from 'bs58'
 import { base58 } from '@metaplex-foundation/umi/serializers'
 import { user_whitelist } from '@/data/user_whitelist'
 import { getClaimQueue, getQueueStats } from '@/lib/claim-queue'
+import { hasClaimedNFT, saveClaimRecord } from '@/lib/claim-storage'
+import { getCollectionMetadata } from '@/lib/collection-metadata'
+import { getAssetIdByOwnerAndCollection } from '@/lib/get-asset-id'
+import { getNextCollectionId } from '@/lib/get-collection-count'
 
 // Request body validation schema
 const claimRequestSchema = z.object({
@@ -31,6 +36,7 @@ type SuccessResponse = {
   leafIndex?: number
   message: string
   network?: string
+  assetId?: string
 }
 
 type ErrorResponse = {
@@ -94,7 +100,20 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check if this user has already claimed
+    // Check if this user has already claimed (from persistent storage)
+    const existingClaim = await hasClaimedNFT(privyUserId, walletAddress)
+    if (existingClaim) {
+      console.log(`User ${privyUserId} has already claimed NFT`)
+      return NextResponse.json<ErrorResponse>(
+        {
+          success: false,
+          error: 'You have already claimed this NFT.',
+        },
+        { status: 400 }
+      )
+    }
+    
+    // Also check in-memory claims (for current session)
     const claimKey = `${privyUserId}-${walletAddress}`
     if (processedClaims.has(claimKey)) {
       return NextResponse.json<ErrorResponse>(
@@ -178,10 +197,17 @@ export async function POST(request: NextRequest) {
         const defaultRpcUrl = IS_MAINNET 
           ? 'https://api.mainnet-beta.solana.com' 
           : 'https://api.devnet.solana.com'
-        const rpcUrl = process.env.SOLANA_RPC_URL || defaultRpcUrl
+        
+        // Check for network-specific RPC URLs first
+        const networkSpecificRpc = IS_MAINNET 
+          ? process.env.MAINNET_RPC_URL 
+          : process.env.DEVNET_RPC_URL
+        
+        const rpcUrl = networkSpecificRpc || process.env.SOLANA_RPC_URL || defaultRpcUrl
         const umi = createUmi(rpcUrl)
           .use(mplBubblegum())
           .use(keypairIdentity(fromWeb3JsKeypair(backendWallet)))
+          .use(irysUploader())
 
         // Verify Merkle Tree exists and is initialized
         try {
@@ -211,11 +237,80 @@ export async function POST(request: NextRequest) {
           throw new Error('Failed to verify NFT collection configuration')
         }
 
+        // Get next NFT ID from the collection
+        const heliusApiKey = process.env.HELIUS_API_KEY
+        if (!heliusApiKey) {
+          console.error('HELIUS_API_KEY not found')
+          processedClaims.delete(claimKey)
+          throw new Error('Server configuration error: Missing HELIUS_API_KEY')
+        }
+        
+        const nftId = await getNextCollectionId(COLLECTION_MINT, heliusApiKey, IS_MAINNET)
+        console.log('Minting NFT with ID:', nftId, '(based on collection count)')
+        
+        // Get collection-specific metadata
+        const collectionMetadata = getCollectionMetadata(COLLECTION_MINT)
+        
+        // Prepare individual NFT metadata
+        const nftMetadata = {
+          name: `${collectionMetadata.name} #${nftId}`,
+          symbol: collectionMetadata.symbol,
+          description: `${collectionMetadata.description}. This NFT represents your commitment as one of the earliest members of the HiveFi community.`,
+          image: collectionMetadata.imageUrl,
+          external_url: 'https://hivefi.xyz',
+          attributes: [
+            {
+              trait_type: 'Collection',
+              value: COLLECTION_MINT || 'Genesis Pioneer'
+            },
+            {
+              trait_type: 'ID',
+              value: nftId.toString()
+            },
+            {
+              trait_type: 'Mint Order',
+              value: nftId
+            }
+          ],
+          properties: {
+            files: [
+              {
+                uri: collectionMetadata.imageUrl,
+                type: 'image/png'
+              }
+            ],
+            category: 'image',
+            creators: [
+              {
+                address: backendWallet.publicKey.toBase58(),
+                share: 100
+              }
+            ]
+          }
+        }
+        
+        // Upload metadata to Arweave using Irys
+        let metadataUri: string
+        
+        try {
+          console.log('Uploading metadata to Arweave...')
+          metadataUri = await umi.uploader.uploadJson(nftMetadata)
+          console.log('Metadata uploaded to:', metadataUri)
+          
+          // Wait for Arweave propagation
+          await new Promise(resolve => setTimeout(resolve, 2000))
+        } catch (uploadError) {
+          console.error('Failed to upload metadata to Arweave:', uploadError)
+          // Fallback to environment variable or placeholder
+          metadataUri = process.env.NFT_METADATA_URI || 'https://arweave.net/placeholder-metadata.json'
+          console.log('Using fallback metadata URI:', metadataUri)
+        }
+        
         // Prepare metadata for the cNFT
         const metadata = {
-          name: 'HiveFi Early Adopter NFT',
-          symbol: 'HIVE',
-          uri: process.env.NFT_METADATA_URI || 'https://arweave.net/placeholder-metadata.json',
+          name: nftMetadata.name,
+          symbol: nftMetadata.symbol,
+          uri: metadataUri,
           sellerFeeBasisPoints: 0,
           collection: {
             key: publicKey(COLLECTION_MINT),
@@ -272,8 +367,10 @@ export async function POST(request: NextRequest) {
         
         // Try to parse the leaf information
         let leafInfo = null
+        let assetId: string | undefined
         retryCount = 0
         
+        // First, try to parse leaf info to get the nonce/leaf index
         while (retryCount < maxRetries && !leafInfo) {
           try {
             if (retryCount > 0) {
@@ -286,11 +383,54 @@ export async function POST(request: NextRequest) {
             )
             
             if (leafInfo) {
-              console.log('Leaf index:', leafInfo.nonce)
+              console.log('Leaf info parsed successfully')
+              console.log('Leaf info keys:', Object.keys(leafInfo))
+              console.log('Leaf nonce/index:', leafInfo.nonce)
+              break
             }
           } catch (parseError) {
             console.warn(`Failed to parse leaf info (attempt ${retryCount + 1}):`, parseError)
             retryCount++
+          }
+        }
+        
+        // Calculate asset ID
+        if (leafInfo && leafInfo.nonce !== undefined) {
+          try {
+            const { findLeafAssetIdPda } = await import('@metaplex-foundation/mpl-bubblegum')
+            const assetIdPda = findLeafAssetIdPda(umi, {
+              merkleTree: publicKey(MERKLE_TREE_ADDRESS),
+              leafIndex: Number(leafInfo.nonce)
+            })
+            assetId = assetIdPda[0].toString()
+            console.log('✅ Successfully calculated asset ID from leaf:', assetId)
+          } catch (assetIdError) {
+            console.error('❌ Failed to calculate asset ID from leaf:', assetIdError)
+          }
+        } else {
+          console.warn('⚠️  Could not calculate asset ID from leaf - trying DAS API')
+        }
+        
+        // If we couldn't get asset ID from leaf, try DAS API
+        if (!assetId) {
+          console.log('Attempting to get asset ID via DAS API...')
+          const heliusApiKey = process.env.HELIUS_API_KEY
+          if (heliusApiKey) {
+            // Wait a bit for the transaction to be indexed
+            await new Promise(resolve => setTimeout(resolve, 3000))
+            
+            assetId = await getAssetIdByOwnerAndCollection(
+              walletAddress,
+              COLLECTION_MINT,
+              heliusApiKey,
+              IS_MAINNET
+            ) || undefined
+            
+            if (assetId) {
+              console.log('✅ Successfully retrieved asset ID from DAS API:', assetId)
+            } else {
+              console.warn('❌ Could not find asset ID via DAS API')
+            }
           }
         }
 
@@ -311,12 +451,30 @@ export async function POST(request: NextRequest) {
         
         console.log('Final signature string:', signatureString)
         
+        // Save claim record to persistent storage
+        try {
+          await saveClaimRecord({
+            privyUserId: privyUserId || '',
+            walletAddress,
+            signature: signatureString,
+            assetId: assetId || (leafInfo?.id ? leafInfo.id.toString() : undefined),
+            claimedAt: new Date().toISOString(),
+            network: NETWORK,
+          })
+          console.log('Claim record saved to storage')
+        } catch (saveError) {
+          console.error('Failed to save claim record:', saveError)
+          // Don't fail the entire request if storage fails
+          // The NFT was minted successfully
+        }
+        
         return {
           success: true,
           signature: signatureString,
           leafIndex: leafInfo?.nonce ? Number(leafInfo.nonce) : undefined,
           message: 'NFT claimed successfully!',
           network: NETWORK,
+          assetId: assetId || (leafInfo?.id ? leafInfo.id.toString() : undefined), // Include asset ID for metadata fetching
         }
       } catch (error) {
         // Remove from processed claims on error (except for "already claimed")
@@ -370,7 +528,7 @@ export async function POST(request: NextRequest) {
 }
 
 // Optional: Add a GET endpoint to check queue status
-export async function GET(request: NextRequest) {
+export async function GET() {
   const stats = getQueueStats()
   return NextResponse.json({
     queue: {

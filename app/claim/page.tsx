@@ -8,6 +8,7 @@ import { useToast } from '@/hooks/use-toast'
 import { CheckCircle2, Loader2, Wallet, Gift } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
+import { CLAIM_CONSTANTS } from '@/lib/claim-constants'
 
 export default function ClaimPage() {
   const { authenticated, ready, login, user } = usePrivy()
@@ -16,19 +17,112 @@ export default function ClaimPage() {
   const [claiming, setClaiming] = useState(false)
   const [claimed, setClaimed] = useState(false)
   const [txSignature, setTxSignature] = useState<string | null>(null)
-  const [network, setNetwork] = useState<string>('devnet')
+  const [network, setNetwork] = useState<string>(CLAIM_CONSTANTS.NETWORK)
   const [errorMessage, setErrorMessage] = useState<string>('')
+  const [nftMetadata, setNftMetadata] = useState<{
+    name: string
+    image?: string
+    description?: string
+    assetId?: string
+  } | null>(null)
+  const [loadingMetadata, setLoadingMetadata] = useState(false)
 
   // Get the user's primary Solana wallet
   const userWallet = wallets[0]
 
   useEffect(() => {
-    // Check if user has already claimed (you could store this in localStorage or fetch from API)
-    const hasClaimed = localStorage.getItem(`claimed_${userWallet?.address}`)
-    if (hasClaimed) {
-      setClaimed(true)
-      setTxSignature(hasClaimed)
+    // Clear old claim keys when component mounts
+    CLAIM_CONSTANTS.clearOldClaimKeys()
+  }, [])
+
+  const fetchNFTMetadata = async (assetId: string) => {
+    setLoadingMetadata(true)
+    try {
+      const response = await fetch('/api/nft/metadata', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ assetId }),
+      })
+      
+      if (response.ok) {
+        const data = await response.json()
+        if (data.success && data.metadata) {
+          setNftMetadata({
+            ...data.metadata,
+            assetId: assetId // Ensure assetId is included
+          })
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching NFT metadata:', error)
+    } finally {
+      setLoadingMetadata(false)
     }
+  }
+
+  useEffect(() => {
+    const checkClaimStatus = async () => {
+      if (!userWallet?.address) return
+      
+      // Use the new key format with collection ID
+      const claimKey = CLAIM_CONSTANTS.getClaimKey(userWallet.address)
+      
+      // First check localStorage for immediate feedback
+      const localClaimed = localStorage.getItem(claimKey)
+      if (localClaimed) {
+        setClaimed(true)
+        setTxSignature(localClaimed)
+      }
+      
+      // Then check blockchain for authoritative answer
+      try {
+        const response = await fetch('/api/claim/check', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            walletAddress: userWallet.address,
+          }),
+        })
+        
+        if (response.ok) {
+          const data = await response.json()
+          if (data.hasClaimed) {
+            setClaimed(true)
+            // Set network from response if available
+            if (data.network) {
+              setNetwork(data.network)
+            }
+            // If we got an asset ID, we can use it as a pseudo-signature
+            if (data.assetId) {
+              const assetId = data.assetId
+              if (!localClaimed) {
+                setTxSignature(assetId)
+                // Update localStorage to cache the result
+                localStorage.setItem(claimKey, assetId)
+              }
+              // Store the assetId immediately for Solscan link
+              setNftMetadata(prev => ({ ...prev, assetId: assetId }))
+              // Fetch NFT metadata
+              fetchNFTMetadata(assetId)
+            }
+          } else if (!localClaimed) {
+            // Only update to false if localStorage didn't have a claim record
+            setClaimed(false)
+            setTxSignature(null)
+          }
+        }
+      } catch (error) {
+        console.error('Error checking claim status:', error)
+        // Keep the localStorage state if API check fails
+      }
+    }
+    
+    checkClaimStatus()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userWallet?.address])
 
   const handleClaim = async () => {
@@ -78,8 +172,16 @@ export default function ClaimPage() {
       setClaimed(true)
       setTxSignature(data.signature)
       setNetwork(data.network || 'devnet')
-      // Store claim status
-      localStorage.setItem(`claimed_${userWallet.address}`, data.signature)
+      // Store claim status with new key format
+      const claimKey = CLAIM_CONSTANTS.getClaimKey(userWallet.address)
+      localStorage.setItem(claimKey, data.signature)
+      
+      // Fetch metadata for the newly claimed NFT
+      if (data.assetId) {
+        // Store the assetId immediately for Solscan link
+        setNftMetadata(prev => ({ ...prev, assetId: data.assetId }))
+        fetchNFTMetadata(data.assetId)
+      }
       
       toast({
         title: 'NFT Claimed Successfully!',
@@ -152,19 +254,60 @@ export default function ClaimPage() {
                     <p className="text-zinc-400 mb-4">
                       You have successfully claimed your GENESIS PIONEER BEE NFT
                     </p>
+                    
+                    {/* NFT Image Display */}
+                    {loadingMetadata ? (
+                      <div className="my-6">
+                        <Loader2 className="h-8 w-8 animate-spin mx-auto text-zinc-400" />
+                        <p className="text-sm text-zinc-500 mt-2">Loading NFT metadata...</p>
+                      </div>
+                    ) : nftMetadata?.image ? (
+                      <div className="my-6">
+                        <div className="w-64 h-64 mx-auto rounded-lg overflow-hidden border border-zinc-800">
+                          <img 
+                            src={nftMetadata.image} 
+                            alt={nftMetadata.name}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        {nftMetadata.name && (
+                          <p className="text-base font-semibold text-zinc-300 mt-4">
+                            {nftMetadata.name}
+                          </p>
+                        )}
+                        {nftMetadata.description && (
+                          <p className="text-sm text-zinc-400 mt-2 max-w-md mx-auto">
+                            {nftMetadata.description}
+                          </p>
+                        )}
+                      </div>
+                    ) : null}
+                    
                     {txSignature && (
                       <div className="space-y-2">
                         <p className="text-sm text-zinc-500">Transaction Signature:</p>
                         <p className="text-xs font-mono text-zinc-400 break-all bg-zinc-900 p-3 rounded-lg">
                           {txSignature}
                         </p>
-                        <Link
-                          href={`https://explorer.solana.com/tx/${txSignature}${network === 'devnet' ? '?cluster=devnet' : ''}`}
-                          target="_blank"
-                          className="inline-flex items-center text-sm text-purple-400 hover:text-purple-300 transition-colors"
-                        >
-                          View on Solana Explorer ({network}) →
-                        </Link>
+                        <div className="flex gap-4 justify-center">
+                          <Link
+                            href={`https://explorer.solana.com/tx/${txSignature}${network === 'mainnet' || network === 'mainnet-beta' ? '' : `?cluster=${network}`}`}
+                            target="_blank"
+                            className="inline-flex items-center text-sm text-purple-400 hover:text-purple-300 transition-colors"
+                          >
+                            View on Solana Explorer →
+                          </Link>
+                          {/* If we have asset ID, show link to Solscan */}
+                          {nftMetadata?.assetId && (
+                            <Link
+                              href={`https://solscan.io/token/${nftMetadata.assetId}${network === 'mainnet' || network === 'mainnet-beta' ? '' : `?cluster=${network}`}`}
+                              target="_blank"
+                              className="inline-flex items-center text-sm text-purple-400 hover:text-purple-300 transition-colors"
+                            >
+                              View on Solscan →
+                            </Link>
+                          )}
+                        </div>
                       </div>
                     )}
                   </div>
@@ -176,6 +319,9 @@ export default function ClaimPage() {
                       <h4 className="font-semibold mb-2">About this NFT:</h4>
                       <p className="text-sm text-zinc-400">
                         This NFT serves as proof of being one of the earliest committed members of the HiveFi community. Join us in shaping the future of HiveFi together.
+                      </p>
+                      <p className="text-sm text-zinc-400 mt-2">
+                        Available exclusively for users who registered their account before April 2025.
                       </p>
                     </div>
 
