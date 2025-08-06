@@ -51,12 +51,31 @@ Merkle Tree のアドレスが環境変数に設定されていない。
 
 1. Merkle Tree を作成：
    ```bash
-   npx ts-node scripts/create-merkle-tree.ts
+   npx tsx scripts/create-merkle-tree.ts
    ```
 
 2. 出力されたアドレスを `.env.local` に追加：
    ```env
    SOLANA_MERKLE_TREE_ADDRESS=生成されたアドレス
+   ```
+
+### HELIUS_API_KEY not found
+
+**エラーメッセージ:**
+```
+DAS API configuration error. Please set HELIUS_API_KEY.
+```
+
+**原因:**
+Helius API キーが設定されていない。
+
+**解決方法:**
+
+1. [Helius](https://www.helius.dev/) でアカウントを作成
+2. API キーを取得（無料プランでOK）
+3. `.env.local` に追加：
+   ```env
+   HELIUS_API_KEY=あなたの_API_キー
    ```
 
 ## Merkle Tree 関連のエラー
@@ -98,6 +117,28 @@ Invalid Merkle tree configuration. The provided address does not appear to be a 
 
 1. 正しい Merkle Tree アドレスを確認
 2. `create-merkle-tree.ts` スクリプトで新しい Merkle Tree を作成
+
+### TreeAuthorityIncorrect エラー
+
+**エラーメッセージ:**
+```
+TreeAuthorityIncorrect. Error Number: 6007
+```
+
+**原因:**
+バックエンドウォレットが Merkle Tree の権限を持っていない。
+
+**解決方法:**
+
+1. 権限を確認：
+   ```bash
+   npx tsx scripts/check-tree-authority.ts
+   ```
+
+2. 同じウォレットで Merkle Tree を再作成：
+   ```bash
+   npx tsx scripts/create-merkle-tree.ts
+   ```
 
 ## トランザクションエラー
 
@@ -206,29 +247,38 @@ NFT は正常に発行されたが、ウォレットに表示されない。
    - Backpack Wallet
    - 一部の機能は Phantom でも確認可能
 
+4. **NFT メタデータ API で確認:**
+   ```bash
+   curl -X POST http://localhost:3000/api/nft/metadata \
+     -H "Content-Type: application/json" \
+     -d '{"assetId": "NFTのAssetID"}'   
+   ```
+
 ### メタデータが表示されない
 
 **問題:**
 NFT の名前や画像が表示されない。
 
 **原因:**
-メタデータ URI が設定されていない、またはアクセスできない。
+1. Helius API キーが設定されていない
+2. DAS API が利用できない
+3. メタデータが Arweave にアップロードされていない
 
 **解決方法:**
 
-1. メタデータをアップロード：
-   ```bash
-   npx ts-node scripts/upload-metadata.ts
-   ```
-
-2. 環境変数を設定：
+1. Helius API キーを設定：
    ```env
-   NFT_METADATA_URI=https://arweave.net/あなたのメタデータハッシュ
+   HELIUS_API_KEY=あなたの_API_キー
    ```
 
-3. メタデータ URI がアクセス可能か確認：
+2. NFT メタデータを確認：
    ```bash
-   curl https://arweave.net/あなたのメタデータハッシュ
+   npx tsx scripts/check-nft-metadata.ts NFTのAssetID
+   ```
+
+3. Irys アカウントの残高を確認：
+   ```bash
+   npx tsx scripts/check-irys-balance.ts
    ```
 
 ### RPC の制限
@@ -277,6 +327,11 @@ NFT の名前や画像が表示されない。
    curl https://api.devnet.solana.com -X POST -H "Content-Type: application/json" -d '{"jsonrpc":"2.0","id":1,"method":"getHealth"}'
    ```
 
+3. **ネットワーク設定の確認:**
+   ```bash
+   npx tsx scripts/check-network-config.ts
+   ```
+
 ### トランザクションの詳細確認
 
 1. **Solana Explorer:**
@@ -298,3 +353,21 @@ NFT の名前や画像が表示されない。
 3. 環境変数の設定（秘密鍵は除く）
 4. ネットワーク（devnet/mainnet）
 5. ブラウザとOSの情報
+
+## よくある問題とエラーメッセージ
+
+### ホワイトリスト関連
+
+**"You are not eligible to claim this NFT"**
+- Privy ユーザー ID が `data/user_whitelist.ts` に含まれていない
+
+**"Authentication required"**
+- Privy でログインしていない
+
+### NFT 発行関連
+
+**"You have already claimed this NFT"**
+- 同じウォレットまたは Privy ID で既に NFT を発行済み
+
+**"Asset not found"**
+- NFT の Asset ID が正しくないか、まだインデックスされていない

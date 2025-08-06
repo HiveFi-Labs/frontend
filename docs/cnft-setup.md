@@ -48,21 +48,23 @@ Compressed NFT (cNFT) は、Solana のスケーラビリティを大幅に向上
 # ネットワーク設定（devnet または mainnet）
 NEXT_PUBLIC_SOLANA_NETWORK=devnet  # 'devnet' または 'mainnet'
 
+# Helius API キー（DAS API 用 - 必須）
+# https://www.helius.dev/ で無料取得可能
+HELIUS_API_KEY=あなたの_API_キー
+
 # バックエンドウォレットの秘密鍵
 # 形式: JSON配列、Base64、またはBase58
 SOLANA_BACKEND_PRIVATE_KEY=あなたの秘密鍵
 
-# RPC URL（オプション - デフォルトで適切なURLが選択されます）
-SOLANA_RPC_URL=
+# RPC URL（オプション）
+DEVNET_RPC_URL=https://api.devnet.solana.com
+MAINNET_RPC_URL=https://mainnet.helius-rpc.com/?api-key=あなたの_API_キー
 
 # Merkle Tree アドレス（後で設定）
 SOLANA_MERKLE_TREE_ADDRESS=
 
 # コレクション NFT のミントアドレス（後で設定）
 SOLANA_COLLECTION_MINT=
-
-# NFT メタデータ URI（オプション）
-NFT_METADATA_URI=
 ```
 
 ### 秘密鍵の形式
@@ -160,56 +162,52 @@ SOLANA_COLLECTION_MINT=YR6XuTDu8F6hc5HHPgXk5Vunw7MoZW6MJtze2oTD8DL
 
 ## メタデータの設定
 
-NFT の表示情報（名前、説明、画像）を設定します。
+NFT の表示情報（名前、説明、画像）は、Irys を使用して自動的に Arweave にアップロードされます。
 
-### 1. メタデータファイルの生成
+### メタデータの構造
 
-```bash
-npx ts-node scripts/upload-metadata.ts
-```
-
-これにより `scripts/nft-metadata.json` が生成されます：
+各 NFT には以下の情報が含まれます：
 
 ```json
 {
-  "name": "HiveFi Early Adopter NFT",
-  "symbol": "HIVE",
-  "description": "This exclusive NFT grants early adopters...",
-  "image": "https://arweave.net/YOUR_IMAGE_HASH",
+  "name": "HiveFi Genesis Pioneer #1",
+  "symbol": "PIONEER",
+  "description": "Genesis Pioneer NFT for HiveFi early adopters. This NFT represents your commitment as one of the earliest members of the HiveFi community.",
+  "image": "https://violet-hilarious-ocelot-223.mypinata.cloud/ipfs/QmPwjsATJHe3bvKMfh3XkYLRpqDP5o7XNZoNEoNfTfhhcK",
+  "external_url": "https://hivefi.xyz",
   "attributes": [
     {
-      "trait_type": "Type",
-      "value": "Early Adopter"
+      "trait_type": "Collection",
+      "value": "8DHG6biZnpRYYxX4fneUH9A9fErZfzF8ssFcsLiz1HTR"
+    },
+    {
+      "trait_type": "ID",
+      "value": "1"
+    },
+    {
+      "trait_type": "Mint Order",
+      "value": 1
     }
   ]
 }
 ```
 
-### 2. メタデータのアップロード
+### コレクションメタデータ
 
-#### Arweave（推奨）
+コレクションの情報は `lib/collection-metadata.ts` で管理されています：
 
-永続的なストレージで、一度アップロードすれば永久に保存されます。
+- **Devnet**: HiveFi Early Adopter NFT
+- **Mainnet**: HiveFi Genesis Pioneer
 
-- [ArDrive](https://ardrive.io)
-- [Bundlr](https://bundlr.network)
-- [Akord](https://akord.com)
+### メタデータのアップロード
 
-#### IPFS
+NFT 発行時に自動的に実行されます：
 
-分散型ストレージですが、ピン留めが必要です。
+1. NFT 固有のメタデータが生成される
+2. Irys 経由で Arweave にアップロード
+3. 返された URI を NFT に設定
 
-- [Pinata](https://pinata.cloud)
-- [NFT.Storage](https://nft.storage)
-- [Web3.Storage](https://web3.storage)
-
-### 3. 環境変数を更新
-
-アップロード後、取得した URL を設定：
-
-```env
-NFT_METADATA_URI=https://arweave.net/あなたのメタデータハッシュ
-```
+**注意**: バックエンドウォレットに十分な SOL が必要です（Irys のアップロード料金用）。
 
 ## 動作確認
 
@@ -223,8 +221,9 @@ solana airdrop 2 --url devnet
 ### 2. cNFT を発行
 
 1. ブラウザで `/claim` ページにアクセス
-2. ウォレットを接続
-3. "Claim NFT" ボタンをクリック
+2. Privy でログイン（ホワイトリストに含まれるアカウントを使用）
+3. ウォレットを接続
+4. "Claim NFT" ボタンをクリック
 
 ### 3. 発行された cNFT を確認
 
@@ -269,8 +268,8 @@ https://explorer.solana.com/tx/トランザクション署名?cluster=devnet
 # mainnet を使用
 NEXT_PUBLIC_SOLANA_NETWORK=mainnet
 
-# mainnet 用の RPC（オプション - より高速な RPC を推奨）
-SOLANA_RPC_URL=https://api.mainnet-beta.solana.com
+# mainnet 用の RPC（Helius RPC を推奨）
+MAINNET_RPC_URL=https://mainnet.helius-rpc.com/?api-key=あなたの_API_キー
 ```
 
 ### 2. mainnet で Merkle Tree を作成
@@ -292,9 +291,15 @@ SOLANA_MERKLE_TREE_ADDRESS=mainnetで作成したアドレス
 SOLANA_COLLECTION_MINT=mainnetのコレクションアドレス
 ```
 
-### 4. 本番用メタデータをアップロード
+### 4. Irys アカウントの確認
 
-本番環境では、プロフェッショナルな画像とメタデータを使用することを推奨します。
+Mainnet では、Irys アカウントに十分な資金があるか確認：
+
+```bash
+npx tsx scripts/check-irys-balance.ts
+```
+
+必要に応じて Irys アカウントに資金を追加してください。
 
 ## セキュリティの考慮事項
 

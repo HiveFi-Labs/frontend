@@ -7,6 +7,8 @@ HiveFi cNFT Claim API のエンドポイントと使用方法について説明�
 | エンドポイント | メソッド | 説明 |
 |--------------|---------|------|
 | `/api/claim` | POST | Compressed NFT を発行 |
+| `/api/claim/check` | POST | NFT 発行済みかチェック |
+| `/api/nft/metadata` | POST | NFT メタデータを取得 |
 
 ## POST /api/claim
 
@@ -46,7 +48,8 @@ Content-Type: application/json
   "signature": "トランザクション署名（base58形式）",
   "leafIndex": 8,
   "message": "NFT claimed successfully!",
-  "network": "devnet"
+  "network": "devnet",
+  "assetId": "7NsvbeHySssWQLQNPxGVEec3Y3GhBBSna5qoWzYhbQxA"
 }
 ```
 
@@ -58,7 +61,8 @@ Content-Type: application/json
 | signature | string | Solana トランザクション署名 |
 | leafIndex | number | Merkle Tree 内の NFT の位置（optional） |
 | message | string | 成功メッセージ |
-| network | string | 使用されたネットワーク（devnet/mainnet-beta） |
+| network | string | 使用されたネットワーク（devnet/mainnet） |
+| assetId | string | 発行された NFT の Asset ID（optional） |
 
 #### エラー時 (400/500)
 
@@ -140,10 +144,11 @@ API の動作に必要な環境変数：
 |-------|------|---|
 | SOLANA_BACKEND_PRIVATE_KEY | NFT 発行用の秘密鍵 | JSON配列、Base64、Base58形式 |
 | NEXT_PUBLIC_SOLANA_NETWORK | ネットワーク設定 | 'mainnet' または 'devnet' |
-| SOLANA_RPC_URL | カスタム RPC URL | https://api.devnet.solana.com |
+| DEVNET_RPC_URL | Devnet RPC URL | https://api.devnet.solana.com |
+| MAINNET_RPC_URL | Mainnet RPC URL | https://mainnet.helius-rpc.com/?api-key=... |
+| HELIUS_API_KEY | Helius API キー | DAS API 用（必須） |
 | SOLANA_MERKLE_TREE_ADDRESS | Merkle Tree アドレス | 4MZS5aYvSkAzvTo... |
 | SOLANA_COLLECTION_MINT | コレクションミントアドレス | YR6XuTDu8F6hc5... |
-| NFT_METADATA_URI | メタデータ URI | https://arweave.net/... |
 
 ### レート制限
 
@@ -158,7 +163,8 @@ API の動作に必要な環境変数：
    - 本番環境では適切な CORS ヘッダーを設定
 
 2. **認証**
-   - 本番環境では JWT トークンなどの認証を実装
+   - Privy ユーザー ID によるホワイトリスト認証を実装済み
+   - 本番環境では追加の認証層を検討
 
 3. **入力検証**
    - ウォレットアドレスの形式を厳密に検証
@@ -197,10 +203,60 @@ npx ts-node scripts/view-cnft.ts {merkleTreeAddress} {leafIndex}
 curl "https://api.helius.xyz/v0/addresses/{walletAddress}/assets?api-key=YOUR_KEY"
 ```
 
+## POST /api/claim/check
+
+ウォレットアドレスが既に NFT を発行済みかチェックします。
+
+### リクエスト
+
+```json
+{
+  "walletAddress": "ウォレットアドレス"
+}
+```
+
+### レスポンス
+
+```json
+{
+  "hasClaimed": true,
+  "assetId": "7NsvbeHySssWQLQNPxGVEec3Y3GhBBSna5qoWzYhbQxA",
+  "message": "This wallet has already claimed the NFT",
+  "network": "devnet"
+}
+```
+
+## POST /api/nft/metadata
+
+NFT の詳細なメタデータを取得します。
+
+### リクエスト
+
+```json
+{
+  "assetId": "NFT の Asset ID"
+}
+```
+
+### レスポンス
+
+```json
+{
+  "success": true,
+  "metadata": {
+    "name": "HiveFi Genesis Pioneer #1",
+    "symbol": "PIONEER",
+    "description": "Genesis Pioneer NFT for HiveFi early adopters",
+    "image": "https://violet-hilarious-ocelot-223.mypinata.cloud/ipfs/...",
+    "assetId": "7NsvbeHySssWQLQNPxGVEec3Y3GhBBSna5qoWzYhbQxA"
+  }
+}
+```
+
 ### よくある質問
 
 **Q: 同じウォレットに複数の NFT を発行できますか？**
-A: はい、可能です。現在の実装では制限はありませんが、本番環境では制限を設けることを推奨します。
+A: いいえ、1つのウォレットアドレスまたは Privy ユーザー ID につき1つの NFT のみ発行可能です。
 
 **Q: NFT の転送はできますか？**
 A: cNFT の転送には別のエンドポイントが必要です。現在は実装されていません。
