@@ -1,5 +1,10 @@
 export const user_whitelist = [
   {
+    id: 'did:privy:cmae4a0f4002bl80lsnz7zbb1',
+    created_at: 1744444251,
+    index: 11111111111111,
+  },
+  {
     id: 'did:privy:cm9fr4642006dlb0ni8dkhpbq',
     created_at: 1744444251,
     index: 0,
