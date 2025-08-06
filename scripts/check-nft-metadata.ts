@@ -9,7 +9,7 @@ import { publicKey } from '@metaplex-foundation/umi'
 dotenv.config()
 
 async function checkNFTMetadata(assetId: string) {
-  const IS_MAINNET = process.env.SOLANA_USE_MAINNET === 'true'
+  const IS_MAINNET = process.env.NEXT_PUBLIC_SOLANA_NETWORK === 'mainnet'
   const NETWORK = IS_MAINNET ? 'mainnet-beta' : 'devnet'
   const heliusApiKey = process.env.HELIUS_API_KEY
   

@@ -11,7 +11,7 @@ import bs58 from 'bs58'
 dotenv.config()
 
 async function checkTreeAuthority() {
-  const IS_MAINNET = process.env.SOLANA_USE_MAINNET === 'true'
+  const IS_MAINNET = process.env.NEXT_PUBLIC_SOLANA_NETWORK === 'mainnet'
   const NETWORK = IS_MAINNET ? 'mainnet-beta' : 'devnet'
   const MERKLE_TREE = process.env.SOLANA_MERKLE_TREE_ADDRESS
   

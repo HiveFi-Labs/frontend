@@ -8,26 +8,26 @@ dotenv.config()
 async function checkNetworkConfig() {
   console.log('\n🔍 Checking network configuration...\n')
   
-  const isMainnet = process.env.SOLANA_USE_MAINNET === 'true'
+  const isMainnet = process.env.NEXT_PUBLIC_SOLANA_NETWORK === 'mainnet'
   const publicNetwork = process.env.NEXT_PUBLIC_SOLANA_NETWORK
   const merkleTree = process.env.SOLANA_MERKLE_TREE_ADDRESS
   const collection = process.env.SOLANA_COLLECTION_MINT
   
   console.log('Configuration:')
-  console.log(`- SOLANA_USE_MAINNET: ${process.env.SOLANA_USE_MAINNET} (${isMainnet ? 'mainnet' : 'devnet'})`)
-  console.log(`- NEXT_PUBLIC_SOLANA_NETWORK: ${publicNetwork || 'NOT SET ❌'}`)
+  console.log(`- NEXT_PUBLIC_SOLANA_NETWORK: ${publicNetwork || 'NOT SET'} (${isMainnet ? 'mainnet' : 'devnet'})`)
+  console.log(`- SOLANA_RPC_URL: ${process.env.SOLANA_RPC_URL || 'default (devnet/mainnet)'}`)
   console.log(`- SOLANA_MERKLE_TREE_ADDRESS: ${merkleTree || 'NOT SET ❌'}`)
   console.log(`- SOLANA_COLLECTION_MINT: ${collection || 'NOT SET ❌'}`)
   
   // Check consistency
   console.log('\n🔧 Configuration Check:')
   
-  if (isMainnet && publicNetwork !== 'mainnet') {
-    console.log('❌ MISMATCH: SOLANA_USE_MAINNET=true but NEXT_PUBLIC_SOLANA_NETWORK is not "mainnet"')
-  } else if (!isMainnet && publicNetwork !== 'devnet') {
-    console.log('❌ MISMATCH: SOLANA_USE_MAINNET=false but NEXT_PUBLIC_SOLANA_NETWORK is not "devnet"')
+  if (!publicNetwork) {
+    console.log('❌ ERROR: NEXT_PUBLIC_SOLANA_NETWORK is not set')
+  } else if (publicNetwork !== 'mainnet' && publicNetwork !== 'devnet') {
+    console.log(`❌ ERROR: NEXT_PUBLIC_SOLANA_NETWORK has invalid value: ${publicNetwork}`)
   } else {
-    console.log('✅ Network configuration is consistent')
+    console.log('✅ Network configuration is valid')
   }
   
   if (!merkleTree || !collection) {

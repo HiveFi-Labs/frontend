@@ -34,7 +34,7 @@ async function main() {
   console.log('🔍 Fetching Compressed NFT information...\n')
 
   // Determine network
-  const isMainnet = process.env.SOLANA_USE_MAINNET === 'true'
+  const isMainnet = process.env.NEXT_PUBLIC_SOLANA_NETWORK === 'mainnet'
   const network = isMainnet ? 'mainnet-beta' : 'devnet'
   const defaultRpcUrl = isMainnet 
     ? 'https://api.mainnet-beta.solana.com' 

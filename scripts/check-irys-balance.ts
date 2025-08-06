@@ -12,7 +12,7 @@ import bs58 from 'bs58'
 dotenv.config()
 
 async function checkIrysBalance() {
-  const IS_MAINNET = process.env.SOLANA_USE_MAINNET === 'true'
+  const IS_MAINNET = process.env.NEXT_PUBLIC_SOLANA_NETWORK === 'mainnet'
   const NETWORK = IS_MAINNET ? 'mainnet' : 'devnet'
   
   console.log(`\n🔍 Checking Irys balance on ${NETWORK}...\n`)

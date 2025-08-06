@@ -8,7 +8,7 @@ import bs58 from 'bs58'
 dotenv.config()
 
 async function checkWalletBalance() {
-  const IS_MAINNET = process.env.SOLANA_USE_MAINNET === 'true'
+  const IS_MAINNET = process.env.NEXT_PUBLIC_SOLANA_NETWORK === 'mainnet'
   const NETWORK = IS_MAINNET ? 'mainnet-beta' : 'devnet'
   
   console.log(`\n💰 Checking wallet balance on ${NETWORK}...\n`)

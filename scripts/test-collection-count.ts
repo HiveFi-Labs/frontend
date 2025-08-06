@@ -7,7 +7,7 @@ import { getCollectionMintCount, getNextCollectionId } from '../lib/get-collecti
 dotenv.config()
 
 async function testCollectionCount() {
-  const IS_MAINNET = process.env.SOLANA_USE_MAINNET === 'true'
+  const IS_MAINNET = process.env.NEXT_PUBLIC_SOLANA_NETWORK === 'mainnet'
   const NETWORK = IS_MAINNET ? 'mainnet-beta' : 'devnet'
   const COLLECTION_MINT = process.env.SOLANA_COLLECTION_MINT
   const HELIUS_API_KEY = process.env.HELIUS_API_KEY

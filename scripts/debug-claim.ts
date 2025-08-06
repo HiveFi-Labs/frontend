@@ -14,7 +14,7 @@ async function debugClaim() {
   console.log('- SOLANA_COLLECTION_MINT:', process.env.SOLANA_COLLECTION_MINT ? '✅ Set' : '❌ Missing')
   console.log('- SOLANA_BACKEND_PRIVATE_KEY:', process.env.SOLANA_BACKEND_PRIVATE_KEY ? '✅ Set' : '❌ Missing')
   console.log('- HELIUS_API_KEY:', process.env.HELIUS_API_KEY ? '✅ Set' : '❌ Missing')
-  console.log('- SOLANA_USE_MAINNET:', process.env.SOLANA_USE_MAINNET || 'false (devnet)')
+  console.log('- NEXT_PUBLIC_SOLANA_NETWORK:', process.env.NEXT_PUBLIC_SOLANA_NETWORK || 'NOT SET')
   
   console.log('\n📝 Recommendation:')
   console.log('If asset IDs are missing from new claims, check the server logs during minting.')

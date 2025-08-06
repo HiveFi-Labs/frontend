@@ -27,7 +27,7 @@ async function main() {
   const networkFromArg = networkArg ? networkArg.split('=')[1] : null
   
   // Determine network
-  let isMainnet = process.env.SOLANA_USE_MAINNET === 'true'
+  let isMainnet = process.env.NEXT_PUBLIC_SOLANA_NETWORK === 'mainnet'
   if (networkFromArg) {
     if (networkFromArg === 'mainnet') {
       isMainnet = true

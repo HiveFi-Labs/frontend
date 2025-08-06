@@ -14,7 +14,7 @@ dotenv.config()
 
 async function fixMissingAssetIds() {
   const claimsPath = path.join(process.cwd(), 'data', 'claimed-nfts.json')
-  const IS_MAINNET = process.env.SOLANA_USE_MAINNET === 'true'
+  const IS_MAINNET = process.env.NEXT_PUBLIC_SOLANA_NETWORK === 'mainnet'
   const COLLECTION_MINT = process.env.SOLANA_COLLECTION_MINT
   const heliusApiKey = process.env.HELIUS_API_KEY
   
