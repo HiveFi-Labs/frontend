@@ -30,21 +30,47 @@ HiveFi の早期アダプター向けに、Solana の圧縮 NFT (cNFT) を発行
 NEXT_PUBLIC_SOLANA_NETWORK=devnet
 
 # Helius API キー（DAS API 用）
+# https://www.helius.dev/ で無料取得可能
 HELIUS_API_KEY=your_helius_api_key_here
 
 # バックエンドウォレット（Base58 形式）
+# このウォレットが Merkle Tree の権限を持ち、ガス代を支払います
 SOLANA_BACKEND_PRIVATE_KEY=your_private_key_here
 
 # Merkle Tree アドレス
+# scripts/create-merkle-tree.ts で作成
 SOLANA_MERKLE_TREE_ADDRESS=your_merkle_tree_address
 
 # コレクション Mint アドレス
+# scripts/create-merkle-tree.ts で作成
 SOLANA_COLLECTION_MINT=your_collection_mint_address
 
 # RPC URL（オプション）
 DEVNET_RPC_URL=https://api.devnet.solana.com
 MAINNET_RPC_URL=https://mainnet.helius-rpc.com/?api-key=your_key
 ```
+
+### 事前準備
+
+1. **Helius API キーの取得**
+   - [Helius](https://www.helius.dev/) でアカウント作成
+   - 無料プランで十分（月 100,000 クレジット）
+
+2. **バックエンドウォレットの準備**
+   ```bash
+   # 新規ウォレット作成（既存のものを使用する場合は不要）
+   solana-keygen new --outfile backend-wallet.json
+   
+   # アドレスを確認
+   solana address -k backend-wallet.json
+   
+   # 秘密鍵を Base58 形式で取得
+   cat backend-wallet.json | jq -r '. | @base64d' | base58
+   ```
+
+3. **SOL の補充**
+   - Devnet: `solana airdrop 2 <WALLET_ADDRESS> --url devnet`
+   - Mainnet: 取引所等から SOL を送金（最低 0.1 SOL 推奨）
 
 ### ローカル開発での動作確認
 
@@ -94,7 +120,7 @@ MAINNET_RPC_URL=https://mainnet.helius-rpc.com/?api-key=your_key
 `p-queue` を使用して同時リクエストを制御し、Merkle Tree への同時書き込みエラーを防止。
 
 ### 2. 永続ストレージ
-`/data/claims.json` に発行記録を保存。サーバー再起動後も発行履歴を保持。
+`/data/claimed-nfts.json` に発行記録を保存。サーバー再起動後も発行履歴を保持。
 
 ### 3. メタデータ管理
 - 各 NFT に固有の ID を付与（コレクション内の発行順）
@@ -116,9 +142,18 @@ MAINNET_RPC_URL=https://mainnet.helius-rpc.com/?api-key=your_key
 
 ### Devnet でのテスト
 1. Devnet 用の環境変数を設定
-2. テスト用 Privy アカウントを作成
-3. `user_whitelist.ts` にテストアカウントを追加
-4. NFT 発行をテスト
+2. バックエンドウォレットに Devnet SOL を補充
+   ```bash
+   solana airdrop 2 <WALLET_ADDRESS> --url devnet
+   ```
+3. Merkle Tree と Collection を作成
+   ```bash
+   npx tsx scripts/create-merkle-tree.ts
+   ```
+4. 作成された Merkle Tree と Collection のアドレスを環境変数に設定
+5. テスト用 Privy アカウントを作成
+6. `user_whitelist.ts` にテストアカウントを追加
+7. NFT 発行をテスト
 
 ### Mainnet への移行
 1. `NEXT_PUBLIC_SOLANA_NETWORK=mainnet` に変更
