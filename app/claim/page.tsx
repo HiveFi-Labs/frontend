@@ -17,7 +17,14 @@ export default function ClaimPage() {
   const [claiming, setClaiming] = useState(false)
   const [claimed, setClaimed] = useState(false)
   const [txSignature, setTxSignature] = useState<string | null>(null)
+  const [assetId, setAssetId] = useState<string | null>(null)
   const [network, setNetwork] = useState<string>(CLAIM_CONSTANTS.NETWORK)
+  
+  // Debug: Log network on mount
+  useEffect(() => {
+    console.log('Current network from CLAIM_CONSTANTS:', CLAIM_CONSTANTS.NETWORK)
+    console.log('Current network state:', network)
+  }, [])
   const [errorMessage, setErrorMessage] = useState<string>('')
   const [nftMetadata, setNftMetadata] = useState<{
     name: string
@@ -73,7 +80,8 @@ export default function ClaimPage() {
       const localClaimed = localStorage.getItem(claimKey)
       if (localClaimed) {
         setClaimed(true)
-        setTxSignature(localClaimed)
+        // LocalStorage stores the asset ID for existing claims
+        setAssetId(localClaimed)
       }
       
       // Then check blockchain for authoritative answer
@@ -96,23 +104,23 @@ export default function ClaimPage() {
             if (data.network) {
               setNetwork(data.network)
             }
-            // If we got an asset ID, we can use it as a pseudo-signature
+            // If we got an asset ID, store it separately
             if (data.assetId) {
-              const assetId = data.assetId
+              setAssetId(data.assetId)
               if (!localClaimed) {
-                setTxSignature(assetId)
                 // Update localStorage to cache the result
-                localStorage.setItem(claimKey, assetId)
+                localStorage.setItem(claimKey, data.assetId)
               }
               // Store the assetId immediately for Solscan link
-              setNftMetadata(prev => ({ ...prev, assetId: assetId }))
+              setNftMetadata(prev => ({ ...prev, assetId: data.assetId }))
               // Fetch NFT metadata
-              fetchNFTMetadata(assetId)
+              fetchNFTMetadata(data.assetId)
             }
           } else if (!localClaimed) {
             // Only update to false if localStorage didn't have a claim record
             setClaimed(false)
             setTxSignature(null)
+            setAssetId(null)
           }
         }
       } catch (error) {
@@ -174,10 +182,12 @@ export default function ClaimPage() {
       setNetwork(data.network || 'devnet')
       // Store claim status with new key format
       const claimKey = CLAIM_CONSTANTS.getClaimKey(userWallet.address)
-      localStorage.setItem(claimKey, data.signature)
+      // Store the asset ID if we have it, otherwise store the signature
+      localStorage.setItem(claimKey, data.assetId || data.signature)
       
       // Fetch metadata for the newly claimed NFT
       if (data.assetId) {
+        setAssetId(data.assetId)
         // Store the assetId immediately for Solscan link
         setNftMetadata(prev => ({ ...prev, assetId: data.assetId }))
         fetchNFTMetadata(data.assetId)
@@ -283,8 +293,32 @@ export default function ClaimPage() {
                       </div>
                     ) : null}
                     
-                    {txSignature && (
+                    {assetId && (
                       <div className="space-y-2">
+                        <p className="text-sm text-zinc-500">NFT Asset ID:</p>
+                        <p className="text-xs font-mono text-zinc-400 break-all bg-zinc-900 p-3 rounded-lg">
+                          {assetId}
+                        </p>
+                        <div className="flex gap-4 justify-center">
+                          <Link
+                            href={`https://explorer.solana.com/address/${assetId}${network === 'mainnet' || network === 'mainnet-beta' ? '' : `?cluster=${network}`}`}
+                            target="_blank"
+                            className="inline-flex items-center text-sm text-purple-400 hover:text-purple-300 transition-colors"
+                          >
+                            View on Solana Explorer →
+                          </Link>
+                          <Link
+                            href={`https://solscan.io/token/${assetId}${network === 'mainnet' || network === 'mainnet-beta' ? '' : `?cluster=${network}`}`}
+                            target="_blank"
+                            className="inline-flex items-center text-sm text-purple-400 hover:text-purple-300 transition-colors"
+                          >
+                            View on Solscan →
+                          </Link>
+                        </div>
+                      </div>
+                    )}
+                    {txSignature && !assetId && (
+                      <div className="space-y-2 mt-4">
                         <p className="text-sm text-zinc-500">Transaction Signature:</p>
                         <p className="text-xs font-mono text-zinc-400 break-all bg-zinc-900 p-3 rounded-lg">
                           {txSignature}
@@ -297,16 +331,6 @@ export default function ClaimPage() {
                           >
                             View on Solana Explorer →
                           </Link>
-                          {/* If we have asset ID, show link to Solscan */}
-                          {nftMetadata?.assetId && (
-                            <Link
-                              href={`https://solscan.io/token/${nftMetadata.assetId}${network === 'mainnet' || network === 'mainnet-beta' ? '' : `?cluster=${network}`}`}
-                              target="_blank"
-                              className="inline-flex items-center text-sm text-purple-400 hover:text-purple-300 transition-colors"
-                            >
-                              View on Solscan →
-                            </Link>
-                          )}
                         </div>
                       </div>
                     )}
