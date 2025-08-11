@@ -11,8 +11,8 @@ const addresses: Record<ClusterType, SolanaAddresses> = {
     collectionMint: '8DHG6biZnpRYYxX4fneUH9A9fErZfzF8ssFcsLiz1HTR'
   },
   devnet: {
-    merkleTreeAddress: '7nGJxDfiYp3wqpnoxKNDRKjSsfnbDaE4iVeuZVE7Mzau',
-    collectionMint: '7riAEfpG1EyJ2TQK6k17rqCrAyNfpBNAe3r3Pu1joVD5'
+    merkleTreeAddress: 'BazYrtxdsU3q8jkJSQrKbXgXwz2NN12QJCBvjUSeLFnc',
+    collectionMint: 'ejTtjWFL471YriTEetrH6LrUotfVTmMeynqEg1co3Tc'
   }
 }
 
