@@ -72,7 +72,8 @@ Authorization: Bearer <access_token>
 ```json
 {
   "success": false,
-  "error": "エラーメッセージ"
+  "error": "エラーメッセージ",
+  "assetId": "7NsvbeHySssWQLQNPxGVEec3Y3GhBBSna5qoWzYhbQxA"  // オンチェーン所有検出時のみ
 }
 ```
 
@@ -83,6 +84,8 @@ Authorization: Bearer <access_token>
 | 400 | Invalid wallet address format | ウォレットアドレスの形式が不正 |
 | 400 | Wallet address is required | ウォレットアドレスが未指定 |
 | 400 | Wallet not linked to account | 指定されたウォレットがアカウントにリンクされていない |
+| 400 | You have already claimed this NFT on {network} | 既に永続ストレージに記録済み |
+| 400 | This wallet already owns an NFT from this collection on {network} | オンチェーンで既存所有を検出 |
 | 401 | Authentication required | Authorization ヘッダーまたは Bearer トークンが未提供 |
 | 401 | Invalid or expired access token | アクセストークンが無効または期限切れ |
 | 403 | You are not eligible to claim this NFT | ユーザーがホワイトリストに含まれていない |
@@ -197,6 +200,13 @@ const addresses = {
    - ウォレットアドレスの形式を厳密に検証
    - SQLインジェクション対策（データベース使用時）
 
+4. **二重ミント防止**
+   - 3層の重複チェックメカニズムを実装：
+     1. **永続ストレージ**: JSON ファイルにクレーム記録を保存（サーバー再起動後も維持）
+     2. **オンチェーン検証**: DAS API を使用してウォレットの既存所有を確認
+     3. **メモリキャッシュ**: 現在のセッション中の重複を防止
+   - DAS API が利用できない場合でも永続ストレージで防止可能
+
 ### トランザクション詳細
 
 #### 使用されるプログラム
@@ -283,7 +293,7 @@ NFT の詳細なメタデータを取得します。
 ### よくある質問
 
 **Q: 同じウォレットに複数の NFT を発行できますか？**
-A: いいえ、1つのウォレットアドレスまたは Privy ユーザー ID につき1つの NFT のみ発行可能です。
+A: いいえ、1つのウォレットアドレスまたは Privy ユーザー ID につき1つの NFT のみ発行可能です。サーバーを再起動しても、オンチェーン検証により二重ミントは防止されます。
 
 **Q: NFT の転送はできますか？**
 A: cNFT の転送には別のエンドポイントが必要です。現在は実装されていません。

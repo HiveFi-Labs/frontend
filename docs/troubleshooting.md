@@ -478,5 +478,83 @@ NFT の名前や画像が表示されない。
 **"You have already claimed this NFT"**
 - 同じウォレットまたは Privy ID で既に NFT を発行済み
 
+**"This wallet already owns an NFT from this collection on {network}"**
+- オンチェーン検証により、指定されたウォレットが既にコレクションの NFT を所有していることが検出された
+- サーバーを再起動した後でも、DAS API によるオンチェーン検証で二重ミントを防止
+
 **"Asset not found"**
 - NFT の Asset ID が正しくないか、まだインデックスされていない
+
+## 二重ミント防止の仕組み
+
+### 3層の防御メカニズム
+
+HiveFi の NFT クレームシステムは、サーバー再起動や複数インスタンス環境でも確実に二重ミントを防止するため、以下の3層の防御メカニズムを実装しています：
+
+1. **永続ストレージ（第1層）**
+   - JSON ファイルベースのクレーム記録
+   - サーバー再起動後も記録が維持される
+   - ユーザー ID とウォレットアドレスの両方でチェック
+   - ネットワーク（devnet/mainnet）ごとに独立した管理
+
+2. **オンチェーン検証（第2層）**
+   - DAS API を使用してウォレットの既存所有を確認
+   - 実際のブロックチェーン状態を反映
+   - プロセス再起動・複数インスタンスでも確実に動作
+   - `HELIUS_API_KEY` が設定されている場合のみ有効
+
+3. **メモリキャッシュ（第3層）**
+   - 現在のセッション中の重複リクエストを高速に防止
+   - レース条件への対策
+   - サーバー再起動時にクリアされる
+
+### 再起動後の動作確認
+
+サーバーを再起動した後でも二重ミントが防止されることを確認するには：
+
+```bash
+# 1. NFT をクレーム
+curl -X POST http://localhost:3000/api/claim \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -d '{"walletAddress": "YOUR_WALLET_ADDRESS"}'
+
+# 2. サーバーを再起動
+npm run dev を停止（Ctrl+C）
+npm run dev を再実行
+
+# 3. 同じウォレットで再度クレームを試行
+curl -X POST http://localhost:3000/api/claim \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -d '{"walletAddress": "YOUR_WALLET_ADDRESS"}'
+
+# 期待される結果：
+# - 永続ストレージにより: "You have already claimed this NFT on devnet"
+# - またはオンチェーン検証により: "This wallet already owns an NFT from this collection on devnet"
+```
+
+### DAS API が利用できない場合
+
+`HELIUS_API_KEY` が設定されていない、または DAS API が利用できない場合：
+
+1. オンチェーン検証はスキップされる
+2. 永続ストレージとメモリキャッシュのみで二重ミントを防止
+3. 既存の NFT 所有者が新規クレームを試みた場合、永続ストレージに記録がなければクレーム可能
+   - これを防ぐには `HELIUS_API_KEY` の設定が必須
+
+### トラブルシューティング
+
+**問題: サーバー再起動後も二重ミントができてしまう**
+
+確認事項：
+1. `data/claims.json` ファイルが存在し、書き込み権限があるか
+2. `HELIUS_API_KEY` が正しく設定されているか
+3. ネットワーク設定（devnet/mainnet）が一致しているか
+
+**問題: "Unable to verify ownership (DAS API not available)" エラー**
+
+解決方法：
+1. Helius API キーを取得して設定
+2. ネットワークに対応した RPC URL を使用
+3. API キーの有効性を確認
