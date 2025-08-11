@@ -5,10 +5,11 @@ Compressed NFT の実装でよく発生する問題と解決方法をまとめ�
 ## 目次
 
 1. [環境設定の問題](#環境設定の問題)
-2. [Merkle Tree 関連のエラー](#merkle-tree-関連のエラー)
-3. [トランザクションエラー](#トランザクションエラー)
-4. [API エラー](#api-エラー)
-5. [表示・確認の問題](#表示確認の問題)
+2. [認証関連のエラー](#認証関連のエラー)
+3. [Merkle Tree 関連のエラー](#merkle-tree-関連のエラー)
+4. [トランザクションエラー](#トランザクションエラー)
+5. [API エラー](#api-エラー)
+6. [表示・確認の問題](#表示確認の問題)
 
 ## 環境設定の問題
 
@@ -109,6 +110,65 @@ Helius API キーが設定されていない。
    ```env
    HELIUS_API_KEY=あなたの_API_キー
    ```
+
+## 認証関連のエラー
+
+### Authentication required (401)
+
+**エラーメッセージ:**
+```
+Authentication required
+```
+
+**原因:**
+Authorization ヘッダーまたは Bearer トークンが提供されていない。
+
+**解決方法:**
+
+1. Privy でログインしてアクセストークンを取得
+2. API リクエストに Authorization ヘッダーを追加：
+   ```javascript
+   const response = await fetch('/api/claim', {
+     method: 'POST',
+     headers: {
+       'Content-Type': 'application/json',
+       'Authorization': `Bearer ${accessToken}`
+     },
+     body: JSON.stringify({ walletAddress })
+   });
+   ```
+
+### Invalid or expired access token (401)
+
+**エラーメッセージ:**
+```
+Invalid or expired access token
+```
+
+**原因:**
+提供されたアクセストークンが無効または期限切れ。
+
+**解決方法:**
+
+1. Privy で再度ログイン
+2. 新しいアクセストークンを取得
+3. 新しいトークンでリクエストを再試行
+
+### Wallet not linked to account (400)
+
+**エラーメッセージ:**
+```
+Wallet not linked to account
+```
+
+**原因:**
+指定されたウォレットアドレスが、認証されたユーザーのアカウントにリンクされていない。
+
+**解決方法:**
+
+1. Privy のアカウント設定でウォレットをリンク
+2. リンクされているウォレットアドレスを使用
+3. 正しいアカウントでログインしているか確認
 
 ## Merkle Tree 関連のエラー
 
@@ -402,7 +462,16 @@ NFT の名前や画像が表示されない。
 - Privy ユーザー ID が `data/user_whitelist.ts` に含まれていない
 
 **"Authentication required"**
-- Privy でログインしていない
+- Bearer トークンが提供されていない
+- Authorization ヘッダーが設定されていない
+
+**"Invalid or expired access token"**
+- アクセストークンの有効期限が切れている
+- 無効なトークンが提供されている
+
+**"Wallet not linked to account"**
+- 指定したウォレットがアカウントにリンクされていない
+- 別のアカウントのウォレットを使用しようとしている
 
 ### NFT 発行関連
 

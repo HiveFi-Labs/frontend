@@ -20,7 +20,10 @@ HiveFi cNFT Claim API のエンドポイントと使用方法について説明�
 
 ```http
 Content-Type: application/json
+Authorization: Bearer <access_token>
 ```
+
+**重要**: Bearer トークン認証が必須になりました。Privy から取得したアクセストークンを使用してください。
 
 #### Body
 
@@ -36,7 +39,7 @@ Content-Type: application/json
 | 名前 | 型 | 必須 | 説明 |
 |-----|---|-----|------|
 | walletAddress | string | ✓ | NFT を受け取るウォレットアドレス |
-| privyUserId | string | ✓ | Privy ユーザー ID（ホワイトリストチェック用） |
+| privyUserId | string | ✗ | **非推奨**: Bearer トークンから自動的に取得されます |
 
 ### レスポンス
 
@@ -79,7 +82,9 @@ Content-Type: application/json
 |-------|---------------|------|
 | 400 | Invalid wallet address format | ウォレットアドレスの形式が不正 |
 | 400 | Wallet address is required | ウォレットアドレスが未指定 |
-| 401 | Authentication required | Privy ユーザー ID が未提供 |
+| 400 | Wallet not linked to account | 指定されたウォレットがアカウントにリンクされていない |
+| 401 | Authentication required | Authorization ヘッダーまたは Bearer トークンが未提供 |
+| 401 | Invalid or expired access token | アクセストークンが無効または期限切れ |
 | 403 | You are not eligible to claim this NFT | ユーザーがホワイトリストに含まれていない |
 | 500 | Server configuration error | サーバー設定エラー（秘密鍵など） |
 | 500 | NFT collection not configured | Merkle Tree またはコレクションが未設定 |
@@ -92,16 +97,17 @@ Content-Type: application/json
 #### JavaScript (Fetch API)
 
 ```javascript
-async function claimNFT(walletAddress, privyUserId) {
+async function claimNFT(walletAddress, accessToken) {
   try {
     const response = await fetch('/api/claim', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`, // 必須: Privy のアクセストークン
       },
       body: JSON.stringify({
         walletAddress: walletAddress,
-        privyUserId: privyUserId, // Required for whitelist check
+        // privyUserId は不要（トークンから自動取得）
       }),
     });
 
@@ -130,9 +136,9 @@ async function claimNFT(walletAddress, privyUserId) {
 # devnet での例
 curl -X POST http://localhost:3000/api/claim \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
   -d '{
-    "walletAddress": "J4BweLUqaxu7GKCkJJ7xvLJB2GMBLMZbNobgmZcFhDpW",
-    "privyUserId": "did:privy:cm9fr4642006dlb0ni8dkhpbq"
+    "walletAddress": "J4BweLUqaxu7GKCkJJ7xvLJB2GMBLMZbNobgmZcFhDpW"
   }'
 ```
 
@@ -183,8 +189,9 @@ const addresses = {
    - 本番環境では適切な CORS ヘッダーを設定
 
 2. **認証**
-   - Privy ユーザー ID によるホワイトリスト認証を実装済み
-   - 本番環境では追加の認証層を検討
+   - Bearer トークンによる認証が必須
+   - Privy のアクセストークンを使用
+   - トークンからユーザー ID を自動取得し、ホワイトリストを確認
 
 3. **入力検証**
    - ウォレットアドレスの形式を厳密に検証

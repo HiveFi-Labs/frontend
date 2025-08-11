@@ -94,6 +94,8 @@ const addresses = {
 4. Privy でログイン（ホワイトリストに含まれるアカウントを使用）
 5. NFT を Claim
 
+**重要**: API の直接テストでは、Privy から取得した Bearer トークンが必須です。
+
 ## 主要な変更点
 
 ### 新規追加ファイル
@@ -148,9 +150,11 @@ const addresses = {
 
 ## セキュリティ考慮事項
 
-1. **ホワイトリスト**: Privy ユーザー ID による厳格な権限管理
-2. **二重発行防止**: 永続ストレージとメモリキャッシュの二重チェック
-3. **プライベートキー**: 環境変数で管理、コードにハードコードなし
+1. **認証**: Bearer トークンによる API 認証が必須
+2. **ホワイトリスト**: Privy ユーザー ID による厳格な権限管理
+3. **ウォレット検証**: アカウントにリンクされたウォレットのみ許可
+4. **二重発行防止**: 永続ストレージとメモリキャッシュの二重チェック
+5. **プライベートキー**: 環境変数で管理、コードにハードコードなし
 
 ## テスト方法
 
@@ -169,6 +173,33 @@ const addresses = {
 6. `user_whitelist.ts` にテストアカウントを追加
 7. NFT 発行をテスト
 
+#### API テストの例
+
+```bash
+# Bearer トークンを使用したテスト
+curl -X POST http://localhost:3000/api/claim \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_PRIVY_ACCESS_TOKEN" \
+  -d '{
+    "walletAddress": "YOUR_WALLET_ADDRESS"
+  }'
+
+# 認証なしでのテスト（401 エラーが期待される）
+curl -X POST http://localhost:3000/api/claim \
+  -H "Content-Type: application/json" \
+  -d '{
+    "walletAddress": "YOUR_WALLET_ADDRESS"
+  }'
+
+# 無効なトークンでのテスト（401 エラーが期待される）
+curl -X POST http://localhost:3000/api/claim \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer INVALID_TOKEN" \
+  -d '{
+    "walletAddress": "YOUR_WALLET_ADDRESS"
+  }'
+```
+
 ### Mainnet への移行
 1. `NEXT_PUBLIC_SOLANA_NETWORK=mainnet` に変更
 2. Mainnet 用の Merkle Tree と Collection を設定
@@ -179,7 +210,18 @@ const addresses = {
 
 ### よくある問題
 
-1. **"You are not on the whitelist" エラー**
+1. **"Authentication required" エラー**
+   - Bearer トークンが提供されているか確認
+   - Authorization ヘッダーの形式が正しいか確認
+
+2. **"Invalid or expired access token" エラー**
+   - トークンの有効期限を確認
+   - Privy で再ログインして新しいトークンを取得
+
+3. **"Wallet not linked to account" エラー**
+   - 指定したウォレットがログイン中のアカウントにリンクされているか確認
+
+4. **"You are not on the whitelist" エラー**
    - Privy ユーザー ID がホワイトリストに含まれているか確認
 
 2. **"Insufficient SOL balance" エラー**

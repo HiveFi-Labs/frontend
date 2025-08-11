@@ -109,15 +109,34 @@ curl -s -X POST http://localhost:3000/api/claim/check \
   - 期待結果: `message: 'DAS API configuration error. Please set HELIUS_API_KEY.'`
 
 2) クレーム実行 `/api/claim`
-- 正常系（`privyUserId` と `walletAddress` を指定）
+- 正常系（Bearer トークンと `walletAddress` を指定）
 ```bash
 curl -s -X POST http://localhost:3000/api/claim \
   -H 'Content-Type: application/json' \
-  -d '{"walletAddress":"<WALLET_ADDRESS>","privyUserId":"<PRIVY_USER_ID>"}' | jq
+  -H 'Authorization: Bearer <YOUR_ACCESS_TOKEN>' \
+  -d '{"walletAddress":"<WALLET_ADDRESS>"}' | jq
 ```
+- 注意: `privyUserId` は非推奨となり、Bearer トークンから自動的に取得されます
 - 期待結果
   - 成功時: `{"success":true, ...}` が返却。レスポンスに `network` が含まれ、`config` のネットワークと一致
   - 二重実行時: `{"success":false, "error":"You have already claimed this NFT."}`
+- 異常系（Bearer トークン未提供）
+```bash
+curl -s -X POST http://localhost:3000/api/claim \
+  -H 'Content-Type: application/json' \
+  -d '{"walletAddress":"<WALLET_ADDRESS>"}' | jq
+```
+  - 期待結果: `{"success":false, "error":"Authentication required"}`
+
+- 異常系（無効なトークン）
+```bash
+curl -s -X POST http://localhost:3000/api/claim \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer INVALID_TOKEN' \
+  -d '{"walletAddress":"<WALLET_ADDRESS>"}' | jq
+```
+  - 期待結果: `{"success":false, "error":"Invalid or expired access token"}`
+
 - 異常系（秘密鍵未設定）
   - 期待結果: ネットワークに応じて以下のいずれかのログ、エラーレスポンス
     - Devnet: `DEVNET_BACKEND_PRIVATE_KEY not found in environment`
@@ -157,7 +176,9 @@ rm -f data/claimed-nfts.json
 
 - [ ] `check-network` と `--network` フラグの両方で mainnet/devnet が正しく切替わる
 - [ ] `/api/claim/check` のレスポンスに `config` の `collectionMint` が反映されている（ログ確認）
-- [ ] `/api/claim` が成功し、2回目以降は二重実行防止が効く
+- [ ] `/api/claim` が Bearer トークン付きで成功し、2回目以降は二重実行防止が効く
+- [ ] `/api/claim` が Bearer トークンなしで 401 エラーを返す
+- [ ] `/api/claim` が無効な Bearer トークンで 401 エラーを返す
 - [ ] `.env.local` に `SOLANA_*_ADDRESS` が無くても動作する
 - [ ] `HELIUS_API_KEY` 未設定時に適切なエラーメッセージが返る
 - [ ] ネットワーク別の秘密鍵（`DEVNET_BACKEND_PRIVATE_KEY`/`MAINNET_BACKEND_PRIVATE_KEY`）または共通鍵（`SOLANA_BACKEND_PRIVATE_KEY`）未設定時に適切なエラーハンドリングとなる
@@ -166,6 +187,13 @@ rm -f data/claimed-nfts.json
 
 ## トラブルシューティング（抜粋）
 
+- `Authentication required` が出る
+  - Authorization ヘッダーに Bearer トークンを設定
+  - 例: `Authorization: Bearer YOUR_ACCESS_TOKEN`
+- `Invalid or expired access token` が出る
+  - Privy で再ログインして新しいトークンを取得
+- `Wallet not linked to account` が出る
+  - ログイン中のアカウントにリンクされたウォレットを使用
 - `NFT collection not configured` が出る
   - `config/solana-addresses.ts` の `merkleTreeAddress` / `collectionMint` が空でないか確認
 - `DAS API configuration error` が出る
