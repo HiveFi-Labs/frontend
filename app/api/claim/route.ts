@@ -25,6 +25,7 @@ import { getNextCollectionId } from '@/lib/get-collection-count'
 import { getSolanaAddresses } from '@/config/solana-addresses'
 import { getBackendWallet } from '@/lib/get-backend-wallet'
 import { getAccessTokenFromRequest, verifyAccessToken, getUserAndWallets, assertWalletBelongsToUser } from '@/lib/auth/privy'
+import { checkOwnedAssetIdByWalletAndCollection, networkToIsMainnet } from '@/lib/ownership-check'
 
 // Request body validation schema
 const claimRequestSchema = z.object({
@@ -173,6 +174,27 @@ export async function POST(request: NextRequest) {
       )
     }
     
+    // Check on-chain ownership (second check)
+    const heliusApiKey = process.env.HELIUS_API_KEY
+    const ownedAssetId = await checkOwnedAssetIdByWalletAndCollection(
+      walletAddress,
+      COLLECTION_MINT,
+      heliusApiKey,
+      networkToIsMainnet(NETWORK)
+    )
+    
+    if (ownedAssetId) {
+      console.log(`Wallet ${walletAddress} already owns NFT from collection ${COLLECTION_MINT}`)
+      return NextResponse.json<ErrorResponse>(
+        {
+          success: false,
+          error: `This wallet already owns an NFT from this collection on ${NETWORK}.`,
+          assetId: ownedAssetId,
+        } as ErrorResponse & { assetId?: string },
+        { status: 400 }
+      )
+    }
+    
     // Also check in-memory claims (for current session)
     const claimKey = `${userId}-${walletAddress}`
     if (processedClaims.has(claimKey)) {
@@ -274,7 +296,6 @@ export async function POST(request: NextRequest) {
         }
 
         // Get next NFT ID from the collection
-        const heliusApiKey = process.env.HELIUS_API_KEY
         if (!heliusApiKey) {
           console.error('HELIUS_API_KEY not found')
           processedClaims.delete(claimKey)
@@ -451,7 +472,6 @@ export async function POST(request: NextRequest) {
         // If we couldn't get asset ID from leaf, try DAS API
         if (!assetId) {
           console.log('Attempting to get asset ID via DAS API...')
-          const heliusApiKey = process.env.HELIUS_API_KEY
           if (heliusApiKey) {
             // Wait a bit for the transaction to be indexed
             await new Promise(resolve => setTimeout(resolve, 3000))
