@@ -18,12 +18,14 @@ export default function ClaimPage() {
   const [claimed, setClaimed] = useState(false)
   const [txSignature, setTxSignature] = useState<string | null>(null)
   const [assetId, setAssetId] = useState<string | null>(null)
-  const [network, setNetwork] = useState<string>(CLAIM_CONSTANTS.NETWORK)
+  const [network, setNetwork] = useState<string>(CLAIM_CONSTANTS.getNetwork())
   
   // Debug: Log network on mount
   useEffect(() => {
-    console.log('Current network from CLAIM_CONSTANTS:', CLAIM_CONSTANTS.NETWORK)
+    const currentNetwork = CLAIM_CONSTANTS.getNetwork()
+    console.log('Current network:', currentNetwork)
     console.log('Current network state:', network)
+    setNetwork(currentNetwork)
   }, [])
   const [errorMessage, setErrorMessage] = useState<string>('')
   const [nftMetadata, setNftMetadata] = useState<{
