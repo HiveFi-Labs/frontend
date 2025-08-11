@@ -1,21 +1,29 @@
 #!/usr/bin/env tsx
 
 import * as dotenv from 'dotenv'
+import { Command } from 'commander'
 import { getCollectionMintCount, getNextCollectionId } from '../lib/get-collection-count'
+import { getSolanaAddresses, getActiveNetworkFromEnv, getSolanaAddressesForNetwork, ClusterType } from '../config/solana-addresses'
 
 // Load environment variables
 dotenv.config()
 
-async function testCollectionCount() {
-  const IS_MAINNET = process.env.NEXT_PUBLIC_SOLANA_NETWORK === 'mainnet'
+async function testCollectionCount(options: { network?: ClusterType }) {
+  // Use command line network if provided, otherwise detect from env
+  const envNetwork = getActiveNetworkFromEnv()
+  const selectedNetwork = options.network || envNetwork
+  const IS_MAINNET = selectedNetwork === 'mainnet'
   const NETWORK = IS_MAINNET ? 'mainnet-beta' : 'devnet'
-  const COLLECTION_MINT = process.env.SOLANA_COLLECTION_MINT
+  
+  // Get addresses from config
+  const addresses = getSolanaAddressesForNetwork(selectedNetwork)
+  const COLLECTION_MINT = addresses.collectionMint
   const HELIUS_API_KEY = process.env.HELIUS_API_KEY
   
-  console.log(`\n📊 Testing collection count on ${NETWORK}...\n`)
+  console.log(`\n📊 Testing collection count on ${NETWORK}${options.network ? ' (override via --network)' : ''}...\n`)
   
-  if (!COLLECTION_MINT || !HELIUS_API_KEY) {
-    console.error('❌ Missing required environment variables')
+  if (!HELIUS_API_KEY) {
+    console.error('❌ Missing HELIUS_API_KEY environment variable')
     return
   }
   
@@ -41,4 +49,18 @@ async function testCollectionCount() {
   }
 }
 
-testCollectionCount()
+// CLI setup
+const program = new Command()
+
+program
+  .name('test-collection-count')
+  .description('Test collection NFT count')
+  .option('-n, --network <network>', 'network to check (mainnet or devnet)', (value) => {
+    if (value !== 'mainnet' && value !== 'devnet') {
+      throw new Error('Network must be mainnet or devnet')
+    }
+    return value as ClusterType
+  })
+  .action(testCollectionCount)
+
+program.parse(process.argv)
