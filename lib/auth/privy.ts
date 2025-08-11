@@ -76,11 +76,12 @@ export async function getUserAndWallets(userId: string): Promise<string[]> {
     }
     
     // Log user details for debugging
+    console.log('User object:', JSON.stringify(user, null, 2))
     console.log('User linked accounts:', JSON.stringify(user.linkedAccounts, null, 2))
     
     // Extract Solana wallet addresses
     const wallets = user.linkedAccounts
-      .filter(account => account.type === 'wallet' && account.walletClientType === 'solana')
+      .filter(account => account.type === 'wallet' && (account as any).chainType === 'solana')
       .map(account => account.address)
     
     return wallets
