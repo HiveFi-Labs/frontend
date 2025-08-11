@@ -20,11 +20,11 @@ const addresses: Record<ClusterType, SolanaAddresses> = {
  * 環境変数からアクティブなネットワークを取得
  */
 export function getActiveNetworkFromEnv(): ClusterType {
-  const network = process.env.NEXT_PUBLIC_SOLANA_NETWORK || process.env.SOLANA_NETWORK || 'mainnet'
+  const network = process.env.NEXT_PUBLIC_SOLANA_NETWORK || process.env.SOLANA_NETWORK || 'devnet'
   
   if (network !== 'mainnet' && network !== 'devnet') {
-    console.warn(`Invalid network "${network}", defaulting to mainnet`)
-    return 'mainnet'
+    console.warn(`Invalid network "${network}", defaulting to devnet`)
+    return 'devnet'
   }
   
   return network as ClusterType

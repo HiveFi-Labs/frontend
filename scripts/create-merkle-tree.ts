@@ -121,8 +121,9 @@ async function main() {
     console.log(`🌲 Merkle Tree Address: ${merkleTree.publicKey}`)
     console.log(`👤 Tree Authority: ${backendWallet.publicKey.toBase58()}\n`)
 
-    console.log('📋 Add this to your .env.local file:')
-    console.log(`SOLANA_MERKLE_TREE_ADDRESS=${merkleTree.publicKey}`)
+    console.log('📋 Next steps:')
+    console.log(`1. Update config/solana-addresses.ts with the new Merkle Tree address:`)
+    console.log(`   merkleTreeAddress: '${merkleTree.publicKey}',`)
     console.log('\n💡 Note: The tree authority is automatically set to the creator wallet')
     console.log(`🔍 View on Explorer: https://explorer.solana.com/address/${merkleTree.publicKey}${isMainnet ? '' : '?cluster=devnet'}`)
 
