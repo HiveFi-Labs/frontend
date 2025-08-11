@@ -24,7 +24,12 @@ Compressed NFT を格納するための Merkle Tree を作成するスクリプ�
 
 1. 環境変数を設定（`.env.local`）:
    ```env
-   SOLANA_BACKEND_PRIVATE_KEY=your_private_key_here
+   # ネットワーク別の秘密鍵（NEXT_PUBLIC_SOLANA_NETWORK に応じて自動選択）
+   DEVNET_BACKEND_PRIVATE_KEY=your_devnet_private_key  # Devnet 用
+   MAINNET_BACKEND_PRIVATE_KEY=your_mainnet_private_key  # Mainnet 用
+   # または、両ネットワーク共通の鍵を使用する場合
+   SOLANA_BACKEND_PRIVATE_KEY=your_private_key_here  # 後方互換性のため残存
+   
    NEXT_PUBLIC_SOLANA_NETWORK=devnet  # 'mainnet' or 'devnet'
    SOLANA_RPC_URL=https://api.devnet.solana.com  # optional
    ```
@@ -44,7 +49,7 @@ Compressed NFT を格納するための Merkle Tree を作成するスクリプ�
    npx ts-node scripts/create-merkle-tree.ts --network=mainnet
    ```
 
-3. 出力された `SOLANA_MERKLE_TREE_ADDRESS` を `.env.local` に追加
+3. 出力されたアドレスを `config/solana-addresses.ts` に追加
 
 ### ネットワークの選択
 
@@ -108,7 +113,11 @@ npx tsx scripts/check-wallet-balance.ts
 Merkle Tree の権限を確認します。TreeAuthorityIncorrect エラーのデバッグに有用です。
 
 ```bash
+# 現在のネットワークを使用
 npx tsx scripts/check-tree-authority.ts
+
+# 特定のネットワークを指定
+npx tsx scripts/check-tree-authority.ts --network mainnet
 ```
 
 ### check-irys-balance.ts
@@ -124,7 +133,11 @@ npx tsx scripts/check-irys-balance.ts
 コレクション内の NFT 数を確認します。
 
 ```bash
+# 現在のネットワークを使用
 npx tsx scripts/test-collection-count.ts
+
+# 特定のネットワークを指定
+npx tsx scripts/test-collection-count.ts --network devnet
 ```
 
 ### 2. DAS API を使用
@@ -157,8 +170,20 @@ curl https://api.helius.xyz/v0/addresses/YOUR_WALLET_ADDRESS/assets?api-key=YOUR
 
 解決方法：
 1. 新しい Merkle Tree を作成する（上記のスクリプトを使用）
-2. `.env.local` の `SOLANA_MERKLE_TREE_ADDRESS` を更新する
+2. `config/solana-addresses.ts` の該当ネットワークのアドレスを更新する
 3. API を再起動する
+
+### 秘密鍵が見つからないエラー
+
+`DEVNET_BACKEND_PRIVATE_KEY not found` または `MAINNET_BACKEND_PRIVATE_KEY not found` エラーが発生する場合：
+
+解決方法：
+1. 現在のネットワーク（`NEXT_PUBLIC_SOLANA_NETWORK`）を確認
+2. 対応する秘密鍵を `.env.local` に設定：
+   - Devnet の場合: `DEVNET_BACKEND_PRIVATE_KEY=...`
+   - Mainnet の場合: `MAINNET_BACKEND_PRIVATE_KEY=...`
+   - または共通: `SOLANA_BACKEND_PRIVATE_KEY=...`
+3. サーバー/スクリプトを再起動
 
 ### insufficient funds エラー
 
@@ -170,26 +195,38 @@ curl https://api.helius.xyz/v0/addresses/YOUR_WALLET_ADDRESS/assets?api-key=YOUR
 
 ## 📝 重要な情報
 
-### 環境変数の設定例
+### アドレスの設定
 
-**Devnet:**
-```env
-NEXT_PUBLIC_SOLANA_NETWORK=devnet
-SOLANA_MERKLE_TREE_ADDRESS=4MZS5aYvSkAzvToyY4crZEFzWwULxubDsAc4t7X2AnU5
-SOLANA_COLLECTION_MINT=YR6XuTDu8F6hc5HHPgXk5Vunw7MoZW6MJtze2oTD8DL
+**重要**: Merkle Tree アドレスとコレクションミントアドレスは `config/solana-addresses.ts` で管理されるようになりました。
+
+```typescript
+// config/solana-addresses.ts
+const addresses = {
+  mainnet: {
+    merkleTreeAddress: '7PoSJh8sBRx26h2zNmRocSXFEV2tBD8MjkCAQhQsbiXR',
+    collectionMint: 'CoDTKqGbfQpqZx8dM5DcudFYCiQYEuRjnzj3LjSgxfSS'
+  },
+  devnet: {
+    merkleTreeAddress: '5KZa3rFaX8FJNuZZfXQjJa5KysBmBcKNfQb6wJBhgcMU',
+    collectionMint: '2LArGnJgJxJcgKdRjdtBxk8ZJAy8bnMNSL46s4fyLSFN'
+  }
+}
 ```
 
-**Mainnet:**
+**環境変数（.env.local）:**
 ```env
-NEXT_PUBLIC_SOLANA_NETWORK=mainnet
-SOLANA_MERKLE_TREE_ADDRESS=3PzT8RYNpWuPPoacQDwHFtUREQRS71Hc2XRJ41XjZkBv
-SOLANA_COLLECTION_MINT=8DHG6biZnpRYYxX4fneUH9A9fErZfzF8ssFcsLiz1HTR
+NEXT_PUBLIC_SOLANA_NETWORK=devnet  # または mainnet
 ```
 
 ### 必須環境変数チェックリスト
 
 - [ ] `NEXT_PUBLIC_SOLANA_NETWORK` - ネットワーク設定
 - [ ] `HELIUS_API_KEY` - DAS API 用（必須）
-- [ ] `SOLANA_BACKEND_PRIVATE_KEY` - バックエンドウォレット
-- [ ] `SOLANA_MERKLE_TREE_ADDRESS` - Merkle Tree アドレス
-- [ ] `SOLANA_COLLECTION_MINT` - コレクション Mint アドレス
+- [ ] 秘密鍵（以下のいずれか）：
+  - [ ] `DEVNET_BACKEND_PRIVATE_KEY` - Devnet 用バックエンドウォレット
+  - [ ] `MAINNET_BACKEND_PRIVATE_KEY` - Mainnet 用バックエンドウォレット
+  - [ ] `SOLANA_BACKEND_PRIVATE_KEY` - 両ネットワーク共通バックエンドウォレット
+
+### config ファイルの確認
+
+- [ ] `config/solana-addresses.ts` - 各ネットワークのアドレスが正しく設定されているか確認

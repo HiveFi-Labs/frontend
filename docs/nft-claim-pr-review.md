@@ -35,19 +35,31 @@ HELIUS_API_KEY=your_helius_api_key_here
 
 # バックエンドウォレット（Base58 形式）
 # このウォレットが Merkle Tree の権限を持ち、ガス代を支払います
-SOLANA_BACKEND_PRIVATE_KEY=your_private_key_here
-
-# Merkle Tree アドレス
-# scripts/create-merkle-tree.ts で作成
-SOLANA_MERKLE_TREE_ADDRESS=your_merkle_tree_address
-
-# コレクション Mint アドレス
-# scripts/create-merkle-tree.ts で作成
-SOLANA_COLLECTION_MINT=your_collection_mint_address
+# ネットワーク別の秘密鍵（NEXT_PUBLIC_SOLANA_NETWORK に応じて自動選択）
+DEVNET_BACKEND_PRIVATE_KEY=your_devnet_private_key  # Devnet 用
+MAINNET_BACKEND_PRIVATE_KEY=your_mainnet_private_key  # Mainnet 用
+# または、両ネットワーク共通の鍵を使用する場合
+SOLANA_BACKEND_PRIVATE_KEY=your_private_key_here  # 後方互換性のため残存
 
 # RPC URL（オプション）
 DEVNET_RPC_URL=https://api.devnet.solana.com
 MAINNET_RPC_URL=https://mainnet.helius-rpc.com/?api-key=your_key
+```
+
+**重要な変更**: Merkle Tree アドレスとコレクションミントアドレスは、環境変数ではなく `config/solana-addresses.ts` で管理されるようになりました。
+
+```typescript
+// config/solana-addresses.ts
+const addresses = {
+  mainnet: {
+    merkleTreeAddress: '7PoSJh8sBRx26h2zNmRocSXFEV2tBD8MjkCAQhQsbiXR',
+    collectionMint: 'CoDTKqGbfQpqZx8dM5DcudFYCiQYEuRjnzj3LjSgxfSS'
+  },
+  devnet: {
+    merkleTreeAddress: '5KZa3rFaX8FJNuZZfXQjJa5KysBmBcKNfQb6wJBhgcMU',
+    collectionMint: '2LArGnJgJxJcgKdRjdtBxk8ZJAy8bnMNSL46s4fyLSFN'
+  }
+}
 ```
 
 ### 事前準備
@@ -67,6 +79,8 @@ MAINNET_RPC_URL=https://mainnet.helius-rpc.com/?api-key=your_key
    # 秘密鍵を Base58 形式で取得
    cat backend-wallet.json | jq -r '. | @base64d' | base58
    ```
+   
+   **注意**: ネットワーク別に異なるウォレットを使用する場合は、それぞれの秘密鍵を設定してください。
 
 3. **SOL の補充**
    - Devnet: `solana airdrop 2 <WALLET_ADDRESS> --url devnet`
@@ -146,11 +160,11 @@ MAINNET_RPC_URL=https://mainnet.helius-rpc.com/?api-key=your_key
    ```bash
    solana airdrop 2 <WALLET_ADDRESS> --url devnet
    ```
-3. Merkle Tree と Collection を作成
+3. Merkle Tree と Collection を作成（既存のものがない場合）
    ```bash
    npx tsx scripts/create-merkle-tree.ts
    ```
-4. 作成された Merkle Tree と Collection のアドレスを環境変数に設定
+4. 作成された Merkle Tree と Collection のアドレスを `config/solana-addresses.ts` に設定
 5. テスト用 Privy アカウントを作成
 6. `user_whitelist.ts` にテストアカウントを追加
 7. NFT 発行をテスト

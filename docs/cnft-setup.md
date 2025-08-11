@@ -54,17 +54,39 @@ HELIUS_API_KEY=あなたの_API_キー
 
 # バックエンドウォレットの秘密鍵
 # 形式: JSON配列、Base64、またはBase58
-SOLANA_BACKEND_PRIVATE_KEY=あなたの秘密鍵
+# ネットワーク別の秘密鍵（NEXT_PUBLIC_SOLANA_NETWORK に応じて自動選択）
+DEVNET_BACKEND_PRIVATE_KEY=あなたの_devnet_秘密鍵
+MAINNET_BACKEND_PRIVATE_KEY=あなたの_mainnet_秘密鍵
+# または、両ネットワーク共通の鍵を使用する場合
+SOLANA_BACKEND_PRIVATE_KEY=あなたの秘密鍵  # 後方互換性のため残存
 
 # RPC URL（オプション）
 DEVNET_RPC_URL=https://api.devnet.solana.com
 MAINNET_RPC_URL=https://mainnet.helius-rpc.com/?api-key=あなたの_API_キー
+```
 
-# Merkle Tree アドレス（後で設定）
-SOLANA_MERKLE_TREE_ADDRESS=
+### 重要な変更点
 
-# コレクション NFT のミントアドレス（後で設定）
-SOLANA_COLLECTION_MINT=
+1. **Merkle Tree アドレスとコレクションミントアドレスは `config/solana-addresses.ts` で管理されるようになりました。**
+
+2. **秘密鍵はネットワーク別に管理できるようになりました。**
+   - `NEXT_PUBLIC_SOLANA_NETWORK` の値に基づいて自動的に選択されます
+   - Devnet: `DEVNET_BACKEND_PRIVATE_KEY` → `SOLANA_BACKEND_PRIVATE_KEY` の順で検索
+   - Mainnet: `MAINNET_BACKEND_PRIVATE_KEY` → `SOLANA_BACKEND_PRIVATE_KEY` の順で検索
+
+各ネットワークのアドレスは以下のファイルで確認できます：
+```typescript
+// config/solana-addresses.ts
+const addresses = {
+  mainnet: {
+    merkleTreeAddress: '7PoSJh8sBRx26h2zNmRocSXFEV2tBD8MjkCAQhQsbiXR',
+    collectionMint: 'CoDTKqGbfQpqZx8dM5DcudFYCiQYEuRjnzj3LjSgxfSS'
+  },
+  devnet: {
+    merkleTreeAddress: '5KZa3rFaX8FJNuZZfXQjJa5KysBmBcKNfQb6wJBhgcMU',
+    collectionMint: '2LArGnJgJxJcgKdRjdtBxk8ZJAy8bnMNSL46s4fyLSFN'
+  }
+}
 ```
 
 ### 秘密鍵の形式
@@ -131,12 +153,16 @@ npx ts-node scripts/create-merkle-tree.ts --network=devnet
 SOLANA_MERKLE_TREE_ADDRESS=4MZS5aYvSkAzvToyY4crZEFzWwULxubDsAc4t7X2AnU5
 ```
 
-### 3. 環境変数を更新
+### 3. アドレスの更新
 
-出力された `SOLANA_MERKLE_TREE_ADDRESS` を `.env.local` に追加：
+新しい Merkle Tree を作成した場合は、`config/solana-addresses.ts` を更新してください：
 
-```env
-SOLANA_MERKLE_TREE_ADDRESS=4MZS5aYvSkAzvToyY4crZEFzWwULxubDsAc4t7X2AnU5
+```typescript
+// config/solana-addresses.ts の該当ネットワーク部分を更新
+devnet: {
+  merkleTreeAddress: '4MZS5aYvSkAzvToyY4crZEFzWwULxubDsAc4t7X2AnU5', // 新しいアドレス
+  collectionMint: '既存のコレクションミントアドレス'
+}
 ```
 
 ### Merkle Tree の仕様
@@ -151,9 +177,14 @@ cNFT はコレクションに属する必要があります。既存のコレク
 
 ### 既存のコレクションを使用
 
-```env
-# .env.local に追加
-SOLANA_COLLECTION_MINT=YR6XuTDu8F6hc5HHPgXk5Vunw7MoZW6MJtze2oTD8DL
+`config/solana-addresses.ts` で該当ネットワークのコレクションミントアドレスを更新：
+
+```typescript
+// config/solana-addresses.ts
+devnet: {
+  merkleTreeAddress: '既存のMerkleTreeアドレス',
+  collectionMint: 'YR6XuTDu8F6hc5HHPgXk5Vunw7MoZW6MJtze2oTD8DL' // 更新
+}
 ```
 
 ### 新しいコレクションを作成
@@ -281,14 +312,16 @@ npx ts-node scripts/create-merkle-tree.ts --network=mainnet
 # 確認プロンプトで "yes" を入力
 ```
 
-### 3. 新しいアドレスで環境変数を更新
+### 3. 新しいアドレスで config を更新
 
-```env
-# mainnet の Merkle Tree アドレス
-SOLANA_MERKLE_TREE_ADDRESS=mainnetで作成したアドレス
+`config/solana-addresses.ts` の mainnet セクションを更新：
 
-# mainnet のコレクションミントアドレス
-SOLANA_COLLECTION_MINT=mainnetのコレクションアドレス
+```typescript
+// config/solana-addresses.ts
+mainnet: {
+  merkleTreeAddress: 'mainnetで作成したアドレス',
+  collectionMint: 'mainnetのコレクションアドレス'
+}
 ```
 
 ### 4. Irys アカウントの確認

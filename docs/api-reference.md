@@ -142,13 +142,33 @@ API の動作に必要な環境変数：
 
 | 変数名 | 説明 | 例 |
 |-------|------|---|
-| SOLANA_BACKEND_PRIVATE_KEY | NFT 発行用の秘密鍵 | JSON配列、Base64、Base58形式 |
+| DEVNET_BACKEND_PRIVATE_KEY | Devnet 用の秘密鍵 | JSON配列、Base64、Base58形式 |
+| MAINNET_BACKEND_PRIVATE_KEY | Mainnet 用の秘密鍵 | JSON配列、Base64、Base58形式 |
+| SOLANA_BACKEND_PRIVATE_KEY | 両ネットワーク共通の秘密鍵（後方互換） | JSON配列、Base64、Base58形式 |
 | NEXT_PUBLIC_SOLANA_NETWORK | ネットワーク設定 | 'mainnet' または 'devnet' |
 | DEVNET_RPC_URL | Devnet RPC URL | https://api.devnet.solana.com |
 | MAINNET_RPC_URL | Mainnet RPC URL | https://mainnet.helius-rpc.com/?api-key=... |
 | HELIUS_API_KEY | Helius API キー | DAS API 用（必須） |
-| SOLANA_MERKLE_TREE_ADDRESS | Merkle Tree アドレス | 4MZS5aYvSkAzvTo... |
-| SOLANA_COLLECTION_MINT | コレクションミントアドレス | YR6XuTDu8F6hc5... |
+
+**注意**: 
+1. Merkle Tree アドレスとコレクションミントアドレスは `config/solana-addresses.ts` で管理されるようになりました。環境変数での設定は不要です。
+2. 秘密鍵は `NEXT_PUBLIC_SOLANA_NETWORK` の値に基づいて自動的に選択されます：
+   - `devnet` の場合: `DEVNET_BACKEND_PRIVATE_KEY` → `SOLANA_BACKEND_PRIVATE_KEY` の順で検索
+   - `mainnet` の場合: `MAINNET_BACKEND_PRIVATE_KEY` → `SOLANA_BACKEND_PRIVATE_KEY` の順で検索
+
+```typescript
+// config/solana-addresses.ts
+const addresses = {
+  mainnet: {
+    merkleTreeAddress: '7PoSJh8sBRx26h2zNmRocSXFEV2tBD8MjkCAQhQsbiXR',
+    collectionMint: 'CoDTKqGbfQpqZx8dM5DcudFYCiQYEuRjnzj3LjSgxfSS'
+  },
+  devnet: {
+    merkleTreeAddress: '5KZa3rFaX8FJNuZZfXQjJa5KysBmBcKNfQb6wJBhgcMU',
+    collectionMint: '2LArGnJgJxJcgKdRjdtBxk8ZJAy8bnMNSL46s4fyLSFN'
+  }
+}
+```
 
 ### レート制限
 

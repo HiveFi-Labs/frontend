@@ -24,7 +24,10 @@ Failed to parse backend wallet private key
 
 **解決方法:**
 
-1. `.env.local` ファイルに `SOLANA_BACKEND_PRIVATE_KEY` が設定されているか確認
+1. `.env.local` ファイルに秘密鍵が設定されているか確認：
+   - ネットワーク別： `DEVNET_BACKEND_PRIVATE_KEY` または `MAINNET_BACKEND_PRIVATE_KEY`
+   - 共通： `SOLANA_BACKEND_PRIVATE_KEY`
+   - 秘密鍵は `NEXT_PUBLIC_SOLANA_NETWORK` の値に基づいて自動選択されます
 
 2. 秘密鍵の形式を確認（以下のいずれか）：
    - JSON 配列: `[123,45,67,...]`
@@ -37,7 +40,27 @@ Failed to parse backend wallet private key
    cat wallet.json  # この内容をコピー
    ```
 
-### SOLANA_MERKLE_TREE_ADDRESS not found
+### ネットワーク別秘密鍵が見つからない
+
+**エラーメッセージ:**
+```
+DEVNET_BACKEND_PRIVATE_KEY not found in environment
+または
+MAINNET_BACKEND_PRIVATE_KEY not found in environment
+```
+
+**原因:**
+現在のネットワークに対応する秘密鍵が設定されていない。
+
+**解決方法:**
+1. `NEXT_PUBLIC_SOLANA_NETWORK` の値を確認
+2. 対応する秘密鍵を `.env.local` に設定：
+   - Devnet の場合: `DEVNET_BACKEND_PRIVATE_KEY=...`
+   - Mainnet の場合: `MAINNET_BACKEND_PRIVATE_KEY=...`
+   - または共通: `SOLANA_BACKEND_PRIVATE_KEY=...`
+3. サーバーまたはスクリプトを再起動
+
+### NFT collection not configured
 
 **エラーメッセージ:**
 ```
@@ -45,18 +68,27 @@ NFT collection not configured
 ```
 
 **原因:**
-Merkle Tree のアドレスが環境変数に設定されていない。
+Merkle Tree またはコレクションミントのアドレスが `config/solana-addresses.ts` に正しく設定されていない。
 
 **解決方法:**
 
-1. Merkle Tree を作成：
-   ```bash
-   npx tsx scripts/create-merkle-tree.ts
+1. `config/solana-addresses.ts` を確認し、現在のネットワークのアドレスが設定されているか確認：
+   ```typescript
+   const addresses = {
+     mainnet: {
+       merkleTreeAddress: 'メインネットのMerkleTreeアドレス',
+       collectionMint: 'メインネットのコレクションアドレス'
+     },
+     devnet: {
+       merkleTreeAddress: 'devnetのMerkleTreeアドレス',
+       collectionMint: 'devnetのコレクションアドレス'
+     }
+   }
    ```
 
-2. 出力されたアドレスを `.env.local` に追加：
-   ```env
-   SOLANA_MERKLE_TREE_ADDRESS=生成されたアドレス
+2. 新しい Merkle Tree を作成した場合は、config ファイルを更新：
+   ```bash
+   npx tsx scripts/create-merkle-tree.ts
    ```
 
 ### HELIUS_API_KEY not found
@@ -92,7 +124,7 @@ AnchorError caused by account: tree_authority. Error Code: AccountNotInitialized
 
 **解決方法:**
 
-1. 環境変数の `SOLANA_MERKLE_TREE_ADDRESS` が正しいか確認
+1. `config/solana-addresses.ts` のアドレスが正しいか確認
 
 2. アドレスが通常の NFT ではなく、Merkle Tree であることを確認：
    - Merkle Tree: アカウントサイズが 1787 バイト以上
@@ -330,6 +362,14 @@ NFT の名前や画像が表示されない。
 3. **ネットワーク設定の確認:**
    ```bash
    npx tsx scripts/check-network-config.ts
+   # 特定のネットワークをチェック
+   npx tsx scripts/check-network-config.ts --network mainnet
+   ```
+
+4. **アドレス設定の確認:**
+   ```bash
+   # 現在のネットワークのアドレスを表示
+   cat config/solana-addresses.ts
    ```
 
 ### トランザクションの詳細確認
