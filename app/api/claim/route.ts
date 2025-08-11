@@ -145,7 +145,7 @@ export async function POST(request: NextRequest) {
       
       // Temporary workaround: Allow whitelisted users to claim with any wallet
       // This should be removed once Privy wallet linking is properly implemented
-      const ALLOW_UNLINKED_WALLETS = process.env.ALLOW_UNLINKED_WALLETS === 'true'
+      const ALLOW_UNLINKED_WALLETS = process.env.ALLOW_UNLINKED_WALLETS === 'true' // Default: false
       
       if (!ALLOW_UNLINKED_WALLETS) {
         return NextResponse.json<ErrorResponse>(
