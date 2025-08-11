@@ -14,6 +14,7 @@ import { Keypair } from '@solana/web3.js'
 import bs58 from 'bs58'
 import * as dotenv from 'dotenv'
 import * as path from 'path'
+import { getBackendWallet } from '../lib/get-backend-wallet'
 
 // Load environment variables
 dotenv.config({ path: path.resolve(__dirname, '../.env.local') })
@@ -39,11 +40,9 @@ async function main() {
     }
   }
 
-  // Check environment variables
-  const privateKeyString = process.env.SOLANA_BACKEND_PRIVATE_KEY
-  if (!privateKeyString) {
-    console.error('❌ Error: SOLANA_BACKEND_PRIVATE_KEY not found in .env.local')
-    process.exit(1)
+  // Set network for the backend wallet utility
+  if (networkFromArg) {
+    process.env.NEXT_PUBLIC_SOLANA_NETWORK = networkFromArg
   }
 
   const network = isMainnet ? 'mainnet-beta' : 'devnet'
@@ -80,28 +79,14 @@ async function main() {
   
   console.log()
 
-  // Parse private key
+  // Get backend wallet using network-specific private key
   let backendWallet: Keypair
   try {
-    // Try parsing as JSON array first
-    const privateKeyArray = JSON.parse(privateKeyString)
-    backendWallet = Keypair.fromSecretKey(new Uint8Array(privateKeyArray))
-  } catch {
-    try {
-      // Try parsing as base64
-      const privateKeyBuffer = Buffer.from(privateKeyString, 'base64')
-      backendWallet = Keypair.fromSecretKey(privateKeyBuffer)
-    } catch {
-      try {
-        // Try parsing as base58
-        const privateKeyBytes = bs58.decode(privateKeyString)
-        backendWallet = Keypair.fromSecretKey(privateKeyBytes)
-      } catch (error) {
-        console.error('❌ Error: Failed to parse private key')
-        console.error('Supported formats: JSON array, base64, or base58')
-        process.exit(1)
-      }
-    }
+    backendWallet = getBackendWallet()
+    console.log(`✅ Successfully loaded backend wallet for ${network}`)
+  } catch (walletError) {
+    console.error('❌ Failed to get backend wallet:', walletError)
+    process.exit(1)
   }
 
   console.log(`💳 Tree Creator: ${backendWallet.publicKey.toBase58()}\n`)

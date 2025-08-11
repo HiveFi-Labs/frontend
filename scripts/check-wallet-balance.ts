@@ -3,6 +3,7 @@
 import * as dotenv from 'dotenv'
 import { Connection, Keypair, LAMPORTS_PER_SOL } from '@solana/web3.js'
 import bs58 from 'bs58'
+import { getBackendWallet } from '../lib/get-backend-wallet'
 
 // Load environment variables
 dotenv.config()
@@ -13,28 +14,14 @@ async function checkWalletBalance() {
   
   console.log(`\n💰 Checking wallet balance on ${NETWORK}...\n`)
   
-  // Get backend wallet
-  const privateKeyString = process.env.SOLANA_BACKEND_PRIVATE_KEY
-  if (!privateKeyString) {
-    console.error('❌ SOLANA_BACKEND_PRIVATE_KEY not found in environment')
-    process.exit(1)
-  }
-  
-  // Parse private key
+  // Get backend wallet using network-specific private key
   let backendWallet: Keypair
   try {
-    // Try parsing as JSON array first
-    const privateKeyArray = JSON.parse(privateKeyString)
-    backendWallet = Keypair.fromSecretKey(new Uint8Array(privateKeyArray))
-  } catch (jsonError) {
-    try {
-      // Try parsing as base58
-      const privateKeyBytes = bs58.decode(privateKeyString)
-      backendWallet = Keypair.fromSecretKey(privateKeyBytes)
-    } catch (bs58Error) {
-      console.error('❌ Failed to parse private key')
-      process.exit(1)
-    }
+    backendWallet = getBackendWallet()
+    console.log(`✅ Successfully loaded backend wallet for ${NETWORK}`)
+  } catch (walletError) {
+    console.error('❌ Failed to get backend wallet:', walletError)
+    process.exit(1)
   }
   
   const walletAddress = backendWallet.publicKey.toBase58()

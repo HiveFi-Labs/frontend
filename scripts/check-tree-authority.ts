@@ -6,42 +6,45 @@ import { createUmi } from '@metaplex-foundation/umi-bundle-defaults'
 import { mplBubblegum } from '@metaplex-foundation/mpl-bubblegum'
 import { publicKey } from '@metaplex-foundation/umi'
 import bs58 from 'bs58'
+import { getSolanaAddresses, getActiveNetworkFromEnv, getSolanaAddressesForNetwork, ClusterType } from '../config/solana-addresses'
+import { Command } from 'commander'
+import { getBackendWallet } from '../lib/get-backend-wallet'
 
 // Load environment variables
 dotenv.config()
 
-async function checkTreeAuthority() {
-  const IS_MAINNET = process.env.NEXT_PUBLIC_SOLANA_NETWORK === 'mainnet'
+async function checkTreeAuthority(options: { network?: ClusterType }) {
+  // Use command line network if provided, otherwise detect from env
+  const envNetwork = getActiveNetworkFromEnv()
+  const selectedNetwork = options.network || envNetwork
+  const IS_MAINNET = selectedNetwork === 'mainnet'
   const NETWORK = IS_MAINNET ? 'mainnet-beta' : 'devnet'
-  const MERKLE_TREE = process.env.SOLANA_MERKLE_TREE_ADDRESS
   
-  console.log(`\n🌳 Checking Merkle Tree authority on ${NETWORK}...\n`)
+  // Get addresses from config
+  const addresses = getSolanaAddressesForNetwork(selectedNetwork)
+  const MERKLE_TREE = addresses.merkleTreeAddress
   
-  if (!MERKLE_TREE) {
-    console.error('❌ SOLANA_MERKLE_TREE_ADDRESS not found in environment')
-    return
-  }
+  console.log(`\n🌳 Checking Merkle Tree authority on ${NETWORK}${options.network ? ' (override via --network)' : ''}...\n`)
   
-  // Get backend wallet
-  const privateKeyString = process.env.SOLANA_BACKEND_PRIVATE_KEY
-  if (!privateKeyString) {
-    console.error('❌ SOLANA_BACKEND_PRIVATE_KEY not found in environment')
-    return
-  }
-  
-  // Parse private key
+  // Get backend wallet using network-specific private key
   let backendWallet: Keypair
   try {
-    const privateKeyArray = JSON.parse(privateKeyString)
-    backendWallet = Keypair.fromSecretKey(new Uint8Array(privateKeyArray))
-  } catch {
-    try {
-      const privateKeyBytes = bs58.decode(privateKeyString)
-      backendWallet = Keypair.fromSecretKey(privateKeyBytes)
-    } catch {
-      console.error('❌ Failed to parse private key')
-      return
+    // Temporarily set the network for the utility function
+    const originalNetwork = process.env.NEXT_PUBLIC_SOLANA_NETWORK
+    process.env.NEXT_PUBLIC_SOLANA_NETWORK = selectedNetwork
+    
+    backendWallet = getBackendWallet()
+    console.log(`✅ Successfully loaded backend wallet for ${selectedNetwork}`)
+    
+    // Restore original network
+    if (originalNetwork) {
+      process.env.NEXT_PUBLIC_SOLANA_NETWORK = originalNetwork
+    } else {
+      delete process.env.NEXT_PUBLIC_SOLANA_NETWORK
     }
+  } catch (walletError) {
+    console.error('❌ Failed to get backend wallet:', walletError)
+    return
   }
   
   console.log('Backend wallet:', backendWallet.publicKey.toBase58())
@@ -77,24 +80,35 @@ async function checkTreeAuthority() {
     console.log('   Tree authority PDA:', treeAuthority.toBase58())
     console.log('   Your wallet:', backendWallet.publicKey.toBase58())
     
-    // Check if they match
-    if (backendWallet.publicKey.equals(treeAuthority)) {
-      console.log('\n✅ Your wallet is the tree authority!')
-    } else {
-      console.log('\n❌ Your wallet is NOT the tree authority')
-      console.log('   The wallet that created this tree must be used to mint NFTs')
-      
-      // Provide helpful suggestions
-      console.log('\n📝 Solutions:')
-      console.log('   1. Use the correct private key that created this Merkle tree')
-      console.log('   2. Create a new Merkle tree with your current wallet')
-      console.log('   3. Have the tree creator delegate authority to your wallet')
-    }
+    // Note: The tree authority PDA is derived from the tree address
+    // The actual minting authority is the wallet that created the tree
+    console.log('\n📝 Note:')
+    console.log('   The Tree Authority PDA is a derived address.')
+    console.log('   Your wallet controls the tree if it was the creator.')
+    console.log('   Testing actual minting capability is the best verification.')
+    
+    // Check if the wallet can actually mint (best test)
+    console.log('\n🧪 Testing minting capability:')
+    console.log('   Run a test mint to verify your wallet has authority.')
+    console.log('   If minting succeeds, your wallet has the correct permissions.')
     
   } catch (error) {
     console.error('❌ Error checking tree authority:', error)
   }
 }
 
-// Run the check
-checkTreeAuthority().catch(console.error)
+// CLI setup
+const program = new Command()
+
+program
+  .name('check-tree-authority')
+  .description('Check Merkle tree authority configuration')
+  .option('-n, --network <network>', 'network to check (mainnet or devnet)', (value) => {
+    if (value !== 'mainnet' && value !== 'devnet') {
+      throw new Error('Network must be mainnet or devnet')
+    }
+    return value as ClusterType
+  })
+  .action(checkTreeAuthority)
+
+program.parse(process.argv)
