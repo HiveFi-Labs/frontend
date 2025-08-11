@@ -22,6 +22,8 @@ import { hasClaimedNFT, saveClaimRecord } from '@/lib/claim-storage'
 import { getCollectionMetadata } from '@/lib/collection-metadata'
 import { getAssetIdByOwnerAndCollection } from '@/lib/get-asset-id'
 import { getNextCollectionId } from '@/lib/get-collection-count'
+import { getSolanaAddresses } from '@/config/solana-addresses'
+import { getBackendWallet } from '@/lib/get-backend-wallet'
 
 // Request body validation schema
 const claimRequestSchema = z.object({
@@ -49,9 +51,8 @@ type ErrorResponse = {
 const IS_MAINNET = process.env.NEXT_PUBLIC_SOLANA_NETWORK === 'mainnet'
 const NETWORK = process.env.NEXT_PUBLIC_SOLANA_NETWORK || 'devnet'
 
-// Merkle tree and collection configuration
-const MERKLE_TREE_ADDRESS = process.env.SOLANA_MERKLE_TREE_ADDRESS
-const COLLECTION_MINT = process.env.SOLANA_COLLECTION_MINT
+// Get addresses from config
+const { merkleTreeAddress: MERKLE_TREE_ADDRESS, collectionMint: COLLECTION_MINT } = getSolanaAddresses()
 
 // Keep track of processed claims to prevent duplicates
 const processedClaims = new Set<string>()
@@ -101,13 +102,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if this user has already claimed (from persistent storage)
-    const existingClaim = await hasClaimedNFT(privyUserId, walletAddress)
+    const existingClaim = await hasClaimedNFT(privyUserId, walletAddress, NETWORK)
     if (existingClaim) {
-      console.log(`User ${privyUserId} has already claimed NFT`)
+      console.log(`User ${privyUserId} has already claimed NFT on ${NETWORK}`)
       return NextResponse.json<ErrorResponse>(
         {
           success: false,
-          error: 'You have already claimed this NFT.',
+          error: `You have already claimed this NFT on ${NETWORK}.`,
         },
         { status: 400 }
       )
@@ -151,10 +152,13 @@ export async function POST(request: NextRequest) {
           throw new Error('Invalid wallet address format')
         }
 
-        // Get backend wallet from environment
-        const privateKeyString = process.env.SOLANA_BACKEND_PRIVATE_KEY
-        if (!privateKeyString) {
-          console.error('SOLANA_BACKEND_PRIVATE_KEY not found in environment')
+        // Get backend wallet using network-specific private key
+        let backendWallet: Keypair
+        try {
+          backendWallet = getBackendWallet()
+          console.log('Successfully loaded backend wallet for network:', NETWORK)
+        } catch (walletError) {
+          console.error('Failed to get backend wallet:', walletError)
           processedClaims.delete(claimKey)
           throw new Error('Server configuration error')
         }
@@ -164,33 +168,6 @@ export async function POST(request: NextRequest) {
           console.error('Merkle tree or collection not configured')
           processedClaims.delete(claimKey)
           throw new Error('NFT collection not configured')
-        }
-
-        // Parse private key
-        let backendWallet: Keypair
-        try {
-          // Try parsing as JSON array first
-          const privateKeyArray = JSON.parse(privateKeyString)
-          backendWallet = Keypair.fromSecretKey(new Uint8Array(privateKeyArray))
-          console.log('Successfully parsed private key as JSON array')
-        } catch (jsonError) {
-          try {
-            // Try parsing as base64
-            const privateKeyBuffer = Buffer.from(privateKeyString, 'base64')
-            backendWallet = Keypair.fromSecretKey(privateKeyBuffer)
-            console.log('Successfully parsed private key as base64')
-          } catch (base64Error) {
-            try {
-              // Try parsing as base58 (common Solana format)
-              const privateKeyBytes = bs58.decode(privateKeyString)
-              backendWallet = Keypair.fromSecretKey(privateKeyBytes)
-              console.log('Successfully parsed private key as base58')
-            } catch (bs58Error) {
-              console.error('Failed to parse backend wallet private key')
-              processedClaims.delete(claimKey)
-              throw new Error('Server configuration error: Invalid private key format')
-            }
-          }
         }
 
         // Setup Umi with network-specific RPC URL
