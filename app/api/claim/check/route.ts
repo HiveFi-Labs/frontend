@@ -7,6 +7,7 @@ import { mplBubblegum } from '@metaplex-foundation/mpl-bubblegum'
 import { publicKey } from '@metaplex-foundation/umi'
 import { z } from 'zod'
 import { hasClaimedNFT } from '@/lib/claim-storage'
+import { getSolanaAddresses } from '@/config/solana-addresses'
 
 // Request validation schema
 const checkRequestSchema = z.object({
@@ -25,9 +26,8 @@ type CheckResponse = {
 const IS_MAINNET = process.env.NEXT_PUBLIC_SOLANA_NETWORK === 'mainnet'
 const NETWORK = process.env.NEXT_PUBLIC_SOLANA_NETWORK || 'devnet'
 
-// Merkle tree and collection configuration
-const MERKLE_TREE_ADDRESS = process.env.SOLANA_MERKLE_TREE_ADDRESS
-const COLLECTION_MINT = process.env.SOLANA_COLLECTION_MINT
+// Get addresses from config
+const { merkleTreeAddress: MERKLE_TREE_ADDRESS, collectionMint: COLLECTION_MINT } = getSolanaAddresses()
 
 export async function POST(request: NextRequest) {
   try {
@@ -48,13 +48,13 @@ export async function POST(request: NextRequest) {
     const { walletAddress } = validationResult.data
 
     // First check if wallet has already claimed from our persistent storage
-    const claimRecord = await hasClaimedNFT(undefined, walletAddress)
+    const claimRecord = await hasClaimedNFT(undefined, walletAddress, NETWORK)
     if (claimRecord) {
-      console.log(`Wallet ${walletAddress} has already claimed NFT`)
+      console.log(`Wallet ${walletAddress} has already claimed NFT on ${NETWORK}`)
       return NextResponse.json<CheckResponse>({
         hasClaimed: true,
         assetId: claimRecord.assetId,
-        message: 'This wallet has already claimed the NFT',
+        message: `This wallet has already claimed the NFT on ${NETWORK}`,
         network: claimRecord.network || NETWORK,
       })
     }

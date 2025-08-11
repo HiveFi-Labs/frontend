@@ -70,16 +70,21 @@ export async function hasWalletClaimed(walletAddress: string): Promise<ClaimReco
 }
 
 // Check if either user or wallet has claimed
-export async function hasClaimedNFT(privyUserId?: string, walletAddress?: string): Promise<ClaimRecord | null> {
+export async function hasClaimedNFT(privyUserId?: string, walletAddress?: string, network?: string): Promise<ClaimRecord | null> {
   const records = await loadClaimRecords()
   
+  // If network is specified, only check claims for that network
+  const filteredRecords = network 
+    ? records.filter(r => r.network === network)
+    : records
+  
   if (privyUserId) {
-    const userRecord = records.find(r => r.privyUserId === privyUserId)
+    const userRecord = filteredRecords.find(r => r.privyUserId === privyUserId)
     if (userRecord) return userRecord
   }
   
   if (walletAddress) {
-    const walletRecord = records.find(r => r.walletAddress === walletAddress)
+    const walletRecord = filteredRecords.find(r => r.walletAddress === walletAddress)
     if (walletRecord) return walletRecord
   }
   
