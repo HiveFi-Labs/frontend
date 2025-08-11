@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { usePrivy, useSolanaWallets } from '@privy-io/react-auth'
+import { usePrivy, useSolanaWallets, getAccessToken } from '@privy-io/react-auth'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useToast } from '@/hooks/use-toast'
@@ -149,14 +149,22 @@ export default function ClaimPage() {
     setErrorMessage('') // Clear any previous error messages
 
     try {
+      // Get Privy access token
+      const accessToken = await getAccessToken()
+      if (!accessToken) {
+        setErrorMessage('Failed to authenticate. Please try logging in again.')
+        setClaiming(false)
+        return
+      }
+
       const response = await fetch('/api/claim', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`,
         },
         body: JSON.stringify({
           walletAddress: userWallet.address,
-          privyUserId: user?.id, // Send Privy user ID for whitelist check
         }),
       })
 
@@ -201,7 +209,12 @@ export default function ClaimPage() {
       })
     } catch (error) {
       console.error('Claim error:', error)
-      setErrorMessage('Failed to connect to the server. Please try again later.')
+      if (error instanceof Error) {
+        console.error('Error details:', error.message)
+        setErrorMessage(error.message || 'Failed to connect to the server. Please try again later.')
+      } else {
+        setErrorMessage('Failed to connect to the server. Please try again later.')
+      }
     } finally {
       setClaiming(false)
     }
@@ -347,7 +360,7 @@ export default function ClaimPage() {
                         This NFT serves as proof of being one of the earliest committed members of the HiveFi community. Join us in shaping the future of HiveFi together.
                       </p>
                       <p className="text-sm text-zinc-400 mt-2">
-                        Available exclusively for users who registered their account before April 2025.
+                        Available exclusively for whitelisted early adopters.
                       </p>
                     </div>
 
