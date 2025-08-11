@@ -24,11 +24,12 @@ import { getAssetIdByOwnerAndCollection } from '@/lib/get-asset-id'
 import { getNextCollectionId } from '@/lib/get-collection-count'
 import { getSolanaAddresses } from '@/config/solana-addresses'
 import { getBackendWallet } from '@/lib/get-backend-wallet'
+import { getAccessTokenFromRequest, verifyAccessToken, getUserAndWallets, assertWalletBelongsToUser } from '@/lib/auth/privy'
 
 // Request body validation schema
 const claimRequestSchema = z.object({
   walletAddress: z.string().min(1, 'Wallet address is required'),
-  privyUserId: z.string().optional(), // Privy user ID for whitelist check
+  privyUserId: z.string().optional(), // Deprecated - will be ignored
 })
 
 // Response types
@@ -73,38 +74,96 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { walletAddress, privyUserId } = validationResult.data
+    const { walletAddress } = validationResult.data
     
-    // Check if user is in whitelist
-    if (privyUserId) {
-      const isWhitelisted = user_whitelist.some(user => user.id === privyUserId)
-      if (!isWhitelisted) {
-        console.log(`User ${privyUserId} is not in whitelist`)
-        return NextResponse.json<ErrorResponse>(
-          {
-            success: false,
-            error: 'You are not eligible to claim this NFT. Only whitelisted users can claim.',
-          },
-          { status: 403 }
-        )
-      }
-      console.log(`User ${privyUserId} is whitelisted`)
-    } else {
-      // If no privyUserId is provided, reject the request
-      console.log('No Privy user ID provided')
+    // Extract and verify access token
+    const accessToken = getAccessTokenFromRequest(request)
+    if (!accessToken) {
+      console.log('No access token provided')
       return NextResponse.json<ErrorResponse>(
         {
           success: false,
-          error: 'Authentication required. Please sign in with Privy to claim the NFT.',
+          error: 'Authentication required. Please provide a valid access token.',
         },
         { status: 401 }
       )
     }
+    
+    // Verify the access token
+    let userId: string
+    try {
+      const tokenData = await verifyAccessToken(accessToken)
+      userId = tokenData.userId
+      console.log(`Access token verified for user: ${userId}`)
+    } catch (error) {
+      console.log('Access token verification failed:', error)
+      return NextResponse.json<ErrorResponse>(
+        {
+          success: false,
+          error: 'Invalid or expired access token.',
+        },
+        { status: 401 }
+      )
+    }
+    
+    // Check if user is in whitelist
+    const isWhitelisted = user_whitelist.some(user => user.id === userId)
+    if (!isWhitelisted) {
+      console.log(`User ${userId} is not in whitelist`)
+      return NextResponse.json<ErrorResponse>(
+        {
+          success: false,
+          error: 'You are not eligible to claim this NFT. Only whitelisted users can claim.',
+        },
+        { status: 403 }
+      )
+    }
+    console.log(`User ${userId} is whitelisted`)
+    
+    // Get user's linked wallets
+    let userWallets: string[]
+    try {
+      userWallets = await getUserAndWallets(userId)
+      console.log(`User ${userId} has ${userWallets.length} linked wallet(s)`)
+    } catch (error) {
+      console.error('Failed to get user wallets:', error)
+      return NextResponse.json<ErrorResponse>(
+        {
+          success: false,
+          error: 'Failed to retrieve user wallet information.',
+        },
+        { status: 500 }
+      )
+    }
+    
+    // Verify that the wallet belongs to the user
+    try {
+      assertWalletBelongsToUser(walletAddress, userWallets)
+      console.log(`Wallet ${walletAddress} verified for user ${userId}`)
+    } catch (error) {
+      console.log(`Wallet ${walletAddress} does not belong to user ${userId}`)
+      
+      // Temporary workaround: Allow whitelisted users to claim with any wallet
+      // This should be removed once Privy wallet linking is properly implemented
+      const ALLOW_UNLINKED_WALLETS = process.env.ALLOW_UNLINKED_WALLETS === 'true'
+      
+      if (!ALLOW_UNLINKED_WALLETS) {
+        return NextResponse.json<ErrorResponse>(
+          {
+            success: false,
+            error: 'The provided wallet address is not linked to your account. Please link your wallet in your Privy account settings.',
+          },
+          { status: 400 }
+        )
+      }
+      
+      console.log('WARNING: Allowing unlinked wallet for whitelisted user (temporary workaround)')
+    }
 
     // Check if this user has already claimed (from persistent storage)
-    const existingClaim = await hasClaimedNFT(privyUserId, walletAddress, NETWORK)
+    const existingClaim = await hasClaimedNFT(userId, walletAddress, NETWORK)
     if (existingClaim) {
-      console.log(`User ${privyUserId} has already claimed NFT on ${NETWORK}`)
+      console.log(`User ${userId} has already claimed NFT on ${NETWORK}`)
       return NextResponse.json<ErrorResponse>(
         {
           success: false,
@@ -115,7 +174,7 @@ export async function POST(request: NextRequest) {
     }
     
     // Also check in-memory claims (for current session)
-    const claimKey = `${privyUserId}-${walletAddress}`
+    const claimKey = `${userId}-${walletAddress}`
     if (processedClaims.has(claimKey)) {
       return NextResponse.json<ErrorResponse>(
         {
@@ -303,6 +362,7 @@ export async function POST(request: NextRequest) {
         }
 
         console.log('Minting cNFT to:', walletAddress)
+        console.log('User ID:', userId)
         console.log('Network:', NETWORK)
         console.log('Using Merkle tree:', MERKLE_TREE_ADDRESS)
         console.log('Collection:', COLLECTION_MINT)
@@ -431,7 +491,7 @@ export async function POST(request: NextRequest) {
         // Save claim record to persistent storage
         try {
           await saveClaimRecord({
-            privyUserId: privyUserId || '',
+            privyUserId: userId,
             walletAddress,
             signature: signatureString,
             assetId: assetId || (leafInfo?.id ? leafInfo.id.toString() : undefined),
