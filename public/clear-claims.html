@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clear NFT Claim Records</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #0a0a0a;
+            color: #e0e0e0;
+        }
+        .container {
+            background: #1a1a1a;
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid #333;
+        }
+        h1 {
+            color: #9333ea;
+            margin-bottom: 20px;
+        }
+        button {
+            background: #9333ea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px 10px 10px 0;
+        }
+        button:hover {
+            background: #7c3aed;
+        }
+        button.danger {
+            background: #dc2626;
+        }
+        button.danger:hover {
+            background: #b91c1c;
+        }
+        .key-list {
+            background: #0a0a0a;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: monospace;
+            font-size: 14px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .key-item {
+            margin: 5px 0;
+            padding: 8px;
+            background: #1a1a1a;
+            border-radius: 4px;
+        }
+        .message {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .success {
+            background: #064e3b;
+            color: #6ee7b7;
+            border: 1px solid #047857;
+        }
+        .info {
+            background: #1e3a5f;
+            color: #93c5fd;
+            border: 1px solid #2563eb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>NFT Claim Records Manager</h1>
+        
+        <p>This tool helps you manage localStorage claim records when switching between networks or collections.</p>
+        
+        <div id="current-config" class="message info"></div>
+        
+        <h2>Current Claim Records:</h2>
+        <div id="key-list" class="key-list">
+            <em>Loading...</em>
+        </div>
+        
+        <h2>Actions:</h2>
+        <button onclick="clearOldKeys()">Clear Old Format Keys</button>
+        <button onclick="clearNetworkKeys('devnet')">Clear Devnet Claims</button>
+        <button onclick="clearNetworkKeys('mainnet')">Clear Mainnet Claims</button>
+        <button class="danger" onclick="clearAllClaims()">Clear ALL Claims</button>
+        
+        <div id="message"></div>
+    </div>
+
+    <script>
+        function getCurrentConfig() {
+            // These would normally come from environment variables
+            return {
+                network: 'mainnet', // or 'devnet'
+                collectionId: 'genesis-pioneer-bee-v1'
+            };
+        }
+        
+        function displayKeys() {
+            const keys = Object.keys(localStorage).filter(key => key.startsWith('claimed_'));
+            const keyList = document.getElementById('key-list');
+            const config = getCurrentConfig();
+            
+            document.getElementById('current-config').innerHTML = 
+                `<strong>Current Configuration:</strong><br>` +
+                `Network: ${config.network}<br>` +
+                `Collection: ${config.collectionId}`;
+            
+            if (keys.length === 0) {
+                keyList.innerHTML = '<em>No claim records found</em>';
+                return;
+            }
+            
+            keyList.innerHTML = keys.map(key => {
+                const value = localStorage.getItem(key);
+                const isCurrent = key.includes(`claimed_${config.network}_${config.collectionId}_`);
+                return `<div class="key-item" style="${isCurrent ? 'border: 1px solid #9333ea;' : ''}">
+                    <strong>${key}</strong><br>
+                    <small>${value}</small>
+                    ${isCurrent ? '<br><small style="color: #9333ea;">✓ Current network/collection</small>' : ''}
+                </div>`;
+            }).join('');
+        }
+        
+        function clearOldKeys() {
+            const config = getCurrentConfig();
+            const currentPrefix = `claimed_${config.network}_${config.collectionId}_`;
+            let cleared = 0;
+            
+            Object.keys(localStorage)
+                .filter(key => key.startsWith('claimed_') && !key.startsWith(currentPrefix))
+                .forEach(key => {
+                    localStorage.removeItem(key);
+                    cleared++;
+                });
+            
+            showMessage(`Cleared ${cleared} old format keys`, 'success');
+            displayKeys();
+        }
+        
+        function clearNetworkKeys(network) {
+            const prefix = `claimed_${network}_`;
+            let cleared = 0;
+            
+            Object.keys(localStorage)
+                .filter(key => key.startsWith(prefix))
+                .forEach(key => {
+                    localStorage.removeItem(key);
+                    cleared++;
+                });
+            
+            showMessage(`Cleared ${cleared} ${network} claim records`, 'success');
+            displayKeys();
+        }
+        
+        function clearAllClaims() {
+            if (!confirm('Are you sure you want to clear ALL claim records?')) return;
+            
+            let cleared = 0;
+            Object.keys(localStorage)
+                .filter(key => key.startsWith('claimed_'))
+                .forEach(key => {
+                    localStorage.removeItem(key);
+                    cleared++;
+                });
+            
+            showMessage(`Cleared ${cleared} claim records`, 'success');
+            displayKeys();
+        }
+        
+        function showMessage(text, type) {
+            const messageEl = document.getElementById('message');
+            messageEl.className = `message ${type}`;
+            messageEl.textContent = text;
+            setTimeout(() => {
+                messageEl.textContent = '';
+                messageEl.className = '';
+            }, 3000);
+        }
+        
+        // Initial display
+        displayKeys();
+    </script>
+</body>
+</html>

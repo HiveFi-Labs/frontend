@@ -92,6 +92,13 @@ export default function Header() {
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-500 to-blue-500 transition-all duration-300 group-hover:w-full"></span>
             </button>
             <Link
+              href="/claim"
+              className="text-zinc-300 hover:text-white transition-colors relative group"
+            >
+              <span>Claim NFT</span>
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-500 to-blue-500 transition-all duration-300 group-hover:w-full"></span>
+            </Link>
+            <Link
               href="https://hivefi.gitbook.io/hivefi"
               target="_blank"
               rel="noopener noreferrer"
@@ -194,6 +201,13 @@ export default function Header() {
               >
                 Portfolio
               </button>
+              <Link
+                href="/claim"
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-zinc-300 hover:text-white transition-colors py-2 text-center"
+              >
+                Claim NFT
+              </Link>
               <Link
                 href="https://hivefi.gitbook.io/hivefi"
                 target="_blank"
