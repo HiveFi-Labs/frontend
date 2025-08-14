@@ -26,21 +26,60 @@ function getPrivyClient(): PrivyClient {
  */
 export function getAccessTokenFromRequest(req: NextRequest): string | null {
   // CloudFront/LB 配下では Authorization ヘッダーが別名に転送される場合がある
+  const debug = process.env.LOG_AUTH_DEBUG === 'true'
+
+  const rawAuthorization = req.headers.get('authorization')
+  const rawXForwardedAuthorization = req.headers.get('x-forwarded-authorization')
+  const rawXAuthorization = req.headers.get('x-authorization')
+
   const headerCandidates = [
-    req.headers.get('authorization'),
-    req.headers.get('x-forwarded-authorization'),
-    req.headers.get('x-authorization'),
-  ].filter(Boolean) as string[]
+    rawAuthorization,
+    rawXForwardedAuthorization,
+    rawXAuthorization,
+  ].filter((v): v is string => Boolean(v))
+
+  const preview = (token: string | null) =>
+    token ? `${token.substring(0, 12)}... (len=${token.length})` : 'null'
+
+  if (debug) {
+    console.log('[AuthDebug] Header presence:', {
+      authorization: Boolean(rawAuthorization),
+      xForwardedAuthorization: Boolean(rawXForwardedAuthorization),
+      xAuthorization: Boolean(rawXAuthorization),
+    })
+    console.log('[AuthDebug] Header previews:', {
+      authorization: preview(rawAuthorization),
+      xForwardedAuthorization: preview(rawXForwardedAuthorization),
+      xAuthorization: preview(rawXAuthorization),
+    })
+  }
 
   for (const header of headerCandidates) {
     if (header.startsWith('Bearer ')) {
-      return header.substring(7)
+      const token = header.substring(7)
+      if (debug) {
+        console.log('[AuthDebug] Using Bearer token from header', {
+          source: header === rawAuthorization
+            ? 'authorization'
+            : header === rawXForwardedAuthorization
+            ? 'x-forwarded-authorization'
+            : 'x-authorization',
+          tokenPreview: preview(token),
+        })
+      }
+      return token
     }
   }
 
   // フォールバック: Bearer プレフィックスが無い場合でもトークン文字列を返す
   if (headerCandidates.length > 0) {
-    return headerCandidates[0] || null
+    const fallback = headerCandidates[0] || null
+    if (debug) {
+      console.log('[AuthDebug] Fallback token (no Bearer prefix)', {
+        tokenPreview: preview(fallback),
+      })
+    }
+    return fallback
   }
 
   return null
