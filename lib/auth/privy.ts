@@ -25,13 +25,64 @@ function getPrivyClient(): PrivyClient {
  * @returns Access token or null if not found
  */
 export function getAccessTokenFromRequest(req: NextRequest): string | null {
-  const authHeader = req.headers.get('authorization')
-  
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return null
+  // CloudFront/LB 配下では Authorization ヘッダーが別名に転送される場合がある
+  const debug = process.env.LOG_AUTH_DEBUG === 'true'
+
+  const rawAuthorization = req.headers.get('authorization')
+  const rawXForwardedAuthorization = req.headers.get('x-forwarded-authorization')
+  const rawXAuthorization = req.headers.get('x-authorization')
+
+  const headerCandidates = [
+    rawAuthorization,
+    rawXForwardedAuthorization,
+    rawXAuthorization,
+  ].filter((v): v is string => Boolean(v))
+
+  const preview = (token: string | null) =>
+    token ? `${token.substring(0, 12)}... (len=${token.length})` : 'null'
+
+  if (debug) {
+    console.log('[AuthDebug] Header presence:', {
+      authorization: Boolean(rawAuthorization),
+      xForwardedAuthorization: Boolean(rawXForwardedAuthorization),
+      xAuthorization: Boolean(rawXAuthorization),
+    })
+    console.log('[AuthDebug] Header previews:', {
+      authorization: preview(rawAuthorization),
+      xForwardedAuthorization: preview(rawXForwardedAuthorization),
+      xAuthorization: preview(rawXAuthorization),
+    })
   }
-  
-  return authHeader.substring(7) // Remove 'Bearer ' prefix
+
+  for (const header of headerCandidates) {
+    if (header.startsWith('Bearer ')) {
+      const token = header.substring(7)
+      if (debug) {
+        console.log('[AuthDebug] Using Bearer token from header', {
+          source: header === rawAuthorization
+            ? 'authorization'
+            : header === rawXForwardedAuthorization
+            ? 'x-forwarded-authorization'
+            : 'x-authorization',
+          tokenPreview: preview(token),
+        })
+      }
+      return token
+    }
+  }
+
+  // フォールバック: Bearer プレフィックスが無い場合でもトークン文字列を返す
+  if (headerCandidates.length > 0) {
+    const fallback = headerCandidates[0] || null
+    if (debug) {
+      console.log('[AuthDebug] Fallback token (no Bearer prefix)', {
+        tokenPreview: preview(fallback),
+      })
+    }
+    return fallback
+  }
+
+  return null
 }
 
 /**
@@ -80,9 +131,10 @@ export async function getUserAndWallets(userId: string): Promise<string[]> {
     console.log('User linked accounts:', JSON.stringify(user.linkedAccounts, null, 2))
     
     // Extract Solana wallet addresses
-    const wallets = user.linkedAccounts
-      .filter(account => account.type === 'wallet' && (account as any).chainType === 'solana')
-      .map(account => account.address)
+    type WalletAccount = { type: string; chainType?: string; address?: string }
+    const wallets = (user.linkedAccounts as WalletAccount[])
+      .filter(account => account.type === 'wallet' && account.chainType === 'solana')
+      .map(account => account.address as string)
     
     return wallets
   } catch (error) {
