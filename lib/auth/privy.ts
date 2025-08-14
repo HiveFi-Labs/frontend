@@ -25,13 +25,25 @@ function getPrivyClient(): PrivyClient {
  * @returns Access token or null if not found
  */
 export function getAccessTokenFromRequest(req: NextRequest): string | null {
-  const authHeader = req.headers.get('authorization')
-  
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return null
+  // CloudFront/LB 配下では Authorization ヘッダーが別名に転送される場合がある
+  const headerCandidates = [
+    req.headers.get('authorization'),
+    req.headers.get('x-forwarded-authorization'),
+    req.headers.get('x-authorization'),
+  ].filter(Boolean) as string[]
+
+  for (const header of headerCandidates) {
+    if (header.startsWith('Bearer ')) {
+      return header.substring(7)
+    }
   }
-  
-  return authHeader.substring(7) // Remove 'Bearer ' prefix
+
+  // フォールバック: Bearer プレフィックスが無い場合でもトークン文字列を返す
+  if (headerCandidates.length > 0) {
+    return headerCandidates[0] || null
+  }
+
+  return null
 }
 
 /**
@@ -80,9 +92,10 @@ export async function getUserAndWallets(userId: string): Promise<string[]> {
     console.log('User linked accounts:', JSON.stringify(user.linkedAccounts, null, 2))
     
     // Extract Solana wallet addresses
-    const wallets = user.linkedAccounts
-      .filter(account => account.type === 'wallet' && (account as any).chainType === 'solana')
-      .map(account => account.address)
+    type WalletAccount = { type: string; chainType?: string; address?: string }
+    const wallets = (user.linkedAccounts as WalletAccount[])
+      .filter(account => account.type === 'wallet' && account.chainType === 'solana')
+      .map(account => account.address as string)
     
     return wallets
   } catch (error) {
