@@ -322,13 +322,13 @@ export default function ClaimPage() {
                           >
                             View on Solana Explorer →
                           </Link>
-                          <Link
+                          {/* <Link
                             href={`https://solscan.io/token/${assetId}${network === 'mainnet' || network === 'mainnet-beta' ? '' : `?cluster=${network}`}`}
                             target="_blank"
                             className="inline-flex items-center text-sm text-purple-400 hover:text-purple-300 transition-colors"
                           >
                             View on Solscan →
-                          </Link>
+                          </Link> */}
                         </div>
                       </div>
                     )}
