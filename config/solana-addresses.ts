@@ -7,8 +7,8 @@ export interface SolanaAddresses {
 
 const addresses: Record<ClusterType, SolanaAddresses> = {
   mainnet: {
-    merkleTreeAddress: '3PzT8RYNpWuPPoacQDwHFtUREQRS71Hc2XRJ41XjZkBv',
-    collectionMint: '8DHG6biZnpRYYxX4fneUH9A9fErZfzF8ssFcsLiz1HTR'
+    merkleTreeAddress: 'EmjRqUdyAjWCmH4WK844j26hD52BXBsmoWZyDVuxreZU',
+    collectionMint: 'FFsBLpQS3j8BUwgBP2wJXdnfiwPwkbVqpVwhbuwoXCxH'
   },
   devnet: {
     merkleTreeAddress: 'HTpAUhk4sQa8eb8CpH5Lse19WhBsWXgYSA4YTJtFcSZf',
