@@ -23,10 +23,10 @@
     "@metaplex-foundation/mpl-token-metadata": "^3.4.0",
     "@metaplex-foundation/umi": "^1.2.0",
     "@metaplex-foundation/umi-bundle-defaults": "^1.2.0",
-    "@metaplex-foundation/umi-uploader-irys": "^1.2.0",
+    "@metaplex-foundation/umi-uploader-irys": "^1.4.1",
     "@metaplex-foundation/umi-web3js-adapters": "^1.2.0",
     "@privy-io/react-auth": "^2.8.3",
-    "@privy-io/server-auth": "^1.31.0",
+    "@privy-io/server-auth": "^1.32.0",
     "@radix-ui/react-accordion": "latest",
     "@radix-ui/react-alert-dialog": "^1.1.4",
     "@radix-ui/react-aspect-ratio": "^1.1.1",
@@ -55,7 +55,7 @@
     "@radix-ui/react-toggle-group": "^1.1.1",
     "@radix-ui/react-tooltip": "^1.1.6",
     "@solana/spl-account-compression": "^0.4.1",
-    "@solana/spl-token": "^0.4.13",
+    "@solana/spl-token": "^0.4.14",
     "@solana/web3.js": "^1.98.4",
     "@tanstack/react-query": "^5.74.4",
     "autoprefixer": "^10.4.20",
@@ -96,14 +96,26 @@
     "@types/react-dom": "^19",
     "@types/react-plotly.js": "^2.6.3",
     "dotenv": "^17.2.1",
-    "eslint-config-next": "^15.3.0",
+    "eslint-config-next": "^16.0.0",
     "eslint-config-prettier": "^10.1.2",
     "postcss": "^8",
     "prettier": "^3.5.3",
-    "tailwindcss": "^3.4.17",
+    "tailwindcss": "^3.4.18",
     "tsx": "^4.20.3",
     "typescript": "^5",
     "uuid": "^11.1.0"
   },
-  "packageManager": "pnpm@10.7.0+sha512.6b865ad4b62a1d9842b61d674a393903b871d9244954f652b8842c2b553c72176b278f64c463e52d40fff8aba385c235c8c9ecf5cc7de4fd78b8bb6d49633ab6"
+  "packageManager": "pnpm@10.7.0+sha512.6b865ad4b62a1d9842b61d674a393903b871d9244954f652b8842c2b553c72176b278f64c463e52d40fff8aba385c235c8c9ecf5cc7de4fd78b8bb6d49633ab6",
+  "pnpm": {
+    "overrides": {
+      "@hpke/core": ">=1.7.5",
+      "axios": ">=1.12.0",
+      "glob": ">=10.5.0",
+      "js-yaml": ">=4.1.1",
+      "mdast-util-to-hast": ">=13.2.1",
+      "brace-expansion": ">=2.0.2",
+      "@eslint/plugin-kit": ">=0.3.4",
+      "tmp": ">=0.2.4"
+    }
+  }
 }
