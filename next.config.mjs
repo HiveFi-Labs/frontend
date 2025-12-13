@@ -24,12 +24,8 @@ const nextConfig = {
     parallelServerBuildTraces: true,
     parallelServerCompiles: true,
   },
-  serverExternalPackages: [
-    'pino',
-    'thread-stream',
-    '@walletconnect/universal-provider',
-    '@walletconnect/ethereum-provider',
-  ],
+  // serverExternalPackagesは削除（Turbopackでは警告が出るため）
+  // Turbopack設定を削除（webpackを使用）
   webpack: (config, { isServer }) => {
     // node_modules内のテストファイルや開発用ファイルを除外
     config.resolve = config.resolve || {}
