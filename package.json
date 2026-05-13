@@ -67,7 +67,7 @@
     "embla-carousel-react": "8.5.1",
     "input-otp": "1.4.1",
     "lucide-react": "^0.454.0",
-    "next": "16.0.10",
+    "next": "16.2.6",
     "next-themes": "^0.4.4",
     "p-queue": "^8.1.0",
     "plotly.js": "^3.0.1",
@@ -110,13 +110,23 @@
   "pnpm": {
     "overrides": {
       "@hpke/core": ">=1.7.5",
-      "axios": ">=1.12.0",
+      "axios": ">=1.15.1",
       "glob": ">=10.5.0",
       "js-yaml": ">=4.1.1",
       "mdast-util-to-hast": ">=13.2.1",
       "brace-expansion": ">=2.0.2",
+      "@isaacs/brace-expansion": ">=5.0.1",
       "@eslint/plugin-kit": ">=0.3.4",
-      "tmp": ">=0.2.4"
+      "tmp": ">=0.2.4",
+      "defu": ">=6.1.5",
+      "h3": ">=1.15.6",
+      "immutable": ">=5.1.5",
+      "minimatch": ">=10.2.3",
+      "picomatch": ">=4.0.4",
+      "preact": ">=10.26.10",
+      "flatted": ">=3.3.4",
+      "serialize-javascript": ">=6.0.2",
+      "fast-uri": ">=3.1.0"
     }
   }
 }
